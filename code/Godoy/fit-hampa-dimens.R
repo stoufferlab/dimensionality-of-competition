@@ -1,9 +1,6 @@
 
-source('../Mayfield/dev.fun.R')
-source('../Mayfield/get.alphas.from.model.R')
-source('../Mayfield/glm.coefs.from.traits.R')
-source('../Mayfield/change.dimensions.R')
-source('../Mayfield/optimal.traits.R')
+# load in house competition library
+library(competition)
 
 # read in Oscar's data
 datadir <- "../../data/Godoy/"
@@ -15,6 +12,10 @@ hampa <- hampa[,which(!grepl("X",colnames(hampa)))]
 # rename target as focal
 hampa$focal <- hampa$target
 hampa$target <- NULL
+
+# pretend fruits are seeds
+hampa$seeds <- hampa$fruits
+hampa$fruits <- NULL
 
 # make hampa look like my standardized competition data format
 # this first means separating the different competitors into separate columns which include their neighbor abundance
@@ -36,12 +37,31 @@ for(t in levels(hampa$treatment)){
 	focals.local <- levels(droplevels(hampa.local$focal))
 	competitors.local <- competitors[which(colSums(hampa.local[,competitors])>0)]
 
-	dimensions <- 1
-	optim.lowD[[t]][[dimensions]] <- optimal.traits(hampa.local, dimensions, focals.local, competitors.local, ftol_rel=1E-8, maxeval=5E6)
+	# solve the zero- and one-dimensional problems first
+	dimensions <- 0
+	tmp <- optimal.traits(hampa.local, dimensions, focals.local, competitors.local, method='sbplx', maxeval=1E6)
+	# tmp <- optimal.traits(hampa.local, dimensions, focals.local, competitors.local, start=tmp$par, method='cobyla', maxeval=10000)
+	optim.lowD[[t]][[as.character(dimensions)]] <- tmp
 
-	for(dimensions in seq.int(2,10)){
-		start <- change.dimensions(optim.lowD[[t]][[dimensions-1]]$par, focals, competitors, dimensions-1, dimensions)
-		optim.lowD[[t]][[dimensions]] <- optimal.traits(hampa.local, dimensions, focals.local, competitors.local, start=start, ftol_rel=1E-8, maxeval=5E6)
+	dimensions <- 1
+	while(TRUE){
+		tmp <- optimal.traits(hampa.local, dimensions, focals.local, competitors.local, method='sbplx', maxeval=1E6)
+		if(is.finite(tmp$value)) break
+	}
+	# tmp <- optimal.traits(hampa.local, dimensions, focals.local, competitors.local, start=tmp$par, method='cobyla', maxeval=10000)
+	optim.lowD[[t]][[as.character(dimensions)]] <- tmp
+
+	# now use the lower-dimensional solutions as starting points for the more complex ones
+	for(dimensions in seq.int(2,min(length(focals.local),length(competitors.local)))){
+		start <- change.dimensions(optim.lowD[[t]][[as.character(dimensions-1)]]$par, focals.local, competitors.local, dimensions-1, dimensions)
+
+		while(TRUE){
+			tmp <- optimal.traits(hampa.local, dimensions, focals.local, competitors.local, start=start, method='sbplx', maxeval=1E6)
+			if(is.finite(tmp$value)) break
+		}
+
+		# tmp <- optimal.traits(hampa.local, dimensions, focals.local, competitors.local, start=tmp$par, method='cobyla', maxeval=10000)
+		optim.lowD[[t]][[as.character(dimensions)]] <- tmp
 	}
 
 }
