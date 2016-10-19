@@ -1,5 +1,10 @@
 
+# load the competition functions
 library(competition)
+
+# to parallelize the replicates below
+library(doParallel)
+registerDoParallel(cores=4)
 
 dummy <- function(hampa, optim.lowD){
 	competitors <- colnames(hampa)
@@ -15,16 +20,13 @@ dummy <- function(hampa, optim.lowD){
 		competitors.local <- competitors[which(colSums(hampa.local[,competitors])>0)]
 
 		for(dimensions in as.integer(names(optim.lowD[[t]]))){
-			boot.lowD[[t]][[as.character(dimensions)]] <- list()
-			# boot.lowD[[t]][[as.character(dimensions)]][[1]] <- optim.lowD[[t]][[as.character(dimensions)]]
-			for(czech in seq.int(1,100)){
-				while(TRUE){
+			boot.lowD[[t]][[as.character(dimensions)]] <- foreach(czech=seq.int(1,100)) %dopar% {
+				repeat{
 					hampa.local2 <- hampa.local[sample(rownames(hampa.local),nrow(hampa.local),replace=TRUE),]
 					tmp <- optimal.traits(hampa.local2, dimensions, focals.local, competitors.local, start=optim.lowD[[t]][[as.character(dimensions)]]$par, method='sbplx', maxeval=1E6)
 					if(is.finite(tmp$value)) break
 				}
-				# tmp <- optimal.traits(hampa.local, dimensions, focals.local, competitors.local, start=tmp$par, method='cobyla', maxeval=10000)
-				boot.lowD[[t]][[as.character(dimensions)]][[czech]] <- tmp
+				return(tmp)
 			}
 		}
 
