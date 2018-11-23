@@ -1,0 +1,39 @@
+Relative Yield (Table 12b),,,Neighbor,,,
+target,Am,Ca,Hc,Lh,Ps,Sm
+Am,1,1.97,0.78,1.28,1.31,0.97
+Ca,0.86,1,0.51,0.51,0.92,0.29
+Hc,1.65,1.85,1,1.41,1.71,0.96
+Lh,0.88,1.87,1.05,1,1.41,0.76
+Ps,1.23,1.92,0.59,1.74,1,1.41
+Sm,1.45,1.52,1.19,1.38,1.22,1
+,,,,,,
+Relative Yield (re-ordered),,,Neighbor,,,
+target,Hc,Ps,Sm,Am,Lh,Ca
+Hc,1,1.71,0.96,1.65,1.41,1.85
+Ps,0.59,1,1.41,1.23,1.74,1.92
+Sm,1.19,1.22,1,1.45,1.38,1.52
+Am,0.78,1.31,0.97,1,1.28,1.97
+Lh,1.05,1.41,0.76,0.88,1,1.87
+Ca,0.51,0.92,0.29,0.86,0.51,1
+,,,,,,
+Wins and Losses as binary,,,,,,
+1 indicates that row species outcompetes column species, 0 indicates its loss,,,,,,
+,,,Neighbor,,,
+target,Hc,Ps,Sm,Am,Lh,Ca
+Hc,,1,0,1,1*,1
+Ps,0,,1*,0,1*,1
+Sm,1,0,,1,1,1
+Am,0,1*,0,,1,1
+Lh,0,0,0,0,,1
+Ca,0,0,0,0,0,
+,*each species grows better with its competitor (coexistence), but one species grows even better (the 1),,,,,
+,**each species grows better by itself (alternative stable state), but one species grows less worse in mixture (the 1),,,,,
+,,,,,,
+Relative Abundances (in rank) in field plots from Table 3  (the plots also include numerous other species as well),,,,,,
+,Mean rank across 9 sites in the UK,,,,,
+Hc,9.9,,,,,
+Ps,15.8,,,,,
+Sm,1.9,,,,,
+Am,22.1,,,,,
+Lh,5,,,,,
+Ca,5.6,,,,,
