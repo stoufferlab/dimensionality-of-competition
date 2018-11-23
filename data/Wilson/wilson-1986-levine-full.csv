@@ -1,0 +1,33 @@
+Relative Yield (Table 1),,,Neighbor,,,,
+target,Dul,Jun,Lys,Hyp,Rhy,Dro,Eri
+Dul,1,1.33,1.18,1.17,1.25,1.18,1.34
+Jun,0.63,1,1.34,1.46,1.46,1.52,1.49
+Lys,0.88,0.87,1,1.63,1.63,1.78,1.57
+Hyp,1.09,0.99,0.91,1,1.22,1.29,1.23
+Rhy,1.05,0.73,0.93,0.91,1,1.21,1.36
+Dro,0.98,0.91,0.93,1.02,1.02,1,1.11
+Eri,0.65,0.71,0.88,0.89,0.87,1.48,1
+,,,,,,,
+Wins and Losses as binary,,,,,,,
+1 indicates that row species outcompetes column species, 0 indicates its loss,,,,,,,
+target,Dul,Jun,Lys,Hyp,Rhy,Dro,Eri
+Dul,,1,1,1*,1*,1,1
+Jun,0,,1,1,1,1,1
+Lys,0,0,,1,1,1,1
+Hyp,0,0,0,,1,1*,1
+Rhy,0,0,0,0,,1*,1
+Dro,0,0,0,0,0,,0
+Eri,0,0,0,0,0,1*,
+,,,,,,,
+,*each species grows better with its competitor (coexistence), but one species grows even better (the 1),,,,,,
+,**each species grows better by itself (alternative stable state), but one species grows less worse in mixture (the 1),,,,,,
+,,,,,,,
+Proportion of 0.5 x 0.5 m plots in which the species is found, only including those plots from the three most organic classes (1-2 from Fig.1  )),,,,,,,
+,note that the figures were not scanned, so this is done by eye,,,,,,
+Dul,33,,,,,,
+Jun,28,,,,,,
+Lys,80,,,,,,
+Hyp,36,,,,,,
+Rhy,25,,,,,,
+Dro,75,,,,,,
+Eri,5,,,,,,
