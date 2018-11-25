@@ -1,0 +1,12 @@
+These are preliminary estimates of interaction coefficients between 10 native annual serpentine species from southern California.
+Data were collected between 2007 and 2014.
+Interaction coefficients are based on a population growth model for annual seedbanking species (see Levine & HRL 2009 for model).
+Interaction coefficients define the amount that one germinant of species j reduces the seed production of species i.
+Note - due to computational / statistical model fitting issues, the interaction coefficients (alphas) were constrained to be positive.
+
+Parameter	Definition
+species i	focal species i (that species j influences)
+species j	competitor j
+Parameter	paramater name in model
+Mean		mean parameter value
+SD		standard deviation of parameter (from MCMC draws)
