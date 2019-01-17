@@ -22,5 +22,6 @@ source('fit.machine.R')
 T.optim.lowD <- optim.lowD
 save(T.optim.lowD, file="T.optim.lowD.Rdata")
 
+# write out an AIC table
 T.AICs <- cbind(0:length(optim.lowD), c(summary(null.fit)$aic, unlist(lapply(optim.lowD, function(x){x$aic}))))
 write.table(T.AICs, "../../data/Godoy/godoy.T.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
