@@ -14,29 +14,31 @@ source('change.dimensions.R')
 # 	# go through the normal fitting procedure to get the full alpha model to converge as a basis of comparison
 # 	competitors <- colnames(mayfield)[9:39]
 
-# 	mayfield$neighbors <- rowSums(mayfield[,competitors])
-# 	model.formula <- as.formula("seeds ~ 0 + target + target:neighbors")
-# 	gamma.fit.0 <- glm(
-# 		model.formula,
-# 		family=poisson(),
-# 		data=mayfield,
-# 		control=glm.control(maxit=1000) #,trace=2)
-# 	)
+	# mayfield$neighbors <- rowSums(mayfield[,competitors])
+	# model.formula <- as.formula("seeds ~ 0 + target + target:neighbors")
+	# gamma.fit.0 <- glm(
+	# 	model.formula,
+	# 	family=poisson(),
+	# 	data=mayfield,
+	# 	control=glm.control(maxit=1000) #,trace=2)
+	# )
 
-# 	model.formula <- as.formula(paste0("seeds ~ 0 + target + ",paste0("target:",competitors,collapse=" + ")))
-# 	startnames <- colnames(model.matrix(model.formula,mayfield))
-# 	start1 <- rep(0,length(startnames)) # as.numeric(coef(gamma.fit.0)[gsub("background[A-Z]{4}:",'',startnames)])
-# 	names(start1) <- startnames
-# 	# start1[grepl("SOLO",names(start1))] <- 0
+	# model.formula <- as.formula(paste0("seeds ~ 0 + target + ",paste0("target:",competitors,collapse=" + ")))
+	# startnames <- colnames(model.matrix(model.formula,mayfield))
+	# start1 <- rep(0,length(startnames)) # as.numeric(coef(gamma.fit.0)[gsub("background[A-Z]{4}:",'',startnames)])
+	# names(start1) <- startnames
+	
+	# # fill in intercepts
+	# start1[grep(":",names(start1),value=TRUE,invert=TRUE)] <- coef(gamma.fit.0)[grep(":",names(start1),value=TRUE,invert=TRUE)]
 
-# 	gamma.fit.1 <- glm(
-# 		model.formula,
-# 		family=poisson(),
-# 		data=mayfield,
-# 		start=start1,
-# 		#method=glm.fit3,
-# 		control=list(maxit=1000) #,trace=2)
-# 	)
+	# gamma.fit.1 <- glm(
+	# 	model.formula,
+	# 	family=poisson(),
+	# 	data=mayfield,
+	# 	start=start1,
+	# 	#method=glm.fit3,
+	# 	control=list(maxit=1000) #,trace=2)
+	# )
 
 # XX
 
@@ -92,7 +94,7 @@ source('change.dimensions.R')
 ###############################################################################
 if(TRUE){
 	# specify the model family to fit
-	which.family <- Gamma()
+	which.family <- poisson()
 
 	# get null estimates of the model intercepts as a starting point
 	null.formula <- as.formula("seeds ~ 0 + target")
@@ -150,11 +152,11 @@ if(TRUE){
 				lower <- c(
 					rep(0, nlevels(mayfield$target)),
 					rep(0, nlevels(mayfield$target) * dimensions),
-					rep(-2, length(competitors) * dimensions)
+					rep(-5, length(competitors) * dimensions)
 				)
 				upper <- c(
 					rep(Inf, nlevels(mayfield$target)),
-					rep(2, length(par)-length(targets))
+					rep(5, length(par)-length(targets))
 				)
 
 				optim <- try(
@@ -246,11 +248,11 @@ if(TRUE){
 			lower <- c(
 				rep(0, nlevels(mayfield$target)),
 				rep(0, nlevels(mayfield$target) * dimensions),
-				rep(-2, length(competitors) * dimensions)
+				rep(-5, length(competitors) * dimensions)
 			)
 			upper <- c(
 				rep(Inf, nlevels(mayfield$target)),
-				rep(2, length(par)-length(targets))
+				rep(5, length(par)-length(targets))
 			)
 
 			optim <- try(
@@ -324,11 +326,11 @@ if(TRUE){
 			lower <- c(
 				rep(0, nlevels(mayfield$target)),
 				rep(0, nlevels(mayfield$target) * dimensions),
-				rep(-2, length(competitors) * dimensions)
+				rep(-5, length(competitors) * dimensions)
 			)
 			upper <- c(
 				rep(Inf, nlevels(mayfield$target)),
-				rep(2, length(par)-length(targets))
+				rep(5, length(par)-length(targets))
 			)
 
 			optim <- try(
