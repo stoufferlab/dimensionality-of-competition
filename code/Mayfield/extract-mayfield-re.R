@@ -9,8 +9,6 @@ cc <- colnames(mayfield)
 cc[5] <- "target"
 colnames(mayfield) <- cc
 
-competitors <- colnames(mayfield)[9:39]
-
 # remove NA and 0 
 # WARNING: ask Margie about zero fecundities
 mayfield <- subset(mayfield, !is.na(seeds) & !(seeds==0))
@@ -19,17 +17,19 @@ mayfield <- subset(mayfield, !is.na(seeds) & !(seeds==0))
 
 # extract out the min-aic traits
 source('response.effect.from.pars.R')
-targets <- levels(mayfield$target)
-competitors <- colnames(mayfield)[9:39]
 
 # read in the T traits
 load("Shade.optim.lowD.Rdata")
 t.min.aic <- which.min(unlist(lapply(Shade.optim.lowD, function(x) x$aic)))
+targets <- rownames(Shade.optim.lowD[[t.min.aic]]$alphas)
+competitors <- colnames(Shade.optim.lowD[[t.min.aic]]$alphas)
 ttraits <- response.effect.from.pars(Shade.optim.lowD[[t.min.aic]]$par, targets, competitors, t.min.aic)
 
 # read in the C traits
 load("Open.optim.lowD.Rdata")
 c.min.aic <- which.min(unlist(lapply(Open.optim.lowD, function(x) x$aic)))
+targets <- rownames(Open.optim.lowD[[c.min.aic]]$alphas)
+competitors <- colnames(Open.optim.lowD[[c.min.aic]]$alphas)
 ctraits <- response.effect.from.pars(Open.optim.lowD[[c.min.aic]]$par, targets, competitors, c.min.aic)
 
 # write out fecundities in C and T treatments
@@ -43,10 +43,13 @@ write.table(
 )
 
 # write out alphas in C and T treatments
+c.alphas <- ctraits$response %*% t(ctraits$effect)
+t.alphas <- ttraits$response %*% t(ttraits$effect)
+common.competitors <- intersect(colnames(c.alphas), colnames(t.alphas))
 write.table(
 	cbind(
-		(as.numeric(ctraits$response %*% t(ctraits$effect))),
-		(as.numeric(ttraits$response %*% t(ttraits$effect)))
+		exp(as.numeric(c.alphas[,common.competitors])),
+		exp(as.numeric(t.alphas[,common.competitors]))
 	),
 	"../../data/Mayfield/mayfield.CT.alphas.csv",
 	quote=FALSE,
@@ -60,40 +63,56 @@ write.table(
 ####
 
 ## all traits
-ttraits.fill <- t(plyr::rbind.fill(as.data.frame(t(ttraits$response)),as.data.frame(t(ttraits$effect))))
-ttraits.fill[is.na(ttraits.fill)] <- 0
-ctraits.fill <- t(plyr::rbind.fill(as.data.frame(t(ctraits$response)),as.data.frame(t(ctraits$effect))))
-ctraits.fill[is.na(ctraits.fill)] <- 0
+ttraits.fill <- t(plyr::rbind.fill(as.data.frame(t(ttraits$response)),as.data.frame(t(ttraits$effect[common.competitors,]))))
+# fill in missing values with the mean of other species
+for(i in 1:ncol(ttraits.fill)){
+	ttraits.fill[is.na(ttraits.fill[,i]),i] <- 0 #mean(ttraits.fill[,i],na.rm=TRUE)
+}
+# ttraits.fill[is.na(ttraits.fill)] <- 0
+ctraits.fill <- t(plyr::rbind.fill(as.data.frame(t(ctraits$response)),as.data.frame(t(ctraits$effect[common.competitors,]))))
+# fill in missing values with the mean of other species
+for(i in 1:ncol(ctraits.fill)){
+	ctraits.fill[is.na(ctraits.fill[,i]),i] <- 0 #mean(ctraits.fill[,i],na.rm=TRUE)
+}
+# ctraits.fill[is.na(ctraits.fill)] <- 0
+
+# procrustes on all traits
 proc.test <- vegan::protest(
-	dist(ttraits.fill),
-	dist(ctraits.fill)
+	dist(ctraits.fill),
+	dist(ttraits.fill)	
 )
 
 ## response traits
 proc.test.response <- vegan::protest(
-	dist(ttraits$response),
-	dist(ctraits$response)
+	dist(ctraits$response),
+	dist(ttraits$response)
 )
 
 ## all traits
 proc.test.effect <- vegan::protest(
-	dist(ttraits$effect),
-	dist(ctraits$effect)
+	dist(ctraits$effect[common.competitors,]),
+	dist(ttraits$effect[common.competitors,])
 )
 
 ####
 # test the fits of one dataset with the other's min-aic traits
 ####
 
+stop("NOT WORKING YET WITH REDUCED NUMBER OF COMPETITORS")
+
 # extract and partition out response and effect from different treatments
 # Open treatment
 c.parms <- Open.optim.lowD[[c.min.aic]]$par
+targets <- rownames(Open.optim.lowD[[c.min.aic]]$alphas)
+competitors <- colnames(Open.optim.lowD[[c.min.aic]]$alphas)
 c.lambda <- c.parms[seq.int(length(targets))]
 c.response <- c.parms[seq.int(length(targets)+1,length(targets)+length(targets)*c.min.aic)]
 c.effect <- c.parms[seq.int(length(targets)+length(targets)*c.min.aic+1, length(targets)+length(targets)*c.min.aic+(length(competitors))*c.min.aic)]
 
-# T treatment
+# Shade treatment
 t.parms <- Shade.optim.lowD[[t.min.aic]]$par
+targets <- rownames(Shade.optim.lowD[[t.min.aic]]$alphas)
+competitors <- colnames(Shade.optim.lowD[[t.min.aic]]$alphas)
 t.lambda <- t.parms[seq.int(length(targets))]
 t.response <- t.parms[seq.int(length(targets)+1,length(targets)+length(targets)*t.min.aic)]
 t.effect <- t.parms[seq.int(length(targets)+length(targets)*t.min.aic+1, length(targets)+length(targets)*t.min.aic+(length(competitors))*t.min.aic)]
