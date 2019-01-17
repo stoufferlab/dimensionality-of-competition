@@ -1,6 +1,7 @@
 
 response.effect.from.pars <- function(par, targets, competitors, dimensions){
     lambda <- exp(par[seq.int(length(targets))])
+    names(lambda) <- targets
 
     # turn the linear version of the response traits into a species by trait matrix
     response.traits <- matrix(
