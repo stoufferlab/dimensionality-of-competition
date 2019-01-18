@@ -23,7 +23,7 @@ source('fit.machine.R')
 
 # save the fits and write out a table of the AICs
 all.optim.lowD <- optim.lowD
-save(all.optim.lowD, file="all.optim.lowD.Rdata")
+save(all.optim.lowD, file="../../results/Mayfield/all.optim.lowD.Rdata", ascii=TRUE)
 
 all.AICs <- cbind(0:length(optim.lowD), c(summary(null.fit)$aic, unlist(lapply(optim.lowD, function(x){x$aic}))))
-write.table(all.AICs, "../../data/Mayfield/mayfield.all.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
+write.table(all.AICs, "../../results/Mayfield/mayfield.all.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
