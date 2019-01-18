@@ -94,7 +94,7 @@ source('change.dimensions.R')
 ###############################################################################
 if(TRUE){
 	# specify the model family to fit
-	which.family <- poisson()
+	which.family <- Gamma()
 
 	# get null estimates of the model intercepts as a starting point
 	null.formula <- as.formula("seeds ~ 0 + target")
@@ -122,7 +122,7 @@ if(TRUE){
 
 	# now fit things in the lowD world
 	# start from low dimension to high and fit from null traits, SVD traits, and d-1 traits (if they exist)
-	for(dimensions in seq.int(1,10)){ #seq.int(1,2)){
+	for(dimensions in seq.int(1,8)){ #seq.int(1,2)){
 
 		# there are four ways to try an initial guess for parameters to be optimized
 		for(attempts in c(1,3)){ #seq.int(3)){
@@ -228,7 +228,7 @@ if(TRUE){
 		}
 	}
 
-	for(dimensions in seq.int(9,1)){
+	for(dimensions in seq.int(7,1)){
 
 		# there are four ways to try an initial guess for parameters to be optimized
 		message(
@@ -306,7 +306,7 @@ if(TRUE){
 		}
 	}
 
-	for(dimensions in seq.int(1,10)){
+	for(dimensions in seq.int(1,8)){
 
 		# there are four ways to try an initial guess for parameters to be optimized
 		message(
