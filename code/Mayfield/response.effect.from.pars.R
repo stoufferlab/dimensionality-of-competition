@@ -1,6 +1,6 @@
 
 response.effect.from.pars <- function(par, targets, competitors, dimensions){
-    lambda <- exp(par[seq.int(length(targets))])
+    lambda <- 1. / par[seq.int(length(targets))]
     names(lambda) <- targets
 
     # turn the linear version of the response traits into a species by trait matrix
@@ -11,7 +11,7 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions){
     )
 
     # since we use the Gamma form we need to pull out the effect of lambda
-    # response.traits <- sweep(response.traits, 1, par[seq.int(length(targets))], "/")
+    response.traits <- sweep(response.traits, 1, lambda, "/")
 
     # names help us later
     rownames(response.traits) <- targets
