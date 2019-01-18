@@ -57,8 +57,8 @@ source('fit.machine.R')
 
 # save the fits
 Goldberg.optim.lowD <- optim.lowD
-save(Goldberg.optim.lowD, file="Goldberg.optim.lowD.Rdata")
+save(Goldberg.optim.lowD, file="../../results/Goldberg/Goldberg.optim.lowD.Rdata")
 
 # write out a table of the AICs
 Goldberg.AICs <- cbind(0:length(optim.lowD), c(summary(null.fit)$aic, unlist(lapply(optim.lowD, function(x){x$aic}))))
-write.table(Goldberg.AICs, "../../data/Goldberg/goldberg.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
+write.table(Goldberg.AICs, "../../results/Goldberg/goldberg.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
