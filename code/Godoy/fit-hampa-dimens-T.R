@@ -1,6 +1,8 @@
 
 # read in Oscar's data
 datadir <- "../../data/Godoy/"
+
+# read in the raw data
 hampa <- read.csv(paste0(datadir, "hampa_neigbours_survey.csv"), row.names=1)
 
 # remove the extra columns at the end
@@ -20,8 +22,8 @@ source('fit.machine.R')
 
 # save the fits and write out a table of the AICs
 T.optim.lowD <- optim.lowD
-save(T.optim.lowD, file="T.optim.lowD.Rdata")
+save(T.optim.lowD, file="../../results/Godoy/T.optim.lowD.Rdata", ascii=TRUE)
 
 # write out an AIC table
 T.AICs <- cbind(0:length(optim.lowD), c(summary(null.fit)$aic, unlist(lapply(optim.lowD, function(x){x$aic}))))
-write.table(T.AICs, "../../data/Godoy/godoy.T.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
+write.table(T.AICs, "../../results/Godoy/godoy.T.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)

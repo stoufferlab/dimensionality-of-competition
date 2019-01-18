@@ -20,7 +20,7 @@ source('fit.machine.R')
 
 # save the fits and write out a table of the AICs
 C.optim.lowD <- optim.lowD
-save(C.optim.lowD, file="C.optim.lowD.Rdata")
+save(C.optim.lowD, file="../../results/Godoy/C.optim.lowD.Rdata", ascii=TRUE)
 
 C.AICs <- cbind(0:length(optim.lowD), c(summary(null.fit)$aic, unlist(lapply(optim.lowD, function(x){x$aic}))))
-write.table(C.AICs, "../../data/Godoy/godoy.C.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
+write.table(C.AICs, "../../results/Godoy/godoy.C.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)

@@ -32,16 +32,16 @@ ttraits <- response.effect.from.pars(T.optim.lowD[[t.min.aic]]$par, targets, com
 # write out the T traits in convenient formats for figures
 
 # response traits
-write.table(ttraits$response, "../../data/Godoy/godoy.T.traits.response.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
+write.table(ttraits$response, "../../results/Godoy/godoy.T.traits.response.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
 
 # effect traits
-write.table(ttraits$effect, "../../data/Godoy/godoy.T.traits.effect.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
+write.table(ttraits$effect, "../../results/Godoy/godoy.T.traits.effect.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
 
 # response-effect pairs
 for(d in 1:ncol(ttraits$response)){
 	write.table(
 		cbind(ttraits$response[,d], ttraits$effect[,d]),
-		paste0("../../data/Godoy/godoy.T.traits.response.effect.",d,".csv"),
+		paste0("../../results/Godoy/godoy.T.traits.response.effect.",d,".csv"),
 		quote=FALSE,
 		col.names=FALSE,
 		sep=" ",
@@ -52,7 +52,7 @@ for(d in 1:ncol(ttraits$response)){
 # write out fecundities in C and T treatments
 write.table(
 	cbind(ctraits$lambda, ttraits$lambda),
-	"../../data/Godoy/godoy.CT.lambdas.csv",
+	"../../results/Godoy/godoy.CT.lambdas.csv",
 	quote=FALSE,
 	col.names=FALSE,
 	sep=" ",
@@ -65,7 +65,7 @@ write.table(
 		1/(1+(as.numeric(ctraits$response %*% t(ctraits$effect)))),
 		1/(1+(as.numeric(ttraits$response %*% t(ttraits$effect))))
 	),
-	"../../data/Godoy/godoy.CT.alphas.csv",
+	"../../results/Godoy/godoy.CT.alphas.csv",
 	quote=FALSE,
 	col.names=FALSE,
 	sep=" ",
@@ -174,7 +174,3 @@ c.nll <- dev.fun(
 	competitors=competitors
 )
 c.nll
-
-# t.aic <- =aic(y,length(y),mu,weights,optim$value) + 2*length(optim$par),
-
-# write.table(cbind(ttraits$response, ttraits$effect), "../../data/Godoy/godoy.T.response.effect.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
