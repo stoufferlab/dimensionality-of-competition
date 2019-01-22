@@ -80,8 +80,8 @@ gea_all_angles <- function(ortho_matrix){
 
 	# take the orthogonal vectors from the last column (DEBUG we could/should probably change this)
 	for(i in seq.int(n-1)){
-		an <- b[,ncol(b)]
-		angles <- gea_angles(an)
+		x <- b[,ncol(b)]
+		angles <- gea_angles(x)
 		a <- gea_matrix_a(angles)
 		b <- t(b) %*% a
 		b <- b[-nrow(b), -ncol(b)]
@@ -95,12 +95,12 @@ gea_orthogonal_from_angles <- function(angles_list){
 	b <- diag(2)
 	n <- round(sqrt(length(angles_list)*8+1)/2 + 0.5)
 
-	for(i in seq.int(dimensions)){
+	for(i in seq.int(n-1)){
 		# get the angles corresponding to this vector
-		angles <- c(angles_list[(length(angles_list)-i):length(angles_list)], pi/2)
+		angles <- c(angles_list[(length(angles_list)-i+1):length(angles_list)], pi/2)
 
 		# remove these angles since they aren't needed anymore
-		angles_list <- angles_list[1:(length(angles_list)-i-1)]
+		angles_list <- angles_list[1:(length(angles_list)-i)]
 
 		# generate a matrix corresponding to this vector
 		ma <- gea_matrix_a(angles)
@@ -108,16 +108,12 @@ gea_orthogonal_from_angles <- function(angles_list){
 		# something from a paper I should read
 		b <- t(b %*% t(ma))
 
-		if(i < n){
+		if(i < n-1){
 			c <- diag(i+2)
-			c[1:(i+1),1:(i+1)] <- b
+			c[seq.int(i+1),seq.int(i+1)] <- b
 			b <- c
 		}
 	}
 	return(b)
 }
 
-# given a vector of n-1 angles, construct an n-dimensional unit vector of points on hypersphere
-polar.transform <- function(angles){
-
-}
