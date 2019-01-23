@@ -1,4 +1,5 @@
 
+# DEBUG we should maybe remove the effect of lambda here!
 # given a list of model coefficients, targets, and competitors, return an alpha matrix
 get.alphas.from.model <- function(start, targets, competitors){
 	alphas <- matrix(NA, length(targets), length(competitors)-1)

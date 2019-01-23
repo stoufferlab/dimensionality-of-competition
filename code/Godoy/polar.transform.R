@@ -72,13 +72,14 @@ gea_matrix_a <- function(angles){
 	return(matrix_a)
 }
 
+# construct a list of angles which define an orthogonal matrix within polar coordinates
 gea_all_angles <- function(ortho_matrix){
 	# we perform a series of transformations while dropping degrees of freedom in the basis set
 	b <- ortho_matrix
 	n <- nrow(ortho_matrix)
 	ret <- numeric()
 
-	# take the orthogonal vectors from the last column (DEBUG we could/should probably change this)
+	# take the orthogonal vectors from the last column (DEBUG we could/dshould probably change this)
 	for(i in seq.int(n-1)){
 		x <- b[,ncol(b)]
 		angles <- gea_angles(x)
@@ -91,6 +92,7 @@ gea_all_angles <- function(ortho_matrix){
 	return(ret)
 }
 
+# given a list of angles (which are the free parameters) construct an orthogonal matrix right to left
 gea_orthogonal_from_angles <- function(angles_list){
 	b <- diag(2)
 	n <- round(sqrt(length(angles_list)*8+1)/2 + 0.5)
@@ -117,3 +119,23 @@ gea_orthogonal_from_angles <- function(angles_list){
 	return(b)
 }
 
+# generate random angles for an orthogonal matrix
+# this function is largely to test things
+gea_random_angles <- function(n, dimensions=n){
+	dof <- seq.int(n-1, 1)
+
+	phis <- sapply(
+		seq.int(length(dof)),
+		function(x, dof, d){
+			if(x <= d){
+				c(runif(dof[x]-1,-pi/2,pi/2),runif(1,-pi,pi))
+			}else{
+				rep(0,dof[x])
+			}
+		},
+		dof = dof,
+		d = dimensions
+	)
+
+	return(phis)
+}

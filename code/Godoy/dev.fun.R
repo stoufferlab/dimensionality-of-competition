@@ -1,5 +1,5 @@
 
-dev.fun <- function(par, dimensions, x, y, weights, linkinv, dev.resids, targets, competitors, trace=FALSE){
+dev.fun <- function(par, dimensions, x, y, weights=rep(1,length(y)), linkinv, dev.resids, targets, competitors, trace=FALSE){
     # stuff from glm.fit that can probably be removed
     # good <- weights > 0
     # varmu <- variance(mu)[good]

@@ -18,6 +18,8 @@ hampa <- subset(hampa, treatment=="C")
 # run the fitting code
 source('fit.machine.R')
 
+XXX
+
 # save the fits and write out a table of the AICs
 C.optim.lowD <- optim.lowD
 save(C.optim.lowD, file="../../results/Godoy/C.optim.lowD.Rdata", ascii=TRUE)
