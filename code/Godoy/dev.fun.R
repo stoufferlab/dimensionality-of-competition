@@ -1,5 +1,5 @@
 
-dev.fun <- function(par, dimensions, x, y, weights=rep(1,length(y)), linkinv, dev.resids, targets, competitors, trace=FALSE){
+dev.fun <- function(par, dimensions, x, y, weights=rep(1,length(y)), family, targets, competitors, trace=FALSE){
     # stuff from glm.fit that can probably be removed
     # good <- weights > 0
     # varmu <- variance(mu)[good]
@@ -19,12 +19,12 @@ dev.fun <- function(par, dimensions, x, y, weights=rep(1,length(y)), linkinv, de
     # }
 
     coefs <- glm.coefs.from.traits(par, targets, competitors, dimensions, colnames(x))
-    
+
     eta <- drop(x %*% coefs)
-    mu <- linkinv(eta)
-    dev <- sum(dev.resids(y, mu, weights))
-    if (trace) 
-        cat("Dimension = ", dimensions, " Deviance = ", dev,
-          "\n", sep = "")
+    mu <- family$linkinv(eta)
+    dev <- sum(family$dev.resids(y, mu, weights))
+    if(trace){
+        cat("Dimension = ", dimensions, " Deviance = ", dev, "\n", sep = "")
+    }
     return(dev)
 }

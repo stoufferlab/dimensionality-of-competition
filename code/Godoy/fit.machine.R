@@ -11,7 +11,7 @@ source('polar.transform.R')
 null.pars <- function(null.fit, targets, competitors, dimensions){
 	# lambdas and weightings are more straightforward
 	lambdas <- coef(null.fit) # lambdas
-	weights <- rep(-10,dimensions) # weightings (in log space)
+	weights <- rep(0,dimensions) # weightings (in log space)
 	names(weights) <- paste0("weight",seq.int(dimensions))
 	
 	# the number of response and effect angles is trickier
@@ -116,13 +116,14 @@ null.fit <- glm(
 	control=list(maxit=1000) #,trace=2)
 )
 
+# the full competition model whose coefficients get replaced with response-effect versions
 model.formula <- as.formula("fruits ~ 0 + target + target:background:neighbours_number")
 x <- model.matrix(model.formula, hampa)
 y <- hampa$fruits
 
-linkinv <- which.family$linkinv
-dev.resids <- which.family$dev.resids
-aic <- which.family$aic
+# linkinv <- which.family$linkinv
+# dev.resids <- which.family$dev.resids
+# aic <- which.family$aic
 targets <- levels(hampa$target)
 competitors <- levels(hampa$background)
 
@@ -145,7 +146,7 @@ for(dimensions in seq.int(length(targets))){
 	par.start <- null.pars(null.fit, targets, competitors, dimensions)
 	
 	# check if the parameters actually work (this is most useful when changing dimensions)
-	dev.start <- dev.fun(par.start, dimensions, x, y, weights, linkinv, dev.resids, targets, competitors)
+	dev.start <- dev.fun(par.start, dimensions, x, y, family=which.family, targets=targets, competitors=competitors)
 
 	# bunk starting conditions
 	if(is.na(dev.start)){
@@ -166,8 +167,7 @@ for(dimensions in seq.int(length(targets))){
 				dimensions=dimensions,
 				x=x,
 				y=y,
-				linkinv=linkinv,
-				dev.resids=dev.resids,
+				family=which.family,
 				targets=targets,
 				competitors=competitors
 			)
@@ -177,20 +177,21 @@ for(dimensions in seq.int(length(targets))){
 		if(!inherits(optim, "try-error")){
 			# this is the best fit at this dimension so far
 			if(optim$value < optim.lowD[[as.character(dimensions)]]$value){
-				message("Message: Dimension = ", dimensions, " Deviance = ", optim$value)
-
 				glm.coefs <- glm.coefs.from.traits(optim$par, targets, competitors, dimensions, colnames(x))
-				mu <- linkinv(x %*% glm.coefs)
+				mu <- which.family$linkinv(x %*% glm.coefs)
+				aic <- which.family$aic(y,length(y),mu,rep(1,length(y)),optim$value) + 2*length(optim$par)
 
 				optim.lowD[[as.character(dimensions)]] <- list(
+					value=optim$value,
+					aic=aic,
+					par=optim$par,
 					x=x,
 					y=y,
-					mu=mu,
-					value=optim$value,
-					aic=aic(y,length(y),mu,weights,optim$value) + 2*length(optim$par),
-					par=optim$par,
-					coefs=glm.coefs
+					coefs=glm.coefs,
+					mu=mu
 				)
+
+				message("Message: Dimension = ", dimensions, " Deviance = ", optim$value, " AIC = ", aic)
 			}
 		}else{
 			warning(
@@ -203,155 +204,3 @@ for(dimensions in seq.int(length(targets))){
 		}
 	}
 }
-
-# ################
-# # optimization strategy two: use d for d-1
-# ################
-
-# # use the higher-dimensional traits as starting points for the d-1 versions of the model
-# for(dimensions in seq.int(length(targets)-1,1)){
-
-# 	# there are four ways to try an initial guess for parameters to be optimized
-# 	message(
-# 		"Message: trying to optimize at dimension ",
-# 		dimensions,
-# 			" from best-fit traits at d+1"
-# 	)					
-
-# 	# step down in dimensions
-# 	par <- change.dimensions(optim.lowD[[as.character(dimensions+1)]]$par, targets, competitors, dimensions+1, dimensions)
-
-# 	poop <- dev.fun(par, dimensions, x, y, weights, linkinv, dev.resids, targets, competitors)
-
-# 	if(is.na(poop)){
-# 		message("Message: aborting due to NA starting conditions for optimization")
-# 	}else{
-
-# 		# get the optimizer bounds for this dimensionality
-# 		bounds <- optim.bounds(targets, competitors, dimensions)
-
-# 		# try to optimize the fit of the data given the parameter vector
-# 		optim <- try(
-# 			nloptr::sbplx(
-# 				x0=par,
-# 				fn=dev.fun,
-# 				lower=bounds$lower,
-# 				upper=bounds$upper,
-# 				control=list(ftol_rel=1e-8, maxeval=100000),
-# 				# trace=TRUE,
-# 				dimensions=dimensions,
-# 				x=x,
-# 				y=y,
-# 				weights=weights,
-# 				linkinv=linkinv,
-# 				dev.resids=dev.resids,
-# 				targets=targets,
-# 				competitors=competitors
-# 			)
-# 		)
-
-# 		# who'd have thunk it, it worked!
-# 		if(!inherits(optim, "try-error")){
-# 			message("Dimension = ", dimensions, " Deviance = ", optim$value)
-
-# 			if(optim$value < optim.lowD[[as.character(dimensions)]]$value){
-# 				message("Dimension = ", dimensions, " Deviance = ", optim$value)
-
-# 				glm.coefs <- glm.coefs.from.traits(optim$par, targets, competitors, dimensions, colnames(x))
-# 				mu <- linkinv(x %*% glm.coefs)
-
-# 				optim.lowD[[as.character(dimensions)]] <- list(
-# 					x=x,
-# 					y=y,
-# 					mu=mu,
-# 					value=optim$value,
-# 					aic=aic(y,length(y),mu,weights,optim$value) + 2*length(optim$par),
-# 					par=optim$par,
-# 					coefs=glm.coefs
-# 					# alphas=get.alphas.from.model(glm.coefs, targets, competitors)
-# 				)
-# 			}
-# 		}else{
-# 			warning(
-# 				"optimization from best-fit traits at d+1 failed",
-# 				paste0(" at dimension ", dimensions),
-# 				call. = FALSE,
-# 				immediate. = TRUE
-# 			)
-# 		}
-		
-# 	}
-# }
-
-# for(dimensions in seq.int(length(targets))){
-
-# 	# there are four ways to try an initial guess for parameters to be optimized
-# 	message(
-# 		"Message: trying to optimize at dimension ",
-# 		dimensions,
-# 			" from best-fit traits at d"
-# 	)					
-
-# 	par <- optim.lowD[[as.character(dimensions)]]$par
-# 	poop <- dev.fun(par, dimensions, x, y, weights, linkinv, dev.resids, targets, competitors)
-
-# 	if(is.na(poop)){
-# 		message("Message: aborting due to NA starting conditions for optimization")
-# 	}else{
-
-# 		# get the optimizer bounds for this dimensionality
-# 		bounds <- optim.bounds(targets, competitors, dimensions)
-
-# 		# try to optimize the fit of the data given the parameter vector
-# 		optim <- try(
-# 			nloptr::sbplx(
-# 				x0=par,
-# 				fn=dev.fun,
-# 				lower=bounds$lower,
-# 				upper=bounds$upper,
-# 				control=list(ftol_rel=1e-8, maxeval=100000),
-# 				# trace=TRUE,
-# 				dimensions=dimensions,
-# 				x=x,
-# 				y=y,
-# 				weights=weights,
-# 				linkinv=linkinv,
-# 				dev.resids=dev.resids,
-# 				targets=targets,
-# 				competitors=competitors
-# 			)
-# 		)
-
-# 		# who'd have thunk it, it worked!
-# 		if(!inherits(optim, "try-error")){
-# 			message("Dimension = ", dimensions, " Deviance = ", optim$value)
-
-# 			if(optim$value < optim.lowD[[as.character(dimensions)]]$value){
-# 				message("Dimension = ", dimensions, " Deviance = ", optim$value)
-
-# 				glm.coefs <- glm.coefs.from.traits(optim$par, targets, competitors, dimensions, colnames(x))
-# 				mu <- linkinv(x %*% glm.coefs)
-
-# 				optim.lowD[[as.character(dimensions)]] <- list(
-# 					x=x,
-# 					y=y,
-# 					mu=mu,
-# 					value=optim$value,
-# 					aic=aic(y,length(y),mu,weights,optim$value) + 2*length(optim$par),
-# 					par=optim$par,
-# 					coefs=glm.coefs
-# 					# alphas=get.alphas.from.model(glm.coefs, targets, competitors)
-# 				)
-# 			}
-# 		}else{
-# 			warning(
-# 				"optimization from best-fit traits at d failed",
-# 				paste0(" at dimension ", dimensions),
-# 				call. = FALSE,
-# 				immediate. = TRUE
-# 			)
-# 		}
-		
-# 	}
-# }
-
