@@ -60,5 +60,5 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions){
     effect.traits <- effect.traits[,order(weights,decreasing = TRUE),drop=FALSE]
     weights <- weights[order(weights, decreasing = TRUE)]
 
-    return(list(lambda=lambdas, weights=weights, response=response.traits, effect=effect.traits, alphas=alphas))
+    return(list(lambdas=lambdas, weights=weights, response=response.traits, effect=effect.traits, alphas=alphas))
 }
