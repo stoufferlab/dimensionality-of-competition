@@ -15,10 +15,26 @@ hampa$background[which(is.na(hampa$background))] <- "SOLO"
 # let's try just one treatment for simplicity in testing regime
 hampa <- subset(hampa, treatment=="C")
 
+# rename the core data frame
+fecundity.data <- hampa
+
+# we need a variable called targets for things to work
+targets <- levels(fecundity.data$target)
+
+# we need a variable called competitors for things to work
+competitors <- levels(fecundity.data$background)
+
+# we need to know what column has the fecundities
+fecundity <- "fruits"
+
+# specify the model family to fit
+which.family <- Gamma()
+
+# number of random starts for optimization at each dimension
+n.random <- 25
+
 # run the fitting code
 source('fit.machine.R')
-
-XXX
 
 # save the fits and write out a table of the AICs
 C.optim.lowD <- optim.lowD
