@@ -1,27 +1,51 @@
 
 #source('glm.fit3.R')
 source('dev.fun.R')
-source('get.alphas.from.model.R')
+# source('get.alphas.from.model.R')
 source('glm.coefs.from.traits.R')
-source('change.dimensions.R')
+# source('change.dimensions.R')
+source('response.effect.from.pars.R')
 source('polar.transform.R')
 
 #####################
 # given the data set up some null parameters to start with in the optimizer
-null.pars <- function(null.fit, targets, competitors, dimensions){
+null.pars <- function(null.fit, targets, competitors, dimensions, random.angles=FALSE){
 	# lambdas and weightings are more straightforward
 	lambdas <- coef(null.fit) # lambdas
-	weights <- rep(0,dimensions) # weightings (in log space)
+	weights <- rep(log(0.001),dimensions) # weights
 	names(weights) <- paste0("weight",seq.int(dimensions))
 	
 	# the number of response and effect angles is trickier
 	response.dof <- seq.int(length(targets)-1,0)
-	response.angles <- rep(0, sum(response.dof[seq.int(dimensions)]))
+	if(!random.angles){
+		response.angles <- rep(0, sum(response.dof[seq.int(dimensions)]))
+	}else{
+		response.angles <- unlist(sapply(
+			response.dof[seq.int(min(dimensions,length(targets)-1))],
+			function(x){
+				# the first n-1 are in [-pi/2, pi/2]
+				# the last one is in [-pi, pi]
+				angles <- c(runif(x-1, -pi/2, pi/2), runif(1, -pi, pi))
+				angles
+			}
+		))
+	}
 	names(response.angles) <- paste0("response",seq.int(length(response.angles)))
 
-	# note extra -1 because of "background"
-	effect.dof <- seq.int(length(competitors)-1-1,0)
-	effect.angles <- rep(0, sum(effect.dof[seq.int(dimensions)]))
+	effect.dof <- seq.int(length(competitors)-2,0)
+	if(!random.angles){
+		effect.angles <- rep(0, sum(effect.dof[seq.int(dimensions)]))	
+	}else{
+		effect.angles <- unlist(sapply(
+			effect.dof[seq.int(min(dimensions,length(competitors)-2))],
+			function(x){
+				# the first n-1 are in [-pi/2, pi/2]
+				# the last one is in [-pi, pi]
+				angles <- c(runif(x-1, -pi/2, pi/2), runif(1, -pi, pi))
+				angles
+			}
+		))
+	}	
 	names(effect.angles) <- paste0("effect",seq.int(length(effect.angles)))
 
 	par <- c(lambdas, weights, response.angles, effect.angles)
@@ -103,29 +127,20 @@ optim.bounds <- function(targets,competitors,dimensions){
 ###############################################################################
 ###############################################################################
 
-# specify the model family to fit
-which.family <- Gamma()
-
 # get null estimates of the model intercepts as a starting point
-null.formula <- as.formula("fruits ~ 0 + target")
+null.formula <- as.formula(paste0(fecundity," ~ 0 + target"))
 null.fit <- glm(
 	null.formula,
 	family=which.family,
-	data=hampa,
+	data=fecundity.data,
 	# method=glm.fit3,
 	control=list(maxit=1000) #,trace=2)
 )
 
 # the full competition model whose coefficients get replaced with response-effect versions
 model.formula <- as.formula("fruits ~ 0 + target + target:background:neighbours_number")
-x <- model.matrix(model.formula, hampa)
-y <- hampa$fruits
-
-# linkinv <- which.family$linkinv
-# dev.resids <- which.family$dev.resids
-# aic <- which.family$aic
-targets <- levels(hampa$target)
-competitors <- levels(hampa$background)
+x <- model.matrix(model.formula, fecundity.data)
+y <- fecundity.data[,fecundity]
 
 # container for the optimized fits
 optim.lowD<-list()
@@ -134,7 +149,7 @@ optim.lowD<-list()
 # start from low dimension to high and fit from null traits
 for(dimensions in seq.int(length(targets))){
 	# keep abreast of the situation
-	message("Message: trying first optimization at dimension ",dimensions)
+	message("Message: Optimizing at Dimension = ",dimensions)
 
 	# we haven't tried this dimension before so need something to compare everything too
 	if(!as.character(dimensions) %in% names(optim.lowD)){
@@ -142,65 +157,73 @@ for(dimensions in seq.int(length(targets))){
 		optim.lowD[[as.character(dimensions)]]$value <- Inf
 	}
 
-	# "null" traits essentially make there be no competitive effect
-	par.start <- null.pars(null.fit, targets, competitors, dimensions)
-	
-	# check if the parameters actually work (this is most useful when changing dimensions)
-	dev.start <- dev.fun(par.start, dimensions, x, y, family=which.family, targets=targets, competitors=competitors)
+	for(random.starts in seq.int(n.random)){
+		if(random.starts == 1){
+			# "null" traits essentially make there be no competitive effect
+			par.start <- null.pars(null.fit, targets, competitors, dimensions, random.angles=FALSE)
+		}else{
+			# weak interactions but a random hierarchy within each dimension
+			par.start <- null.pars(null.fit, targets, competitors, dimensions, random.angles=TRUE)
+		}
+		
+		# check if the parameters actually work (this is most useful when changing dimensions)
+		dev.start <- dev.fun(par.start, dimensions, x, y, family=which.family, targets=targets, competitors=competitors)
 
-	# bunk starting conditions
-	if(is.na(dev.start)){
-		message("Message: aborting due to NA starting conditions for optimization")
-	}else{
-		# get the optimizer bounds for this dimensionality
-		bounds <- optim.bounds(targets, competitors, dimensions)
+		# bunk starting conditions
+		if(is.na(dev.start)){
+			message("Message: aborting due to NA starting conditions for optimization")
+		}else{
+			# get the optimizer bounds for this dimensionality
+			bounds <- optim.bounds(targets, competitors, dimensions)
 
-		# try to optimize the fit of the data given the parameter vector
-		optim <- try(
-			nloptr::sbplx(
-				x0=par.start,
-				fn=dev.fun,
-				lower=bounds$lower,
-				upper=bounds$upper,
-				control=list(ftol_rel=1e-8, maxeval=100000),
-				# trace=TRUE,
-				dimensions=dimensions,
-				x=x,
-				y=y,
-				family=which.family,
-				targets=targets,
-				competitors=competitors
+			# try to optimize the fit of the data given the parameter vector
+			optim <- try(
+				nloptr::sbplx(
+					x0=par.start,
+					fn=dev.fun,
+					lower=bounds$lower,
+					upper=bounds$upper,
+					control=list(ftol_rel=1e-8, maxeval=100000),
+					# trace=TRUE,
+					dimensions=dimensions,
+					x=x,
+					y=y,
+					family=which.family,
+					targets=targets,
+					competitors=competitors
+				)
 			)
-		)
 
-		# who'd have thunk it, it worked!
-		if(!inherits(optim, "try-error")){
-			# this is the best fit at this dimension so far
-			if(optim$value < optim.lowD[[as.character(dimensions)]]$value){
+			# who'd have thunk it, it worked!
+			if(!inherits(optim, "try-error")){
 				glm.coefs <- glm.coefs.from.traits(optim$par, targets, competitors, dimensions, colnames(x))
 				mu <- which.family$linkinv(x %*% glm.coefs)
 				aic <- which.family$aic(y,length(y),mu,rep(1,length(y)),optim$value) + 2*length(optim$par)
+				message("Message: Attempt ",random.starts,": From Deviance = ",dev.start," to Deviance = ", optim$value, " / AIC = ", aic)
 
-				optim.lowD[[as.character(dimensions)]] <- list(
-					value=optim$value,
-					aic=aic,
-					par=optim$par,
-					x=x,
-					y=y,
-					coefs=glm.coefs,
-					mu=mu
+				# this is the best fit at this dimension so far
+				if(optim$value < optim.lowD[[as.character(dimensions)]]$value){
+					optim.lowD[[as.character(dimensions)]] <- list(
+						value=optim$value,
+						aic=aic,
+						par=optim$par,
+						x=x,
+						y=y,
+						coefs=glm.coefs,
+						mu=mu
+					)
+				}
+			}else{
+				warning(
+					"Warning: Attempt ",
+					random.starts,
+					" at Dimension = ",
+					dimensions,
+					" Failed",
+					call. = FALSE,
+					immediate. = TRUE
 				)
-
-				message("Message: Dimension = ", dimensions, " Deviance = ", optim$value, " AIC = ", aic)
 			}
-		}else{
-			warning(
-				"Warning: first optimization at dimension",
-				dimensions,
-				" has failed",
-				call. = FALSE,
-				immediate. = TRUE
-			)
 		}
 	}
 }
