@@ -26,6 +26,21 @@ source('model.comparison.R')
 # we need to remove species that don't appear in this treatment when we fit the low-dimensional versions
 competitors <- names(which(colSums(mayfield[,competitors])>0))
 
+# we need a variable called targets for things to work
+targets <- levels(mayfield$target)
+
+# we need to know what column has the fecundities
+fecundity <- "seeds"
+
+# specify the model family to fit
+which.family <- Gamma()
+
+# rename the core data frame
+fecundity.data <- mayfield
+
+# number of random starts for optimization at each dimension
+n.random <- 25
+
 # run the dimensionality fitting code
 source('fit.machine.R')
 
