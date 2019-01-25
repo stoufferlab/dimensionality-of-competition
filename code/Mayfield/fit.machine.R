@@ -145,7 +145,9 @@ optim.lowD<-list()
 
 # now fit things in the lowD world
 # start from low dimension to high and fit from null traits
-for(dimensions in seq.int(length(targets))){
+# for(dimensions in seq.int(length(targets))){
+	dimensions <- which.dimension
+
 	# keep abreast of the situation
 	message("Message: Optimizing at Dimension = ",dimensions)
 
@@ -155,7 +157,9 @@ for(dimensions in seq.int(length(targets))){
 		optim.lowD[[as.character(dimensions)]]$value <- Inf
 	}
 
-	for(random.starts in seq.int(n.random)){
+	# for(random.starts in seq.int(n.random)){
+	random.starts <- which.n.random
+	
 		if(random.starts == 1){
 			# "null" traits essentially make there be no competitive effect
 			par.start <- null.pars(null.fit, targets, competitors, dimensions, random.angles=FALSE)
@@ -223,5 +227,5 @@ for(dimensions in seq.int(length(targets))){
 				)
 			}
 		}
-	}
-}
+	# }
+# }
