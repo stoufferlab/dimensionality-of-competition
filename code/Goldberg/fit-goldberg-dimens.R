@@ -64,8 +64,14 @@ fecundity <- "biomass"
 # specify the model family to fit
 which.family <- Gamma()
 
-# number of random starts for optimization at each dimension
-n.random <- 25
+# we get some input from the command line
+args <- commandArgs(trailingOnly = TRUE)
+
+# the core dimension for this optimization
+which.dimension <- as.integer(args[1])
+
+# which of n random optimizations this is
+which.n.random <- as.integer(args[2])
 
 # the data should now be primed for analysis; woohoo!
 
@@ -74,8 +80,11 @@ source('../Mayfield/fit.machine.R')
 
 # save the fits
 Goldberg.optim.lowD <- optim.lowD
-save(Goldberg.optim.lowD, file="../../results/Goldberg/Goldberg.optim.lowD.Rdata", ascii = TRUE)
+save(Goldberg.optim.lowD,
+	file=paste0("../../results/Goldberg/Goldberg.optim.D",which.dimension,".r",which.n.random,".Rdata",
+	ascii = TRUE
+)
 
-# write out a table of the AICs
-Goldberg.AICs <- cbind(0:length(optim.lowD), c(summary(null.fit)$aic, unlist(lapply(optim.lowD, function(x){x$aic}))))
-write.table(Goldberg.AICs, "../../results/Goldberg/goldberg.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
+# # write out a table of the AICs
+# Goldberg.AICs <- cbind(0:length(optim.lowD), c(summary(null.fit)$aic, unlist(lapply(optim.lowD, function(x){x$aic}))))
+# write.table(Goldberg.AICs, "../../results/Goldberg/goldberg.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
