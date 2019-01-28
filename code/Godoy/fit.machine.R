@@ -1,56 +1,10 @@
 
-#source('glm.fit3.R')
+# different functionalized bits of code
 source('dev.fun.R')
-# source('get.alphas.from.model.R')
 source('glm.coefs.from.traits.R')
-# source('change.dimensions.R')
-source('response.effect.from.pars.R')
+source('null.pars.R')
 source('polar.transform.R')
-
-#####################
-# given the data set up some null parameters to start with in the optimizer
-null.pars <- function(null.fit, targets, competitors, dimensions, random.angles=FALSE){
-	# lambdas and weightings are more straightforward
-	lambdas <- coef(null.fit) # lambdas
-	weights <- rep(log(0.001),dimensions) # weights
-	names(weights) <- paste0("weight",seq.int(dimensions))
-	
-	# the number of response and effect angles is trickier
-	response.dof <- seq.int(length(targets)-1,0)
-	if(!random.angles){
-		response.angles <- rep(0, sum(response.dof[seq.int(dimensions)]))
-	}else{
-		response.angles <- unlist(sapply(
-			response.dof[seq.int(min(dimensions,length(targets)-1))],
-			function(x){
-				# the first n-1 are in [-pi/2, pi/2]
-				# the last one is in [-pi, pi]
-				angles <- c(runif(x-1, -pi/2, pi/2), runif(1, -pi, pi))
-				angles
-			}
-		))
-	}
-	names(response.angles) <- paste0("response",seq.int(length(response.angles)))
-
-	effect.dof <- seq.int(length(competitors)-2,0)
-	if(!random.angles){
-		effect.angles <- rep(0, sum(effect.dof[seq.int(dimensions)]))	
-	}else{
-		effect.angles <- unlist(sapply(
-			effect.dof[seq.int(min(dimensions,length(competitors)-2))],
-			function(x){
-				# the first n-1 are in [-pi/2, pi/2]
-				# the last one is in [-pi, pi]
-				angles <- c(runif(x-1, -pi/2, pi/2), runif(1, -pi, pi))
-				angles
-			}
-		))
-	}	
-	names(effect.angles) <- paste0("effect",seq.int(length(effect.angles)))
-
-	par <- c(lambdas, weights, response.angles, effect.angles)
-	return(par)
-}
+source('response.effect.from.pars.R')
 
 # automatically generate the bounds for the optimizer
 optim.bounds <- function(targets,competitors,dimensions){
