@@ -148,86 +148,84 @@ optim.lowD<-list()
 # now fit things in the lowD world
 # start from low dimension to high and fit from null traits
 # for(dimensions in seq.int(length(targets))){
-	dimensions <- which.dimension
+dimensions <- which.dimension
 
-	# keep abreast of the situation
-	message("Message: Optimizing at Dimension = ",dimensions)
+# keep abreast of the situation
+message("Message: Optimizing at Dimension = ",dimensions)
 
-	# we haven't tried this dimension before so need something to compare everything too
-	if(!as.character(dimensions) %in% names(optim.lowD)){
-		optim.lowD[[as.character(dimensions)]] <- list()
-		optim.lowD[[as.character(dimensions)]]$value <- Inf
-	}
+# we haven't tried this dimension before so need something to compare everything too
+if(!as.character(dimensions) %in% names(optim.lowD)){
+	optim.lowD[[as.character(dimensions)]] <- list()
+	optim.lowD[[as.character(dimensions)]]$value <- Inf
+}
 
-	# for(random.starts in seq.int(n.random)){
-	random.starts <- which.n.random
-	
-		if(random.starts == 1){
-			# "null" traits essentially make there be no competitive effect
-			par.start <- null.pars(null.fit, targets, competitors, dimensions, random.angles=FALSE)
-		}else{
-			# weak interactions but a random hierarchy within each dimension
-			par.start <- null.pars(null.fit, targets, competitors, dimensions, random.angles=TRUE)
-		}
-		
-		# check if the parameters actually work (this is most useful when changing dimensions)
-		dev.start <- dev.fun(par.start, dimensions, x, y, family=which.family, targets=targets, competitors=competitors)
+# for(random.starts in seq.int(n.random)){
+random.starts <- which.n.random
 
-		# bunk starting conditions
-		if(is.na(dev.start)){
-			message("Message: aborting due to NA starting conditions for optimization")
-		}else{
-			# get the optimizer bounds for this dimensionality
-			bounds <- optim.bounds(targets, competitors, dimensions)
+if(random.starts == 1){
+	# "null" traits essentially make there be no competitive effect
+	par.start <- null.pars(null.fit, targets, competitors, dimensions, random.angles=FALSE)
+}else{
+	# weak interactions but a random hierarchy within each dimension
+	par.start <- null.pars(null.fit, targets, competitors, dimensions, random.angles=TRUE)
+}
 
-			# try to optimize the fit of the data given the parameter vector
-			optim <- try(
-				nloptr::sbplx(
-					x0=par.start,
-					fn=dev.fun,
-					lower=bounds$lower,
-					upper=bounds$upper,
-					control=list(ftol_rel=1e-8, maxeval=100000),
-					# trace=TRUE,
-					dimensions=dimensions,
-					x=x,
-					y=y,
-					family=which.family,
-					targets=targets,
-					competitors=competitors
-				)
+# check if the parameters actually work (this is most useful when changing dimensions)
+dev.start <- dev.fun(par.start, dimensions, x, y, family=which.family, targets=targets, competitors=competitors)
+
+# bunk starting conditions
+if(is.na(dev.start)){
+	message("Message: aborting due to NA starting conditions for optimization")
+}else{
+	# get the optimizer bounds for this dimensionality
+	bounds <- optim.bounds(targets, competitors, dimensions)
+
+	# try to optimize the fit of the data given the parameter vector
+	optim <- try(
+		nloptr::sbplx(
+			x0=par.start,
+			fn=dev.fun,
+			lower=bounds$lower,
+			upper=bounds$upper,
+			control=list(ftol_rel=1e-8, maxeval=100000),
+			# trace=TRUE,
+			dimensions=dimensions,
+			x=x,
+			y=y,
+			family=which.family,
+			targets=targets,
+			competitors=competitors
+		)
+	)
+
+	# who'd have thunk it, it worked!
+	if(!inherits(optim, "try-error")){
+		glm.coefs <- glm.coefs.from.traits(optim$par, targets, competitors, dimensions, colnames(x))
+		mu <- which.family$linkinv(x %*% glm.coefs)
+		aic <- which.family$aic(y,length(y),mu,rep(1,length(y)),optim$value) + 2*length(optim$par)
+		message("Message: Attempt ",random.starts,": From Deviance = ",dev.start," to Deviance = ", optim$value, " / AIC = ", aic)
+
+		# this is the best fit at this dimension so far
+		if(optim$value < optim.lowD[[as.character(dimensions)]]$value){
+			optim.lowD[[as.character(dimensions)]] <- list(
+				value=optim$value,
+				aic=aic,
+				par=optim$par,
+				x=x,
+				y=y,
+				coefs=glm.coefs,
+				mu=mu
 			)
-
-			# who'd have thunk it, it worked!
-			if(!inherits(optim, "try-error")){
-				glm.coefs <- glm.coefs.from.traits(optim$par, targets, competitors, dimensions, colnames(x))
-				mu <- which.family$linkinv(x %*% glm.coefs)
-				aic <- which.family$aic(y,length(y),mu,rep(1,length(y)),optim$value) + 2*length(optim$par)
-				message("Message: Attempt ",random.starts,": From Deviance = ",dev.start," to Deviance = ", optim$value, " / AIC = ", aic)
-
-				# this is the best fit at this dimension so far
-				if(optim$value < optim.lowD[[as.character(dimensions)]]$value){
-					optim.lowD[[as.character(dimensions)]] <- list(
-						value=optim$value,
-						aic=aic,
-						par=optim$par,
-						x=x,
-						y=y,
-						coefs=glm.coefs,
-						mu=mu
-					)
-				}
-			}else{
-				warning(
-					"Warning: Attempt ",
-					random.starts,
-					" at Dimension = ",
-					dimensions,
-					" Failed",
-					call. = FALSE,
-					immediate. = TRUE
-				)
-			}
 		}
+	}else{
+		warning(
+			"Warning: Attempt ",
+			random.starts,
+			" at Dimension = ",
+			dimensions,
+			" Failed",
+			call. = FALSE,
+			immediate. = TRUE
+		)
 	}
 }
