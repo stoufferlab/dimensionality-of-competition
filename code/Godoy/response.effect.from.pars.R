@@ -1,11 +1,17 @@
 
+# convert parameter vector to "human readable" parameters
+# note transformations of many parameters to match non-standard bounds
 response.effect.from.pars <- function(par, targets, competitors, dimensions){
     # the intrinsic fecundities come first
-    lambdas <- 1. / par[seq.int(length(targets))]
+    # these are log transformed in the optimizer to have no effective bounds
+    lambdas <- exp(par[seq.int(length(targets))])
     names(lambdas) <- targets
 
     # "eigenvalues" for the different dimensions come next
+    # these are log transformed in the optimizer to have no effective bounds
     weights <- exp(par[seq.int(length(lambdas)+1, length(lambdas)+dimensions)])
+
+    # DEBUG: should we get rid of bounds on these and make them "logistic"?
 
     # angles for response traits come next
     n.angles <- (choose(length(targets),2) - choose(length(targets)-dimensions,2))
