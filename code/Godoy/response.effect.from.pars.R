@@ -1,7 +1,7 @@
 
 # convert parameter vector to "human readable" parameters
 # note transformations of many parameters to match non-standard bounds
-response.effect.from.pars <- function(par, targets, competitors, dimensions){
+response.effect.from.pars <- function(par, targets, competitors, dimensions, godoy=FALSE){
     # the intrinsic fecundities come first
     # these are log transformed in the optimizer to have no effective bounds
     lambdas <- exp(par[seq.int(length(targets))])
@@ -21,8 +21,8 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions){
     )]
 
     # angles for effect traits come last
-    # the -1 comes from "background" being listed as a competitor
-    n.angles <- (choose(length(competitors)-1,2) - choose(length(competitors)-1-dimensions,2))
+    # the -godoy (-1) comes from "background" being listed as a competitor
+    n.angles <- (choose(length(competitors)-godoy,2) - choose(length(competitors)-godoy-dimensions,2))
     effect.angles <- par[seq.int(
         from=length(targets)+length(weights)+length(response.angles)+1,
         to=length(targets)+length(weights)+length(response.angles)+n.angles
@@ -44,7 +44,7 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions){
 
     # and again for the effects
     # we first need to tack on zeros at the end
-    effect.angles <- c(effect.angles, rep(0,choose(length(competitors)-1,2) - length(effect.angles)))
+    effect.angles <- c(effect.angles, rep(0,choose(length(competitors)-godoy,2) - length(effect.angles)))
 
     # now we turn angles into 
     effect.traits <- gea_orthogonal_from_angles(effect.angles)

@@ -1,7 +1,7 @@
 
 glm.coefs.from.traits <- function(par, targets, competitors, dimensions, xnames){
     # take the paramater vector and turn it into something "useful"
-    par <- response.effect.from.pars(par, targets, competitors, dimensions)
+    par <- response.effect.from.pars(par, targets, competitors, dimensions, godoy=TRUE)
 
     # and back to a linear form for the regression model
     coefs <- numeric(length(targets) + length(targets) * length(competitors))
