@@ -3,77 +3,9 @@
 source('dev.fun.R')
 source('glm.coefs.from.traits.R')
 source('null.pars.R')
+source('optim.bounds.R')
 source('polar.transform.R')
 source('response.effect.from.pars.R')
-
-# automatically generate the bounds for the optimizer
-optim.bounds <- function(targets,competitors,dimensions){
-	# lower bounds on parameters
-	lower <- c(
-		rep(0, length(targets)), # lambdas
-		rep(-Inf, dimensions) # weightings
-		# rep(0, (length(targets)-1) * dimensions), # response angles
-		# rep(0, (length(competitors)-2) * dimensions) # effect angles
-	)
-	response.dof <- seq.int(length(targets)-1,0)
-	response.bounds <- unlist(sapply(
-		response.dof[seq.int(min(dimensions,length(targets)-1))],
-		function(x){
-			# the first n-1 are in [-pi/2, pi/2]
-			# the last one is in [-pi, pi]
-			angles <- c(rep(-pi/2, x-1), -pi)
-			angles
-		}
-	))
-	effect.dof <- seq.int(length(competitors)-1-1,0)
-	effect.bounds <- unlist(sapply(
-		effect.dof[seq.int(min(dimensions,length(competitors)-1-1))],
-		function(x){
-			# the first n-1 are in [-pi/2, pi/2]
-			# the last one is in [-pi, pi]
-			angles <- c(rep(-pi/2, x-1), -pi)
-			angles
-		}
-	))
-
-	# stitch all lower bounds together
-	lower <- c(lower, response.bounds, effect.bounds)
-
-	# upper bounds on parameters
-	# lower bounds on parameters
-	upper <- c(
-		rep(Inf, length(targets)), # lambdas
-		rep(Inf, dimensions) # weightings
-		# rep(0, (length(targets)-1) * dimensions), # response angles
-		# rep(0, (length(competitors)-2) * dimensions) # effect angles
-	)
-	response.dof <- seq.int(length(targets)-1,0)
-	response.bounds <- unlist(sapply(
-		response.dof[seq.int(min(dimensions,length(targets)-1))],
-		function(x){
-			# the first n-1 are in [-pi/2, pi/2]
-			# the last one is in [-pi, pi]
-			angles <- c(rep(pi/2, x-1), pi)
-			angles
-		}
-	))
-	effect.dof <- seq.int(length(competitors)-1-1,0)
-	effect.bounds <- unlist(sapply(
-		effect.dof[seq.int(min(dimensions,length(competitors)-1-1))],
-		function(x){
-			# the first n-1 are in [-pi/2, pi/2]
-			# the last one is in [-pi, pi]
-			angles <- c(rep(pi/2, x-1), pi)
-			angles
-		}
-	))
-
-	# stitch all upper bounds together
-	upper <- c(upper, response.bounds, effect.bounds)
-
-	# return both lower and upper bounds
-	list(lower=lower, upper=upper)
-}
 
 ###############################################################################
 ###############################################################################
@@ -91,6 +23,8 @@ null.fit <- glm(
 	control=list(maxit=1000) #,trace=2)
 )
 
+message("Message --> Null Model: Deviance = ",null.fit$deviance," / AIC = ", null.fit$aic)
+
 # the full competition model whose coefficients get replaced with response-effect versions
 model.formula <- as.formula("fruits ~ 0 + target + target:background:neighbours_number")
 x <- model.matrix(model.formula, fecundity.data)
@@ -105,12 +39,13 @@ optim.lowD<-list()
 dimensions <- which.dimension
 
 # keep abreast of the situation
-message("Message: Optimizing at Dimension = ",dimensions)
+message("Message --> Optimizing at Dimension = ",dimensions)
 
 # we haven't tried this dimension before so need something to compare everything too
 if(!as.character(dimensions) %in% names(optim.lowD)){
 	optim.lowD[[as.character(dimensions)]] <- list()
 	optim.lowD[[as.character(dimensions)]]$value <- Inf
+	optim.lowD[[as.character(dimensions)]]$aic <- NA
 }
 
 # for(random.starts in seq.int(n.random)){
@@ -118,10 +53,10 @@ random.starts <- which.n.random
 
 if(random.starts == 1){
 	# "null" traits essentially make there be no competitive effect
-	par.start <- null.pars(null.fit, targets, competitors, dimensions, random.angles=FALSE)
+	par.start <- null.pars(targets, competitors, dimensions, random.angles=FALSE, godoy=TRUE, lambdas=1./coef(null.fit))
 }else{
 	# weak interactions but a random hierarchy within each dimension
-	par.start <- null.pars(null.fit, targets, competitors, dimensions, random.angles=TRUE)
+	par.start <- null.pars(targets, competitors, dimensions, random.angles=TRUE, godoy=TRUE, lambdas=1./coef(null.fit))
 }
 
 # check if the parameters actually work (this is most useful when changing dimensions)
@@ -129,10 +64,16 @@ dev.start <- dev.fun(par.start, dimensions, x, y, family=which.family, targets=t
 
 # bunk starting conditions
 if(is.na(dev.start)){
-	message("Message: aborting due to NA starting conditions for optimization")
+	message("Message --> aborting due to NA starting conditions for optimization")
 }else{
+	# print out starting conditions just for kicks
+	glm.coefs <- glm.coefs.from.traits(par.start, targets, competitors, dimensions, colnames(x))
+	mu <- which.family$linkinv(x %*% glm.coefs)
+	aic <- which.family$aic(y,length(y),mu,rep(1,length(y)),dev.start) + 2*length(par.start)
+	message("Message --> Attempt ",random.starts,": From Deviance = ",dev.start," / AIC = ", aic)
+
 	# get the optimizer bounds for this dimensionality
-	bounds <- optim.bounds(targets, competitors, dimensions)
+	bounds <- optim.bounds(targets, competitors, dimensions, godoy=TRUE)
 
 	# try to optimize the fit of the data given the parameter vector
 	optim <- try(
@@ -157,7 +98,7 @@ if(is.na(dev.start)){
 		glm.coefs <- glm.coefs.from.traits(optim$par, targets, competitors, dimensions, colnames(x))
 		mu <- which.family$linkinv(x %*% glm.coefs)
 		aic <- which.family$aic(y,length(y),mu,rep(1,length(y)),optim$value) + 2*length(optim$par)
-		message("Message: Attempt ",random.starts,": From Deviance = ",dev.start," to Deviance = ", optim$value, " / AIC = ", aic)
+		message("Message --> Attempt ",random.starts,":   To Deviance = ", optim$value, " / AIC = ", aic)
 
 		# this is the best fit at this dimension so far
 		if(optim$value < optim.lowD[[as.character(dimensions)]]$value){
@@ -173,7 +114,7 @@ if(is.na(dev.start)){
 		}
 	}else{
 		warning(
-			"Warning: Attempt ",
+			"Warning --> Attempt ",
 			random.starts,
 			" at Dimension = ",
 			dimensions,
