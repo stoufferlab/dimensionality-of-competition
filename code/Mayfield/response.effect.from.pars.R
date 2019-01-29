@@ -1,7 +1,7 @@
 
 response.effect.from.pars <- function(par, targets, competitors, dimensions){
     # the intrinsic fecundities come first
-    lambdas <- 1. / par[seq.int(length(targets))]
+    lambdas <- exp(par[seq.int(length(targets))])
     names(lambdas) <- targets
 
     # "eigenvalues" for the different dimensions come next
