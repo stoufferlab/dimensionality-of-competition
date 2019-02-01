@@ -44,6 +44,7 @@ optim.lowD<-list()
 	if(!as.character(dimensions) %in% names(optim.lowD)){
 		optim.lowD[[as.character(dimensions)]] <- list()
 		optim.lowD[[as.character(dimensions)]]$value <- Inf
+		optim.lowD[[as.character(dimensions)]]$aic <- NA
 	}
 
 	# for(random.starts in seq.int(n.random)){

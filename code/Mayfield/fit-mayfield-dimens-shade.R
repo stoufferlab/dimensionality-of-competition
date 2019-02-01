@@ -20,9 +20,6 @@ mayfield <- subset(mayfield, light=="Shade")
 
 # the data should now be primed for analysis; woohoo!
 
-# run the model comparison code
-source('model.comparison.R')
-
 # we need to remove species that don't appear in this treatment when we fit the low-dimensional versions
 competitors <- names(which(colSums(mayfield[,competitors])>0))
 
@@ -46,6 +43,9 @@ which.dimension <- as.integer(args[1])
 
 # which of n random optimizations this is
 which.n.random <- as.integer(args[2])
+
+# # run the model comparison code
+# source('model.comparison.R')
 
 # run the dimensionality fitting code
 source('fit.machine.R')
