@@ -1,43 +1,57 @@
 
 # extract R/E coefficients for the T treatment
 
-# read in Oscar's data
-datadir <- "../../data/Godoy/"
-hampa <- read.csv(paste0(datadir, "hampa_neigbours_survey.csv"), row.names=1)
+# # read in Oscar's data
+# datadir <- "../../data/Godoy/"
+# hampa <- read.csv(paste0(datadir, "hampa_neigbours_survey.csv"), row.names=1)
 
-# remove the extra columns at the end
-hampa <- hampa[,which(!grepl("X",colnames(hampa)))]
+# # remove the extra columns at the end
+# hampa <- hampa[,which(!grepl("X",colnames(hampa)))]
 
-# turn the NAs for background into a non-existent species SOLO which will help us when using the glm function (or equivalents) for fitting
-levels(hampa$background) <- c(levels(hampa$background),"SOLO")
-hampa$background[which(is.na(hampa$background))] <- "SOLO"
+# # turn the NAs for background into a non-existent species SOLO which will help us when using the glm function (or equivalents) for fitting
+# levels(hampa$background) <- c(levels(hampa$background),"SOLO")
+# hampa$background[which(is.na(hampa$background))] <- "SOLO"
 
-# the data should now be primed for analysis; woohoo!
+# # the data should now be primed for analysis; woohoo!
 
-# extract out the min-aic traits
-source('response.effect.from.pars.R')
-targets <- levels(hampa$target)
-competitors <- levels(hampa$background)
+# # extract out the min-aic traits
+# source('response.effect.from.pars.R')
+# targets <- levels(hampa$target)
+# competitors <- levels(hampa$background)
 
-# read in the C traits
-load("C.optim.lowD.Rdata")
-c.min.aic <- which.min(unlist(lapply(C.optim.lowD, function(x) x$aic)))
-ctraits <- response.effect.from.pars(C.optim.lowD[[c.min.aic]]$par, targets, competitors, c.min.aic)
+# read in the best C parameters
+load("../../results/Godoy/godoy.C.best.Rdata")
+ctraits <- Godoy.best
 
-# read in the T traits
-load("T.optim.lowD.Rdata")
-t.min.aic <- which.min(unlist(lapply(T.optim.lowD, function(x) x$aic)))
-ttraits <- response.effect.from.pars(T.optim.lowD[[t.min.aic]]$par, targets, competitors, t.min.aic)
+# c.min.aic <- which.min(unlist(lapply(C.optim.lowD, function(x) x$aic)))
+# ctraits <- response.effect.from.pars(C.optim.lowD[[c.min.aic]]$par, targets, competitors, c.min.aic)
+
+# read in the best T parameters
+load("../../results/Godoy/godoy.T.best.Rdata")
+ttraits <- Godoy.best
+# t.min.aic <- which.min(unlist(lapply(T.optim.lowD, function(x) x$aic)))
+# ttraits <- response.effect.from.pars(T.optim.lowD[[t.min.aic]]$par, targets, competitors, t.min.aic)
 
 # write out the T traits in convenient formats for figures
 
-# response traits
-write.table(ttraits$response, "../../results/Godoy/godoy.T.traits.response.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
+# # response traits
+# write.table(ttraits$response, "../../results/Godoy/godoy.T.traits.response.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
 
-# effect traits
-write.table(ttraits$effect, "../../results/Godoy/godoy.T.traits.effect.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
+# # effect traits
+# write.table(ttraits$effect, "../../results/Godoy/godoy.T.traits.effect.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
 
-# response-effect pairs
+# write out response-effect pairs
+for(d in 1:ncol(ctraits$response)){
+	write.table(
+		cbind(ctraits$response[,d], ctraits$effect[,d]),
+		paste0("../../results/Godoy/godoy.C.traits.response.effect.",d,".csv"),
+		quote=FALSE,
+		col.names=FALSE,
+		sep=" ",
+		row.names=FALSE
+	)
+}
+
 for(d in 1:ncol(ttraits$response)){
 	write.table(
 		cbind(ttraits$response[,d], ttraits$effect[,d]),
@@ -62,8 +76,8 @@ write.table(
 # write out alphas in C and T treatments
 write.table(
 	cbind(
-		1/(1+(as.numeric(ctraits$response %*% t(ctraits$effect)))),
-		1/(1+(as.numeric(ttraits$response %*% t(ttraits$effect))))
+		1/(1+(as.numeric(ctraits$alphas))),
+		1/(1+(as.numeric(ttraits$alphas)))
 	),
 	"../../results/Godoy/godoy.CT.alphas.csv",
 	quote=FALSE,
@@ -71,6 +85,8 @@ write.table(
 	sep=" ",
 	row.names=FALSE
 )
+
+stop()
 
 # conduct procrustes tests between species-species distance matrices
 

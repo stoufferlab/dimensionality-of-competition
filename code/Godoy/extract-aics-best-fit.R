@@ -32,6 +32,20 @@ for(which.treatment in c('C','T')){
 
 	# troll through the lists and find the lowest at each dimension and the best overall
 	best.aics <- unlist(lapply(best.fits, min, na.rm=TRUE))
+	
+	# find the best high D model as a point of comparison for the weights
+	bestest <- names(which.min(best.fits[[length(best.aics)]]))
+	load(paste0('../../results/Godoy/', bestest))
+	assign("y", eval(parse(text = paste0(which.treatment,".optim.lowD"))))
+	fargus.best <- response.effect.from.pars(
+		y[[1]]$par,
+		targets,
+		competitors,
+		dimensions=length(best.aics),
+		godoy=TRUE
+	)
+
+	# search for the best overall model
 	best.val <- min(best.aics)
 	delta.aics <- best.aics - best.val
 	best.d <- min(which(delta.aics <= 2))
@@ -51,6 +65,19 @@ for(which.treatment in c('C','T')){
 	save(Godoy.best,
 		file=paste0("../../results/Godoy/godoy.",which.treatment,".best.Rdata"),
 		ascii = TRUE
+	)
+
+	# write out a pseudo-rsquared table for use in the paper
+	write.table(
+		cbind(
+			cumsum(sqrt(Godoy.best$weights) / sum(sqrt(fargus.best$weights))),
+			sqrt(Godoy.best$weights) / sum(sqrt(fargus.best$weights))
+		),
+		file=paste0("../../results/Godoy/godoy.",which.treatment,".pseudo-rsquared.csv"),
+		quote=FALSE,
+		col.names=FALSE,
+		sep=" ",
+		row.names=FALSE
 	)
 
 	# fit the classic models as a point of comparison for the AIC figures
