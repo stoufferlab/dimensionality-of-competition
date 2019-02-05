@@ -1,62 +1,95 @@
 
 # extract R/E coefficients and do some stats with them
 
-# read in Margie's data
-datadir <- "../../data/Mayfield/"
-mayfield <- read.csv(paste0(datadir, "nhood data wTF.csv"))
+# # read in Margie's data
+# datadir <- "../../data/Mayfield/"
+# mayfield <- read.csv(paste0(datadir, "nhood data wTF.csv"))
 
-cc <- colnames(mayfield)
-cc[5] <- "target"
-colnames(mayfield) <- cc
+# cc <- colnames(mayfield)
+# cc[5] <- "target"
+# colnames(mayfield) <- cc
 
-# remove NA and 0 
-# WARNING: ask Margie about zero fecundities
-mayfield <- subset(mayfield, !is.na(seeds) & !(seeds==0))
+# # remove NA and 0 
+# # WARNING: ask Margie about zero fecundities
+# mayfield <- subset(mayfield, !is.na(seeds) & !(seeds==0))
 
-# the data should now be primed for analysis; woohoo!
+# # the data should now be primed for analysis; woohoo!
 
-# extract out the min-aic traits
-source('response.effect.from.pars.R')
+# # extract out the min-aic traits
+# source('response.effect.from.pars.R')
 
-# read in the T traits
-load("Shade.optim.lowD.Rdata")
-t.min.aic <- which.min(unlist(lapply(Shade.optim.lowD, function(x) x$aic)))
-targets <- rownames(Shade.optim.lowD[[t.min.aic]]$alphas)
-competitors <- colnames(Shade.optim.lowD[[t.min.aic]]$alphas)
-ttraits <- response.effect.from.pars(Shade.optim.lowD[[t.min.aic]]$par, targets, competitors, t.min.aic)
+# read in the best C traits
+load("../../results/Mayfield/mayfield.Open.best.Rdata")
+ctraits <- Mayfield.best
 
-# read in the C traits
-load("Open.optim.lowD.Rdata")
-c.min.aic <- which.min(unlist(lapply(Open.optim.lowD, function(x) x$aic)))
-targets <- rownames(Open.optim.lowD[[c.min.aic]]$alphas)
-competitors <- colnames(Open.optim.lowD[[c.min.aic]]$alphas)
-ctraits <- response.effect.from.pars(Open.optim.lowD[[c.min.aic]]$par, targets, competitors, c.min.aic)
+# read in the best T traits
+load("../../results/Mayfield/mayfield.Shade.best.Rdata")
+ttraits <- Mayfield.best
 
 # write out fecundities in C and T treatments
 write.table(
 	cbind(ctraits$lambda, ttraits$lambda),
-	"../../data/Mayfield/mayfield.CT.lambdas.csv",
+	"../../results/Mayfield/mayfield.CT.lambdas.csv",
 	quote=FALSE,
 	col.names=FALSE,
 	sep=" ",
 	row.names=FALSE
 )
 
-# write out alphas in C and T treatments
-c.alphas <- ctraits$response %*% t(ctraits$effect)
-t.alphas <- ttraits$response %*% t(ttraits$effect)
-common.competitors <- intersect(colnames(c.alphas), colnames(t.alphas))
+# write out all alphas in C and T treatments
+# we need to make sure that all alphas match up by comparing row and column names
+common.focals <- intersect(rownames(ctraits$alphas), rownames(ttraits$alphas))
+common.competitors <- intersect(colnames(ctraits$alphas), colnames(ttraits$alphas))
 write.table(
 	cbind(
-		exp(as.numeric(c.alphas[,common.competitors])),
-		exp(as.numeric(t.alphas[,common.competitors]))
+		1/(1+(as.numeric(ctraits$alphas[common.focals, common.competitors]))),
+		1/(1+(as.numeric(ttraits$alphas[common.focals, common.competitors])))
 	),
-	"../../data/Mayfield/mayfield.CT.alphas.csv",
+	"../../results/Mayfield/mayfield.CT.alphas.csv",
 	quote=FALSE,
 	col.names=FALSE,
 	sep=" ",
 	row.names=FALSE
 )
+
+# write out OBSERVED alphas in C and T treatments
+which.treatment <- "Open"
+source('prep.data.R')
+source('model.comparison.R')
+c.mm <- model.matrix(gamma.fit.2)
+c.coefs <- colnames(c.mm)[colSums(c.mm > 0)>=2]
+
+which.treatment <- "Shade"
+source('prep.data.R')
+source('model.comparison.R')
+t.mm <- model.matrix(gamma.fit.2)
+t.coefs <- colnames(t.mm)[colSums(t.mm > 0)>=2]
+
+# common and observed interactions
+eligible.alphas <- intersect(grep(":",c.coefs,value=TRUE), grep(":",t.coefs,value=TRUE))
+
+# we need to make sure that all alphas match up by comparing row and column names
+common.focals <- intersect(rownames(ctraits$alphas), rownames(ttraits$alphas))
+common.competitors <- intersect(colnames(ctraits$alphas), colnames(ttraits$alphas))
+alpha.table <- c()
+for(i in common.focals){
+	for(j in common.competitors){
+		if(paste0("target",i,":",j) %in% eligible.alphas){
+			alpha.table <- rbind(alpha.table, c(ctraits$alphas[i,j], ttraits$alphas[i,j]))
+		}
+	}
+}
+alpha.table <- 1 / (1 + alpha.table)
+write.table(
+	alpha.table,
+	"../../results/Mayfield/mayfield.CT.alphas.obs.csv",
+	quote=FALSE,
+	col.names=FALSE,
+	sep=" ",
+	row.names=FALSE
+)
+
+stop()
 
 ####
 # conduct procrustes tests between species-species distance matrices
