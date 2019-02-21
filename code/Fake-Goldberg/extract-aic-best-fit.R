@@ -4,20 +4,26 @@ source('../Godoy/response.effect.from.pars.R')
 source('../Godoy/polar.transform.R')
 
 # which fake data set are we analyzing?
-for(which.fake.data in seq(7,1)){
+for(which.fake.data in seq(7)){
 
 	# read in the goldberg data and assign some common variables
 	source('prep.data.R')
+
+	# convenience variable to know where the results files should be located
+	resultsdir <- paste0('../../results/Fake-Goldberg/Fake-Goldberg-',which.fake.data,'/')
 
 	# scrape the shit out of the output files
 	best.fits <- lapply(
 		seq.int(length(targets)),
 		function(d){
-			saved.fits <- list.files('../../results/Fake-Goldberg/', pattern=paste0('Fake-Goldberg-',which.fake.data,'.optim.D',d))
+			saved.fits <- list.files(
+				resultsdir,
+				pattern=paste0('Fake-Goldberg-',which.fake.data,'.optim.D',d)
+			)
 			aics <- unlist(sapply(
 				saved.fits,
 				function(x){
-					load(paste0('../../results/Fake-Goldberg/',x))
+					load(paste0(resultsdir,x))
 					aa <- Goldberg.optim.lowD[[as.character(d)]]$aic
 					ifelse(is.null(aa),NA,aa)
 				}
@@ -32,7 +38,7 @@ for(which.fake.data in seq(7,1)){
 	bestest <- names(best.fits[[best.d]][bestest])
 
 	# reload the best overall model and save the interpretable parameters to a separate unique file
-	load(paste0('../../results/Fake-Goldberg/', bestest))
+	load(paste0(resultsdir, bestest))
 	Goldberg.best <- response.effect.from.pars(
 		Goldberg.optim.lowD[[as.character(best.d)]]$par,
 		targets,
