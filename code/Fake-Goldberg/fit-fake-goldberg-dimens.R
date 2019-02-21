@@ -23,6 +23,6 @@ source('../Mayfield/fit.machine.R')
 # save the fits
 Goldberg.optim.lowD <- optim.lowD
 save(Goldberg.optim.lowD,
-	file=paste0("../../results/Fake-Goldberg/Fake-Goldberg-",which.fake.data,".optim.D",which.dimension,".r",which.n.random,".Rdata"),
+	file=paste0("../../results/Fake-Goldberg/Fake-Goldberg-",which.fake.data,"/Fake-Goldberg-",which.fake.data,".optim.D",which.dimension,".r",which.n.random,".Rdata"),
 	ascii = TRUE
 )
