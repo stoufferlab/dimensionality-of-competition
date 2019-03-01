@@ -4,7 +4,7 @@ source('../Godoy/response.effect.from.pars.R')
 source('../Godoy/polar.transform.R')
 
 # which fake data set are we analyzing?
-for(which.fake.data in seq(7)){
+for(which.fake.data in seq(25)){
 
 	# read in the goldberg data and assign some common variables
 	source('prep.data.R')
@@ -55,7 +55,7 @@ for(which.fake.data in seq(7)){
 	source('../Mayfield/model.comparison.R')
 
 	# write out a table of the AICs
-	Goldberg.AICs <- c(gamma.fit.0$aic, best.aics)
+	Goldberg.AICs <- c(gamma.fit.1$aic, best.aics)
 	Goldberg.AICs <- cbind(seq.int(length(Goldberg.AICs))-1, Goldberg.AICs)
 	write.table(
 		Goldberg.AICs,
