@@ -90,7 +90,7 @@ intercepts <- grep(":",start.names,value=TRUE,invert=TRUE)
 # GAMMA
 ################
 
-# fit a model that has no competitive effects
+# a model that just fits intercepts
 gamma.fit.0 <- glm(
 	model.formula.0,
 	family=Gamma(),
@@ -98,7 +98,7 @@ gamma.fit.0 <- glm(
 	control=glm.control(maxit=1000) #,trace=2)
 )
 
-# fit a model that lumps all targets together to get a good starting point
+# fit a model that lumps all targets together
 gamma.fit.1 <- glm(
 	model.formula.1,
 	family=Gamma(),
@@ -106,7 +106,7 @@ gamma.fit.1 <- glm(
 	control=glm.control(maxit=1000) #,trace=2)
 )
 
-# fit a model that lumps all neighbors together to get a good starting point
+# fit a model that separates targets but lumps all neighbors together
 gamma.fit.2 <- glm(
 	model.formula.2,
 	family=Gamma(),
@@ -126,7 +126,6 @@ gamma.fit.3 <- glm(
 	family=Gamma(),
 	data=fecundity.data,
 	start=start,
-	#method=glm.fit3,
 	control=list(maxit=1000) #,trace=2)
 )
 
