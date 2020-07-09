@@ -43,7 +43,7 @@ ttraits <- Godoy.best
 # write out response-effect pairs
 for(d in 1:ncol(ctraits$response)){
 	write.table(
-		cbind(ctraits$response[,d], ctraits$effect[,d]),
+		cbind(ctraits$effect[,d], ctraits$response[,d]),
 		paste0("../../results/Godoy/godoy.C.traits.response.effect.",d,".csv"),
 		quote=FALSE,
 		col.names=FALSE,
@@ -54,7 +54,7 @@ for(d in 1:ncol(ctraits$response)){
 
 for(d in 1:ncol(ttraits$response)){
 	write.table(
-		cbind(ttraits$response[,d], ttraits$effect[,d]),
+		cbind(ttraits$effect[,d], ttraits$response[,d]),
 		paste0("../../results/Godoy/godoy.T.traits.response.effect.",d,".csv"),
 		quote=FALSE,
 		col.names=FALSE,
@@ -62,6 +62,25 @@ for(d in 1:ncol(ttraits$response)){
 		row.names=FALSE
 	)
 }
+
+# write out leading response-response and effect-effect pairs
+write.table(
+	cbind(ctraits$response[,1], ttraits$response[rownames(ctraits$response),1]),
+	"../../results/Godoy/godoy.traits.response.response.1.csv",
+	quote=FALSE,
+	col.names=FALSE,
+	sep=" ",
+	row.names=FALSE
+)
+
+write.table(
+	cbind(ctraits$effect[,1], ttraits$effect[rownames(ctraits$effect),1]),
+	"../../results/Godoy/godoy.traits.effect.effect.1.csv",
+	quote=FALSE,
+	col.names=FALSE,
+	sep=" ",
+	row.names=FALSE
+)
 
 # write out fecundities in C and T treatments
 write.table(
