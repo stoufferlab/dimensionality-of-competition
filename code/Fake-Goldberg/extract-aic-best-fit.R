@@ -33,7 +33,9 @@ for(which.fake.data in seq(25)){
 
 	# troll through the lists and find the lowest at each dimension and the best overall
 	best.aics <- unlist(lapply(best.fits, min, na.rm=TRUE))
-	best.d <- which.min(best.aics)
+	best.val <- min(best.aics)
+	delta.aics <- best.aics - best.val
+	best.d <- min(which(delta.aics <= 2))
 	bestest <- which.min(best.fits[[best.d]])
 	bestest <- names(best.fits[[best.d]][bestest])
 
