@@ -56,21 +56,59 @@ write.table(
 which.treatment <- "Open"
 source('prep.data.R')
 source('model.comparison.R')
-c.mm <- model.matrix(gamma.fit.2)
+c.mm <- model.matrix(gamma.fit.3)
 c.coefs <- colnames(c.mm)[colSums(c.mm > 0)>=2]
 
 which.treatment <- "Shade"
 source('prep.data.R')
 source('model.comparison.R')
-t.mm <- model.matrix(gamma.fit.2)
+t.mm <- model.matrix(gamma.fit.3)
 t.coefs <- colnames(t.mm)[colSums(t.mm > 0)>=2]
 
 # common and observed interactions
-eligible.alphas <- intersect(grep(":",c.coefs,value=TRUE), grep(":",t.coefs,value=TRUE))
+celigible.alphas <- grep(":",c.coefs,value=TRUE)
+teligible.alphas <- grep(":",t.coefs,value=TRUE)
+eligible.alphas <- intersect(celigible.alphas, teligible.alphas)
 
-# we need to make sure that all alphas match up by comparing row and column names
-common.focals <- intersect(rownames(ctraits$alphas), rownames(ttraits$alphas))
-common.competitors <- intersect(colnames(ctraits$alphas), colnames(ttraits$alphas))
+# alphas that were observed in the C treatment
+alpha.table <- c()
+for(i in common.focals){
+	for(j in common.competitors){
+		if(paste0("target",i,":",j) %in% celigible.alphas){
+			alpha.table <- rbind(alpha.table, c(ctraits$alphas[i,j], ttraits$alphas[i,j]))
+		}
+	}
+}
+alpha.table <- 1 / (1 + alpha.table)
+write.table(
+	alpha.table,
+	"../../results/Mayfield/mayfield.CT.alphas.obs.C.csv",
+	quote=FALSE,
+	col.names=FALSE,
+	sep=" ",
+	row.names=FALSE
+)
+
+# alphas that were observed in the C treatment
+alpha.table <- c()
+for(i in common.focals){
+	for(j in common.competitors){
+		if(paste0("target",i,":",j) %in% teligible.alphas){
+			alpha.table <- rbind(alpha.table, c(ctraits$alphas[i,j], ttraits$alphas[i,j]))
+		}
+	}
+}
+alpha.table <- 1 / (1 + alpha.table)
+write.table(
+	alpha.table,
+	"../../results/Mayfield/mayfield.CT.alphas.obs.T.csv",
+	quote=FALSE,
+	col.names=FALSE,
+	sep=" ",
+	row.names=FALSE
+)
+
+# alphas that were observed in ALL treatments
 alpha.table <- c()
 for(i in common.focals){
 	for(j in common.competitors){
