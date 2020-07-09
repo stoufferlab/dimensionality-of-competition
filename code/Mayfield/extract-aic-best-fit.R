@@ -27,7 +27,23 @@ for(which.treatment in c('Open','Shade')){
 
 	# troll through the lists and find the lowest at each dimension and the best overall
 	best.aics <- unlist(lapply(best.fits, min, na.rm=TRUE))
-	best.d <- which.min(best.aics)
+
+	# find the best high D model as a point of comparison for the weights
+	bestest <- names(which.min(best.fits[[length(best.aics)]]))
+	load(paste0('../../results/Mayfield/', bestest))
+	assign("y", eval(parse(text = paste0(which.treatment,".optim.lowD"))))
+	fargus.best <- response.effect.from.pars(
+		y[[1]]$par,
+		targets,
+		competitors,
+		dimensions=length(best.aics),
+		godoy=FALSE
+	)
+
+	# find the best overall model
+	best.val <- min(best.aics)
+	delta.aics <- best.aics - best.val
+	best.d <- min(which(delta.aics <= 2))
 	bestest <- which.min(best.fits[[best.d]])
 	bestest <- names(best.fits[[best.d]][bestest])
 
@@ -46,11 +62,38 @@ for(which.treatment in c('Open','Shade')){
 		ascii = TRUE
 	)
 
+	# write out weights for alternative to the AIC figure
+	write.table(
+		cbind(
+			sqrt(fargus.best$weights),
+			sqrt(fargus.best$weights) / sum(sqrt(fargus.best$weights)),
+			cumsum(sqrt(fargus.best$weights) / sum(sqrt(fargus.best$weights)))
+		),
+		file=paste0("../../results/Mayfield/mayfield.",which.treatment,".full.weights.csv"),
+		quote=FALSE,
+		col.names=FALSE,
+		sep=" ",
+		row.names=FALSE
+	)
+
+	# write out a pseudo-rsquared table for use in the paper
+	write.table(
+		cbind(
+			cumsum(sqrt(Mayfield.best$weights) / sum(sqrt(fargus.best$weights))),
+			sqrt(Mayfield.best$weights) / sum(sqrt(fargus.best$weights))
+		),
+		file=paste0("../../results/Mayfield/mayfield.",which.treatment,".pseudo-rsquared.csv"),
+		quote=FALSE,
+		col.names=FALSE,
+		sep=" ",
+		row.names=FALSE
+	)	
+
 	# fit the classic models as a point of comparison for the AIC figures
 	source('../Mayfield/model.comparison.R')
 
 	# write out a table of the AICs
-	Mayfield.AICs <- c(gamma.fit.0$aic, best.aics)
+	Mayfield.AICs <- c(gamma.fit.1$aic, best.aics)
 	Mayfield.AICs <- cbind(seq.int(length(Mayfield.AICs))-1, Mayfield.AICs)
 	write.table(
 		Mayfield.AICs,
