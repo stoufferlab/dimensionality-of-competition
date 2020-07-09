@@ -67,6 +67,20 @@ for(which.treatment in c('C','T')){
 		ascii = TRUE
 	)
 
+	# write out weights for alternative to the AIC figure
+	write.table(
+		cbind(
+			sqrt(fargus.best$weights),
+			sqrt(fargus.best$weights) / sum(sqrt(fargus.best$weights)),
+			cumsum(sqrt(fargus.best$weights) / sum(sqrt(fargus.best$weights)))
+		),
+		file=paste0("../../results/Godoy/godoy.",which.treatment,".full.weights.csv"),
+		quote=FALSE,
+		col.names=FALSE,
+		sep=" ",
+		row.names=FALSE
+	)
+
 	# write out a pseudo-rsquared table for use in the paper
 	write.table(
 		cbind(
@@ -84,7 +98,7 @@ for(which.treatment in c('C','T')){
 	source('./model.comparison.R')
 
 	# write out a table of the AICs
-	Godoy.AICs <- c(gamma.fit.0$aic, best.aics)
+	Godoy.AICs <- c(gamma.fit.1$aic, best.aics)
 	Godoy.AICs <- cbind(seq.int(length(Godoy.AICs))-1, Godoy.AICs)
 	write.table(
 		Godoy.AICs,
