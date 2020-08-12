@@ -50,7 +50,7 @@ plot(
 source('deming_v00.R')
 x <- log(lambda1$lambdas.mean)
 y <- log(lambda2$lambdas.mean)
-xnew <- log(seq(0.001,1000,length.out=1000))
+xnew <- log(seq(0.001,2000,length.out=1000))
 p <- t(sapply(
 	xnew,
 	function(xn) deming.ci.xnew(x,y,lambda=1,xnew=xn)
@@ -65,8 +65,10 @@ p <- as.data.frame(exp(p))
 polygon(
 	c(xnew,rev(xnew)),
 	c(p$lwr,rev(p$upr)),
-	col='grey',
-	border=NA
+	col='white',
+	border=gray(0.5),
+	lwd=2,
+	lty=5
 )
 lines(
 	xnew,
@@ -94,7 +96,7 @@ for(oo in c(0,1,2,3,4)){
 }
 axis(
 	2,
-	at=c(1,10,100),
+	at=c(1,10,100,1000),
 	tcl=0.5,
 	cex.axis=1.4,
 	padj=0.5,
@@ -140,11 +142,14 @@ segments(
 	lwd=1.5
 )
 
+text("a", x=1, y=100, xpd=NA, cex=2, font=2, adj=c(-1,1.3), hadj=2)
 mtext("Intrinsic fecundity (T)", 2, outer=FALSE, line=3.75, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
 mtext("Intrinsic fecundity (C)", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.3)
 # box(lwd=1.5)
+
+
 
 #
 # interaction strengths
@@ -160,12 +165,29 @@ plot(
 	axes=FALSE,
 	xlab='',
 	ylab='',
-	xlim=c(-0.5,10),
-	ylim=c(-0.5,3),
+	xlim=c(-2,10),
+	ylim=c(-1,3),
 	yaxs='i',
 	xaxs='i',
 	xpd=TRUE
 )
+
+# polygon(
+# 	c(-5,0,0,-5),
+# 	c(-5,-5,10,10),
+# 	col=gray(0.85),
+# 	border=NA
+# )
+# polygon(
+# 	c(-1,-1,10,10),
+# 	c(-1,0,0,-1),
+# 	col=gray(0.85),
+# 	border=NA
+# )
+
+# lines(x=c(0,10),y=c(0,0),lty="dotted",lwd=1.5)
+# lines(x=c(0,0),y=c(0,4),lty="dotted",lwd=1.5)
+
 
 # annotate axes
 axis(
@@ -184,7 +206,7 @@ axis(
 	las=2
 )
 
-# add line of best fit to guide eyes
+# # add line of best fit to guide eyes
 # x <- alpha1$alpha
 # y <- alpha2$alpha
 # xnew <- seq(-0.5,10,length.out=1000)
@@ -202,13 +224,6 @@ axis(
 # lines(
 # 	xnew,
 # 	p$estimate,
-# 	lty=2,
-# 	lwd=1.5
-# )
-
-# # add horizontal line since no correlation
-# abline(
-# 	lm(I((alpha2$alpha))~I((alpha1$alpha))),
 # 	lty=2,
 # 	lwd=1.5
 # )
@@ -239,6 +254,7 @@ segments(
 	lwd=1.5
 )
 
+text("b", x=-2, y=3, xpd=NA, cex=2, font=2, adj=c(-1,1.3), hadj=2)
 mtext("Interaction strength (T)", 2, outer=FALSE, line=3.75, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
@@ -266,6 +282,22 @@ plot(
 	xpd=TRUE
 )
 
+# polygon(
+# 	c(1,2,2,1),
+# 	c(0,0,2,2),
+# 	col=gray(0.85),
+# 	border=NA
+# )
+# polygon(
+# 	c(0,0,2,2),
+# 	c(1,2,2,1),
+# 	col=gray(0.85),
+# 	border=NA
+# )
+# lines(x=c(1,1),y=c(0,1),lty="dotted",lwd=1.5)
+# lines(x=c(0,1),y=c(1,1),lty="dotted",lwd=1.5)
+
+
 # annotate axes
 axis(
 	1,
@@ -282,6 +314,7 @@ axis(
 	padj=0.5,
 	las=2
 )
+
 
 # # add line of best fit to guide eyes
 # y <- I(1/(1+1*alpha2$alpha))
@@ -348,10 +381,11 @@ segments(
 # 	lwd=1.5
 # )
 
-mtext("Interaction outcome (T)", 2, outer=FALSE, line=3.75, xpd=NA, cex=1.3)
+text("c", x=0, y=1.2, xpd=NA, cex=2, font=2, adj=c(-1,1.3), hadj=2)
+mtext("Per capita impact (T)", 2, outer=FALSE, line=3.75, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
-mtext("Interaction outcome (C)", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.3)
+mtext("Per capita impact (C)", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.3)
 # box(lwd=1.5)
 
 
