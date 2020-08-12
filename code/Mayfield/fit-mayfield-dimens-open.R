@@ -1,29 +1,28 @@
 
-# read in Margie's data
-datadir <- "../../data/Mayfield/"
-mayfield <- read.csv(paste0(datadir, "nhood data wTF.csv"))
+# read in the Mayfield data for the Open treatment
+which.treatment <- "Open"
+source('prep.data.R')
 
-cc <- colnames(mayfield)
-cc[5] <- "target"
-colnames(mayfield) <- cc
+# specify the model family to fit
+which.family <- Gamma()
 
-competitors <- colnames(mayfield)[9:39]
+# we get some input from the command line
+args <- commandArgs(trailingOnly = TRUE)
 
-# remove NA and 0 
-# WARNING: ask Margie about zero fecundities
-mayfield <- subset(mayfield, !is.na(seeds) & !(seeds==0))
+# the core dimension for this optimization
+which.dimension <- as.integer(args[1])
 
-# let's try just one treatment for simplicity in testing regime
-mayfield <- subset(mayfield, light=="Open")
+# which of n random optimizations this is
+which.n.random <- as.integer(args[2])
 
-# the data should now be primed for analysis; woohoo!
-
-# run the fitting code
+# run the dimensionality fitting code
 source('fit.machine.R')
 
 # save the fits and write out a table of the AICs
 Open.optim.lowD <- optim.lowD
-save(Open.optim.lowD, file="Open.optim.lowD.Rdata")
-
-Open.AICs <- cbind(0:length(optim.lowD), c(summary(null.fit)$aic, unlist(lapply(optim.lowD, function(x){x$aic}))))
-write.table(Open.AICs, "../../data/Mayfield/mayfield.Open.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
+save(Open.optim.lowD,
+	file=paste0("../../results/Mayfield/Open.optim.D",which.dimension,".r",which.n.random,".Rdata"),
+	ascii = TRUE
+)
+# Open.AICs <- cbind(0:length(optim.lowD), c(summary(null.fit)$aic, unlist(lapply(optim.lowD, function(x){x$aic}))))
+# write.table(Open.AICs, "../../results/Mayfield/mayfield.Open.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)

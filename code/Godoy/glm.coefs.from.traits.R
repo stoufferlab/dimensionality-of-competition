@@ -1,35 +1,21 @@
 
 glm.coefs.from.traits <- function(par, targets, competitors, dimensions, xnames){
-    # turn the linear version of the response traits into a species by trait matrix
-    response.traits <- matrix(
-        par[seq.int(length(targets)+1, length(targets)+length(targets)*dimensions)],
-        length(targets),
-        dimensions
-    )
-
-    # turn the linear version of the effect traits into a species by trait matrix
-    effect.traits <- matrix(
-        par[seq.int(length(targets)+length(targets)*dimensions+1, length(targets)+length(targets)*dimensions+(length(competitors)-1)*dimensions)],
-        length(competitors)-1,
-        dimensions
-    )
-
-    # matrix multiplication!
-    alphas <- response.traits %*% t(effect.traits)
-    rownames(alphas) <- targets
-    colnames(alphas) <- competitors[competitors!="SOLO"]
+    # take the paramater vector and turn it into something "useful"
+    par <- response.effect.from.pars(par, targets, competitors, dimensions, godoy=TRUE)
 
     # and back to a linear form for the regression model
     coefs <- numeric(length(targets) + length(targets) * length(competitors))
     names(coefs) <- xnames
     
     # add the lambdas to the appropriate places
-    coefs[paste0("target",targets)] <- par[seq.int(1, length(targets))]
+    # DEBUG: note transformation because of Gamma family
+    coefs[paste0("target",targets)] <- 1. / par$lambdas
 
     # add the alphas to the appropriate places
-    for(i in rownames(alphas)){
-        for(j in colnames(alphas)){
-            coefs[paste0("target",i,":background",j,":neighbours_number")] <- alphas[i,j]
+    # DEBUG: note transformation because of Gamma family
+    for(i in rownames(par$alphas)){
+        for(j in colnames(par$alphas)){
+            coefs[paste0("target",i,":background",j,":neighbours_number")] <- (1. / par$lambdas[i]) * par$alphas[i,j]
         }
     }
 
