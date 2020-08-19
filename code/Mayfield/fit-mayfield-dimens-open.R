@@ -24,5 +24,3 @@ save(Open.optim.lowD,
 	file=paste0("../../results/Mayfield/Open.optim.D",which.dimension,".r",which.n.random,".Rdata"),
 	ascii = TRUE
 )
-# Open.AICs <- cbind(0:length(optim.lowD), c(summary(null.fit)$aic, unlist(lapply(optim.lowD, function(x){x$aic}))))
-# write.table(Open.AICs, "../../results/Mayfield/mayfield.Open.AICs.csv", quote=FALSE, col.names=FALSE, sep=" ", row.names=FALSE)
