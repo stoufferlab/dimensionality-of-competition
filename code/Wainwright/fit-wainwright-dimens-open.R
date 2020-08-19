@@ -6,8 +6,8 @@ source('prep.data.R')
 # specify the model family to fit
 which.family <- Gamma()
 
-# # we get some input from the command line
-# args <- commandArgs(trailingOnly = TRUE)
+# we get some input from the command line
+args <- commandArgs(trailingOnly = TRUE)
 
 # the core dimension for this optimization
 which.dimension <- as.integer(args[1])
