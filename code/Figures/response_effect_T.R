@@ -172,6 +172,8 @@ axis(
 	# padj=0.5,
 	las=1
 )
+abline(h=0,lwd=1.5,lty='dotted')
+abline(v=0,lwd=1.5,lty='dotted')
 
 points(
 	R2[,1] ~ E2[,1],
@@ -246,6 +248,8 @@ axis(
 	cex.axis=1.4,
 	las=1
 )
+abline(h=0,lwd=1.5,lty='dotted')
+abline(v=0,lwd=1.5,lty='dotted')
 
 points(
 	R3[,1] ~ E3[,1],
