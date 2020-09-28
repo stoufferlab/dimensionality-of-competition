@@ -44,7 +44,7 @@ plot(
 	xaxs='i',
 	type='n'
 )
-title('a  First resource', line=1.2, cex.main=2.2)
+title('a  First dimension', line=1.2, cex.main=2.2)
 mtext("Response trait", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
 mtext("Effect trait", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.5)
@@ -154,7 +154,7 @@ plot(
 	xaxs='i'
 )
 
-title('b  Second resource', line=1.2, cex.main=2.2)
+title('b  Second dimension', line=1.2, cex.main=2.2)
 mtext("Effect trait", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.5)
 # box(lwd=1.5)
 axis(
@@ -213,7 +213,7 @@ plot(
 	xaxs='i'
 )
 
-title('c  Third resource', line=1.2, cex.main=2.2)
+title('c  Third dimension', line=1.2, cex.main=2.2)
 mtext("Effect trait", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.5)
 # box(lwd=1.5)
 axis(

@@ -17,15 +17,24 @@ rownames(A3) <- colnames(A3) <- letters[1:nrow(A3)]
 
 # A1 <- matrix(kronecker(1:10,1:10),10) / 100
 
-hmm <- 0.5*(rowMeans(A1)+colMeans(A1))
+# get a baseline matrix
+A0 <- matrix(mean(A),nrow(A1),ncol(A1))
+
+# make the first dimension relative
+A1 <- A1 - A0
+
+weights <- c(0.9,0.9)
+hmm <- weights[1]*rowMeans(A1) + weights[2]*colMeans(A1)
 # hmm <- 0.5*(apply(A,1,max) + apply(A,2,max))
 # # # hmm <- 0.5*(apply(A,))
 hmm.order <- (names(sort(rank(hmm),decreasing=TRUE))) #order(hmm, decreasing=TRUE)
 
 A <- A[hmm.order,]
 A <- A[,hmm.order]
+
 A1 <- A1[hmm.order,]
 A1 <- A1[,hmm.order]
+
 A2 <- A2[hmm.order,]
 A2 <- A2[,hmm.order]
 A3 <- A3[hmm.order,]
@@ -37,18 +46,19 @@ A3 <- A3[,hmm.order]
 fmax <- max((c(A1,A2,A3,A)))
 fmin <- min((c(A1,A2,A3,A)))
 
-pdf('../../manuscript/Figures/Axes/godoy.T.alphas.pdf', width=17, height=4.5)
+pdf('../../manuscript/Figures/Axes/godoy.T.alphas.pdf', width=17, height=8)
 
-layout(mat = matrix(
-		c(4, 5, 1, 2, 3), 
-        nrow = 1, 
-        ncol = 5
+layout(mat = rbind(
+		c(5,6,1,2),
+		c(5,6,3,4)
        ),
-       heights = c(1),
-       widths = c(2, 0.5, 2, 2, 2)
+       heights = c(2, 2),
+       widths = c(2, 0.3, 1, 1)
 )
 
-par(mar = c(5, 6, 4.5, 1), oma = c(0, 0, 0, 0.5))
+par(mar = c(5, 6, 4.5, 0), oma = c(0, 0, 0, 0.75))
+
+# layout.show(6)
 
 # add a color scale for fitness
 
@@ -56,6 +66,28 @@ pal <- c(
 	rev(colorRampPalette(brewer.pal(9, "Blues"))(100)),
 	(colorRampPalette(brewer.pal(9, "Reds"))(200))
 )
+
+# plot the mean overall
+plot(
+	A0,
+	col=pal,
+	breaks=seq(-1.5, 3, length.out=length(pal)),
+	key=NULL,
+	xaxt='n',
+	yaxt='n',
+	xlab='',
+	ylab='',
+	main='',
+	axes=FALSE,
+	axis.col=NULL,
+	axis.row=NULL,
+	asp=1
+)
+
+title('b  Mean interaction', line=1.2, cex.main=2.3)
+mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
+mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
+
 
 # plot the first axis
 plot(
@@ -70,12 +102,13 @@ plot(
 	main='',
 	axes=FALSE,
 	axis.col=NULL,
-	axis.row=NULL
+	axis.row=NULL,
+	asp=1
 )
 
-title('b  First resource (32.6%)', line=1.2, cex.main=2.3)
+title('c  First dimension (32.6%)', line=1.2, cex.main=2.3)
 mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
-mtext("Response species", 2, outer=FALSE, line=1., xpd=NA, cex=1.75)
+mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
 
 # par(mar = c(1, 1, 1, 1))
 plot(
@@ -90,12 +123,13 @@ plot(
 	main='',
 	axes=FALSE,
 	axis.col=NULL,
-	axis.row=NULL
+	axis.row=NULL,
+	asp=1
 )
-title('c  Second resource (21.7%)', line=1.2, cex.main=2.3, xpd=NA)
+title('d  Second dimension (21.7%)', line=1.2, cex.main=2.3, xpd=NA)
 mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
-mtext("Response species", 2, outer=FALSE, line=1., xpd=NA, cex=1.75)
-mtext("+", 2, outer=FALSE, line=3.7, xpd=NA, cex=3.5)
+mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
+# mtext("+", 2, outer=FALSE, line=3.7, xpd=NA, cex=3.5)
 
  #0,max(max(no.comp),max(with.comp)))) # xlab = expression('s'['m']*' = 1 - w'['jm']), ylab=expression('s'['f']*' = 1 - w'['kf']))
 # image(with.comp, xlab = 'z', ylab='Env', main='With competition', col=pal, zlim=c(fmin, fmax)) #, zlim=c(0,max(max(no.comp),max(with.comp)))) # xlab = expression('s'['m']*' = 1 - w'['jm']), ylab=expression('s'['f']*' = 1 - w'['kf']))
@@ -117,14 +151,13 @@ plot(
 	main='',
 	axes=FALSE,
 	axis.col=NULL,
-	axis.row=NULL
+	axis.row=NULL,
+	asp=1
 )
-title('d  Third resource (16.4%)', line=1.2, cex.main=2.3, xpd=NA)
+title('e  Third dimension (16.4%)', line=1.2, cex.main=2.3, xpd=NA)
 mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
-mtext("Response species", 2, outer=FALSE, line=1., xpd=NA, cex=1.75)
-mtext("+", 2, outer=FALSE, line=3.7, xpd=NA, cex=3.5)
-# mtext("Environment", 2, outer=FALSE, line=1., xpd=NA, cex=1.5)
-# mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
+mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
+# mtext("+", 2, outer=FALSE, line=3.7, xpd=NA, cex=3.5)
 
 # # plot the difference
 # par(mar = c(4, 0, 5, 7))
@@ -140,15 +173,13 @@ plot(
 	main='',
 	axes=FALSE,
 	axis.col=NULL,
-	axis.row=NULL
+	axis.row=NULL,
+	asp=1
 )
-title('a  Interaction matrix', line=1.2, cex.main=2.3)
-mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
-mtext("Response species", 2, outer=FALSE, line=1., xpd=NA, cex=1.75)
-text(14.6, 5.5, "=", outer=TRUE, line=1, xpd=NA, cex=4.5)
-# mtext("Environment", 2, outer=FALSE, line=1., xpd=NA, cex=1.5)
-# mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
-
+title('a  Interaction matrix', line=1.2, cex.main=3)
+mtext("Effect species", 1, outer=FALSE, line=3, xpd=NA, cex=3)
+mtext("Response species", 2, outer=FALSE, line=0.8, xpd=NA, cex=3)
+# text(14.6, 5.5, "=", outer=TRUE, line=1, xpd=NA, cex=4.5)
 
 # add a color scale for 
 
@@ -163,9 +194,9 @@ image(
 	yaxt='n',
 	mgp=c(0.5,0.5,0.5)
 )
-text(1.75, 0.5, "Interaction strength", outer=FALSE, line=1., xpd=NA, cex=2.25, srt=270)
-mtext("+", 1, outer=FALSE, line=1., xpd=NA, cex=1.75)
-mtext("-", 3, outer=FALSE, line=0.5, xpd=NA, cex=1.75)
+text(1.75, 0.5, "Interaction strength", outer=FALSE, line=1., xpd=NA, cex=3.5, srt=270)
+mtext("+", 1, outer=FALSE, line=1.5, xpd=NA, cex=2.25)
+mtext("-", 3, outer=FALSE, line=0.5, xpd=NA, cex=2.25)
 
 # dev.copy(device=x11)
 # dev.print()#height=3, width=7)

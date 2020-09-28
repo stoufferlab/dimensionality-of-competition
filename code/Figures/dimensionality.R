@@ -178,7 +178,7 @@ for(i in 1:length(rsquareds)){
 	}
 
 	if(i == 6){
-		mtext("Resource dimension", 1, outer=TRUE, line=1.8, cex=2)
+		mtext("Niche dimension", 1, outer=TRUE, line=1.8, cex=2)
 	}
 
 }
