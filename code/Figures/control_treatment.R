@@ -1,10 +1,11 @@
 
-library(ggplot2)
+# library(ggplot2)
 library(RColorBrewer)
 # library(plot.matrix)
 
 # where to save this bastard
-pdf('../../manuscript/Figures/Reshuffle/reshuffle.pdf', width=4.5, height=8)
+setEPS(width=4.5, height=8)
+postscript('../../manuscript/Figures/Reshuffle/reshuffle.eps')
 
 se.factor <- 2
 
@@ -142,7 +143,7 @@ segments(
 	lwd=1.5
 )
 
-text("a", x=1, y=100, xpd=NA, cex=2, font=2, adj=c(-1,1.3), hadj=2)
+text("a", x=1, y=100, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
 mtext("Intrinsic fecundity (T)", 2, outer=FALSE, line=3.75, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
@@ -254,7 +255,7 @@ segments(
 	lwd=1.5
 )
 
-text("b", x=-2, y=3, xpd=NA, cex=2, font=2, adj=c(-1,1.3), hadj=2)
+text("b", x=-2, y=3, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
 mtext("Interaction strength (T)", 2, outer=FALSE, line=3.75, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
@@ -381,7 +382,7 @@ segments(
 # 	lwd=1.5
 # )
 
-text("c", x=0, y=1.2, xpd=NA, cex=2, font=2, adj=c(-1,1.3), hadj=2)
+text("c", x=0, y=1.2, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
 mtext("Per capita impact (T)", 2, outer=FALSE, line=3.75, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)

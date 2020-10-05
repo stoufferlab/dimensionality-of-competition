@@ -57,7 +57,7 @@ deming.ci.xnew <- function(x, y, lambda=1, xnew, level=95/100){
   V <- xx%*%H%*%xx
   T <- fit$alpha+fit$beta*xnew
   t <- qt(1-(1-level)/2, df=n-2)
-  bounds <- T + c(-1,1)*t*sqrt(V)
+  bounds <- T + c(-1,1)*t*as.vector(sqrt(V))
   return(c(estimate=T, lwr=bounds[1], upr=bounds[2]))
 }
 

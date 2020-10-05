@@ -1,5 +1,5 @@
 
-library(ggplot2)
+# library(ggplot2)
 library(RColorBrewer)
 # library(plot.matrix)
 
@@ -17,7 +17,8 @@ williams <- read.table("../../results/Williams/pseudo-rsquared.csv")
 wilson <- read.table("../../results/Wilson/pseudo-rsquared.csv")
 
 # where to save the figure
-pdf('../../manuscript/Figures/AIC/dimensionality.pdf', width=12, height=10)
+setEPS(width=12, height=10)
+postscript('../../manuscript/Figures/AIC/dimensionality.eps')
 
 layout(mat = matrix(
 		1:9,

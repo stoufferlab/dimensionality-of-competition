@@ -1,5 +1,5 @@
 
-library(ggplot2)
+# library(ggplot2)
 library(RColorBrewer)
 library(plot.matrix)
 
@@ -46,7 +46,8 @@ A3 <- A3[,hmm.order]
 fmax <- max((c(A1,A2,A3,A)))
 fmin <- min((c(A1,A2,A3,A)))
 
-pdf('../../manuscript/Figures/Axes/godoy.T.alphas.pdf', width=17, height=8)
+setEPS(width=17, height=8)
+postscript('../../manuscript/Figures/Axes/godoy.T.alphas.eps')
 
 layout(mat = rbind(
 		c(5,6,1,2),
@@ -194,7 +195,7 @@ image(
 	yaxt='n',
 	mgp=c(0.5,0.5,0.5)
 )
-text(1.75, 0.5, "Interaction strength", outer=FALSE, line=1., xpd=NA, cex=3.5, srt=270)
+text(1.75, 0.5, "Interaction strength", xpd=NA, cex=3.5, srt=270)
 mtext("+", 1, outer=FALSE, line=1.5, xpd=NA, cex=2.25)
 mtext("-", 3, outer=FALSE, line=0.5, xpd=NA, cex=2.25)
 

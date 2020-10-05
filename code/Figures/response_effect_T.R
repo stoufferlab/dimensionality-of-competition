@@ -14,7 +14,8 @@ E3 <- read.table("../../results/Godoy/godoy.T.effect.3.csv")
 
 se.factor <- 2
 
-pdf('../../manuscript/Figures/Axes/traits.xxyy.godoy.T.pdf', width=12, height=3.5)
+setEPS(width=12, height=3.5)
+postscript('../../manuscript/Figures/Axes/traits.xxyy.godoy.T.eps')
 
 layout(mat = matrix(
 		c(1, 2, 3), 
