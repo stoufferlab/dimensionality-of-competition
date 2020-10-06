@@ -27,40 +27,40 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions, god
         to=length(targets)+length(weights)+length(response.angles)+n.angles
     )]
 
-    # now we need to convert the response and effect angles into usable low-dimensional traits
+    # now we need to convert the response and effect angles into usable low-dimensional traits -------
     # we first need to tack on zeros at the end
     response.angles <- c(response.angles, rep(0,choose(length(targets),2) - length(response.angles)))
-
-    # now we turn angles into 
+    
+    # now we turn response angles into response traits
     response.traits <- gea_orthogonal_from_angles(response.angles)
-
+    
     # and we use the last columns as the actual response traits
     response.traits <- response.traits[,seq.int(ncol(response.traits),ncol(response.traits)-dimensions+1),drop=FALSE]
-
-    # name things
+    
+    # assign corresponding names to response traits array
     rownames(response.traits) <- targets
     colnames(response.traits) <- paste0("response",seq.int(dimensions))
-
+    
     # and again for the effects
     # we first need to tack on zeros at the end
     effect.angles <- c(effect.angles, rep(0,choose(length(competitors)-godoy,2) - length(effect.angles)))
 
-    # now we turn angles into 
+    # now we turn angles into effect traits
     effect.traits <- gea_orthogonal_from_angles(effect.angles)
 
-    # and we use the last columns as the actual response traits
+    # and we use the last columns as the actual effect traits
     effect.traits <- effect.traits[,seq.int(ncol(effect.traits),ncol(effect.traits)-dimensions+1),drop=FALSE]
 
-    # name things
+    # assign corresponding row and column names to effect traits
     rownames(effect.traits) <- competitors[competitors!="SOLO"]
     colnames(effect.traits) <- paste0("effect",seq.int(dimensions))
 
-    # generate alphas from matrix multiplication!
+    # generate alphas from matrix multiplication! ---------
     alphas <- response.traits %*% diag(weights,dimensions,dimensions) %*% t(effect.traits)
     rownames(alphas) <- targets
     colnames(alphas) <- competitors[competitors!="SOLO"]
 
-    # lets reorder things in decreasing order of the weights across each dimension
+    # lets reorder response & effect traits in decreasing order of weights across each dimension ----
     response.traits <- response.traits[,order(weights,decreasing = TRUE),drop=FALSE]
     effect.traits <- effect.traits[,order(weights,decreasing = TRUE),drop=FALSE]
     weights <- weights[order(weights, decreasing = TRUE)]
