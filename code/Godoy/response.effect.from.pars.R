@@ -1,26 +1,25 @@
-
 # convert parameter vector to "human readable" parameters
 # note transformations of many parameters to match non-standard bounds
 response.effect.from.pars <- function(par, targets, competitors, dimensions, godoy=FALSE){
-    # the intrinsic fecundities come first
+    # the intrinsic fecundities come first ----------------
     # these are log transformed in the optimizer to have no effective bounds
     lambdas <- exp(par[seq.int(length(targets))])
     names(lambdas) <- targets
-
-    # "eigenvalues" for the different dimensions come next
+    
+    # "eigenvalues" for the different dimensions come next -----------------
     # these are log transformed in the optimizer to have no effective bounds
     weights <- exp(par[seq.int(length(lambdas)+1, length(lambdas)+dimensions)])
 
     # DEBUG: should we get rid of bounds on these and make them "logistic"?
 
-    # angles for response traits come next
+    # angles for response traits come next ----------------------
     n.angles <- (choose(length(targets),2) - choose(length(targets)-dimensions,2))
     response.angles <- par[seq.int(
         from=length(targets)+length(weights)+1,
         to=length(targets)+length(weights)+n.angles
     )]
-
-    # angles for effect traits come last
+    
+    # angles for effect traits come last ------------
     # the -godoy (-1) comes from "background" being listed as a competitor
     n.angles <- (choose(length(competitors)-godoy,2) - choose(length(competitors)-godoy-dimensions,2))
     effect.angles <- par[seq.int(
