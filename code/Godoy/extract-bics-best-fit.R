@@ -71,22 +71,9 @@ for(which.treatment in c('C','T')){
 	# write out weights for alternative to the BIC figure
 	write.table(
 		cbind(
-			sqrt(fargus.best$weights),
-			sqrt(fargus.best$weights) / sum(sqrt(fargus.best$weights)),
-			cumsum(sqrt(fargus.best$weights) / sum(sqrt(fargus.best$weights)))
-		),
-		file=paste0("../../results/Godoy/godoy.",which.treatment,".full.weights.BIC.csv"),
-		quote=FALSE,
-		col.names=FALSE,
-		sep=" ",
-		row.names=FALSE
-	)
-
-	# write out a pseudo-rsquared table for use in the paper
-	write.table(
-		cbind(
-			cumsum(sqrt(Godoy.best$weights) / sum(sqrt(fargus.best$weights))),
-			sqrt(Godoy.best$weights) / sum(sqrt(fargus.best$weights))
+			(fargus.best$weights),
+			(fargus.best$weights**2) / sum(fargus.best$weights**2),
+			cumsum((fargus.best$weights**2) / sum(fargus.best$weights**2))
 		),
 		file=paste0("../../results/Godoy/godoy.",which.treatment,".pseudo-rsquared.BIC.csv"),
 		quote=FALSE,

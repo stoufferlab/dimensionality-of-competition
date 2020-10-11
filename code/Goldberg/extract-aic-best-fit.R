@@ -58,31 +58,18 @@ save(Goldberg.best,
 )
 
 # write out weights for alternative to the AIC figure
-	write.table(
-		cbind(
-			sqrt(fargus.best$weights),
-			sqrt(fargus.best$weights) / sum(sqrt(fargus.best$weights)),
-			cumsum(sqrt(fargus.best$weights) / sum(sqrt(fargus.best$weights)))
-		),
-		file=paste0("../../results/Goldberg/Goldberg.full.weights.csv"),
-		quote=FALSE,
-		col.names=FALSE,
-		sep=" ",
-		row.names=FALSE
-	)
-
-	# write out a pseudo-rsquared table for use in the paper
-	write.table(
-		cbind(
-			cumsum(sqrt(Goldberg.best$weights) / sum(sqrt(fargus.best$weights))),
-			sqrt(Goldberg.best$weights) / sum(sqrt(fargus.best$weights))
-		),
-		file=paste0("../../results/Goldberg/Goldberg.pseudo-rsquared.csv"),
-		quote=FALSE,
-		col.names=FALSE,
-		sep=" ",
-		row.names=FALSE
-	)
+write.table(
+	cbind(
+		(fargus.best$weights),
+		(fargus.best$weights**2) / sum(fargus.best$weights**2),
+		cumsum((fargus.best$weights**2) / sum(fargus.best$weights**2))
+	),
+	file=paste0("../../results/Goldberg/Goldberg.pseudo-rsquared.csv"),
+	quote=FALSE,
+	col.names=FALSE,
+	sep=" ",
+	row.names=FALSE
+)
 
 # fit the classic models as a point of comparison for the AIC figures
 source('../Mayfield/model.comparison.R')
