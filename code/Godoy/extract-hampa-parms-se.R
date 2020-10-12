@@ -141,7 +141,7 @@ for(which.treatment in c('C','T')){
 			alphas.mean,
 			alphas.se$se
 		),
-		paste0("../../results/Godoy/godoy.",which.treatment,".alphas.csv"),
+		paste0("../../results/Godoy/godoy.",which.treatment,".alphas.fit.csv"),
 		quote=FALSE
 	)
 

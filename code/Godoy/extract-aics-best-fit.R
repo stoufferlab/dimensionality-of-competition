@@ -95,4 +95,19 @@ for(which.treatment in c('C','T')){
 		sep=" ",
 		row.names=FALSE
 	)
+
+	# write out the alpha coefficients for comparison plots elsewhere
+	source('get.alphas.from.model.R')
+	coef.summary <- summary(gamma.fit.3)$coef
+	alphas.mean <- get.alphas.from.model(coef.summary[,"Estimate"],targets,competitors)
+	alphas.se <- get.alphas.from.model(coef.summary[,"Std. Error"],targets,competitors)
+
+	alphas <- as.data.frame.table(alphas.mean)
+	colnames(alphas) <- c("row","col","alpha")
+	alphas[,"alphas.se$se"] <- alphas.se[,3]
+	write.table(
+		alphas,
+		paste0("../../results/Godoy/godoy.",which.treatment,".alphas.orig.csv"),
+		quote=FALSE
+	)
 }
