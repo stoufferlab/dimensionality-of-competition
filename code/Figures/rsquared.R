@@ -7,9 +7,6 @@ library(RColorBrewer)
 godoyC <- read.table("../../results/Godoy/godoy.C.pseudo-rsquared.csv")
 godoyT <- read.table("../../results/Godoy/godoy.T.pseudo-rsquared.csv")
 
-# Goldberg hemi data
-goldberg <- "../../results/Goldberg/Goldberg.pseudo-rsquared.csv"
-
 # these datasets were fit from Levine matrix only
 levine.dir <- "../../results/Levine/"
 levine.files <- list.files(levine.dir, "rsquared")
@@ -132,16 +129,8 @@ rsquareds <- rsquareds[order(sapply(rsquareds, nrow), decreasing=TRUE)]
 
 pal <- sample(colorRampPalette(brewer.pal(8, "Dark2"))(length(rsquareds)))
 
-for(i in 1:(length(rsquareds)+1)){
-	if(i==1){
-		d <- read.table(goldberg)
-	}else{
-		d <- rsquareds[[i-1]]
-	}
-	# d[,3] <- c(
-	# 	0,
-	# 	d[2:nrow(d),3] - d[1:(nrow(d)-1),3]
-	# )
+for(i in 1:(length(rsquareds))){
+	d <- rsquareds[[i]]
 
 	plot(
 		c(0,1:nrow(d)),
@@ -169,16 +158,11 @@ for(i in 1:(length(rsquareds)+1)){
 		las=1
 	)
 
-	if(i==1){
-		abline(v=0.9,lwd=2.5,lty='dotted')
-		abline(v=1.1,lwd=2.5,lty='dashed')
-	}else{
-		abline(
-			v = igraph::dim_select(d[,1]),
-			lwd=2.5,
-			lty="dotted"
-		)
-	}
+	abline(
+		v = igraph::dim_select(d[,1]),
+		lwd=2.5,
+		lty="dotted"
+	)
 
 	points(
 		c(0,1:nrow(d)),
