@@ -1,0 +1,21 @@
+Raw Data,,,,
+Relative Yield as the biomass of a plants in pairwise mixture with another scaled by its biomass in isolation,,,,
+,,,,
+,neighbors J,,,
+targets i,T,D,F,P
+T,1,0.38,0.73,0.65
+D,0.84,1,0.78,0.79
+F,0.56,0.38,1,0.61
+P,0.66,0.53,0.68,1
+,,,,
+,,,,
+Wins and Losses as binary,,,,
+1 indicates that row species outcompetes column species, 0 indicates its loss,,,,
+,neighbors J,,,
+targets i,T,D,F,P
+T,,0,1,0
+D,1,,1,1
+F,0,0,,0
+P,1,0,1,
+,,,,
+This looks like a perfectly transitive heirarchy - D-P-T-F,,,,
