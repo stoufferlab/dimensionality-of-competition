@@ -4,9 +4,16 @@ library(RColorBrewer)
 # library(plot.matrix)
 
 # figure out what response/effect files exist
+
+# godoy Control which is not in main text figure
 godoy.dir <- "../../results/Godoy"
 godoy.resp <- grep("godoy.C",list.files(godoy.dir,"response[.][[:digit:]][.]csv",full.names=TRUE),value=TRUE)
 godoy.effe <- grep("godoy.C",list.files(godoy.dir,"effect[.][[:digit:]][.]csv",full.names=TRUE),value=TRUE)
+
+# Wainwright data
+wainwright.dir <- "../../results/Wainwright"
+wainwright.resp <- list.files(wainwright.dir,"response[.][[:digit:]][.]csv",full.names=TRUE)
+wainwright.effe <- list.files(wainwright.dir,"effect[.][[:digit:]][.]csv",full.names=TRUE)
 
 # datasets from the Levine collection
 levine.dir <- "../../results/Levine"
@@ -23,8 +30,8 @@ kinlock.resp <- grep("Landa|Engel",kinlock.resp,invert=TRUE,value=TRUE)
 kinlock.effe <- grep("Landa|Engel",kinlock.effe,invert=TRUE,value=TRUE)
 
 # put everything together
-response.files <- c(godoy.resp, levine.resp, kinlock.resp)
-effect.files <- c(godoy.effe, levine.effe, kinlock.effe)
+response.files <- c(godoy.resp, wainwright.resp, levine.resp, kinlock.resp)
+effect.files <- c(godoy.effe, wainwright.effe, levine.effe, kinlock.effe)
 
 # determine unique stems/datasets
 stems <- unique(sapply(
@@ -65,7 +72,7 @@ for(i in 1:9){
 	       widths = c(1, 1, 1)
 	)
 
-	par(mar = c(5, 4.5, 4.5, 1), oma = c(0, 0.75, 0, 0.5), xpd=TRUE)
+	par(mar = c(5, 4.5, 4.5, 1), oma = c(0, 3.75, 0, 0.5), xpd=TRUE)
 
 	for(j in (1+4*(i-1)):min(4*i,length(stems))){
 		stem <- stems[j]
@@ -76,6 +83,7 @@ for(i in 1:9){
 		for(k in 1:length(resp)){
 			r.traits <- read.table(resp[k])
 			e.traits <- read.table(effe[k])
+			e.traits <- e.traits[grep("Other",rownames(e.traits),invert=TRUE,value=TRUE),,drop=FALSE]
 
 			# check for less intuitive sign structure and reverse signs if needed
 			if(sum((r.traits[,1]<0) + (e.traits[,1]<0))/(nrow(r.traits)+nrow(e.traits)) > 0.5){
@@ -138,7 +146,10 @@ for(i in 1:9){
 			abline(h=0,lwd=1.5,lty='dotted')
 			abline(v=0,lwd=1.5,lty='dotted')
 
-			if(k==1) mtext("Response trait", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
+			if(k==1){
+				mtext("Response trait", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
+				mtext(paste0("Dataset ",j), 2, outer=FALSE, line=5.5, xpd=NA, cex=1.75, font=2)
+			}
 			mtext("Effect trait", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.5)
 
 		}

@@ -7,6 +7,9 @@ library(plot.matrix)
 godoy.dir <- "../../results/Godoy"
 godoy.alphas <- list.files(godoy.dir,"[.]fit[.]csv",full.names=TRUE)
 
+wainwright.dir <- "../../results/Wainwright"
+wainwright.alphas <- list.files(wainwright.dir,"[.]fit[.]csv",full.names=TRUE)
+
 # datasets from the Levine collection
 levine.dir <- "../../results/Levine"
 levine.alphas <- list.files(levine.dir,"[.]fit[.]csv",full.names=TRUE)
@@ -19,7 +22,7 @@ kinlock.alphas <- list.files(kinlock.dir,"[.]fit[.]csv",full.names=TRUE)
 kinlock.alphas <- grep("Landa|Engel",kinlock.alphas,invert=TRUE,value=TRUE)
 
 # put everything together
-alpha.fits <- c(godoy.alphas, levine.alphas, kinlock.alphas)
+alpha.fits <- c(godoy.alphas, wainwright.alphas, levine.alphas, kinlock.alphas)
 alpha.orig <- gsub("fit", "orig", alpha.fits)
 
 # determine unique stems/datasets
@@ -34,7 +37,7 @@ stems <- unique(sapply(
 spp <- sapply(
 	stems,
 	function(stem,alpha.fits){
-		if(grepl("godoy",stem)){
+		if(grepl("godoy|wainwright",stem)){
 			nlevels(read.table(grep(stem,alpha.fits,value=TRUE)[1])$row)
 		}else{
 			nrow(read.table(grep(stem,alpha.fits,value=TRUE)[1]))
@@ -69,11 +72,11 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 	orig <- grep(stem,alpha.orig,value=TRUE)
 	fit <- grep(stem,alpha.fits,value=TRUE)
 	
-	if(grepl("godoy",stem)){
+	if(grepl("godoy|wainwright",stem)){
 		orig <- read.table(orig)
-		orig <- xtabs(alpha ~ row + col, orig)
+		orig <- xtabs(alpha ~ row + col, orig, na.action=na.pass)
 		fit <- read.table(fit)
-		fit <- xtabs(alpha ~ row + col, fit)
+		fit <- xtabs(alpha ~ row + col, fit, na.action=na.pass)
 	}else{
 		orig <- read.table(orig)
 		fit <- read.table(fit)
@@ -83,25 +86,33 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 	fit <- as.matrix(fit)
 
 	if(grepl("alpha",stem)){
-		min.alpha <- range(fit,-fit,orig,-orig)[1]
-		max.alpha <- range(fit,-fit,orig,-orig)[2]
+		min.alpha <- range(fit,-fit,orig,-orig,na.rm=TRUE)[1]
+		max.alpha <- range(fit,-fit,orig,-orig,na.rm=TRUE)[2]
 
 		# add a color scale for interactions
 		pal <- c(
 			rev(colorRampPalette(brewer.pal(9, "Blues"))(300)),
 			(colorRampPalette(brewer.pal(9, "Reds"))(300))
 		)
+		breaks <- seq(min.alpha, max.alpha, length.out=length(pal))
 	}else{
-		min.alpha <- 0
-		max.alpha <- range(fit,orig)[2]
-		pal <- colorRampPalette(brewer.pal(9, "Reds"))(600)
+		fit <- log(fit)
+		orig <- log(orig)
+		min.alpha <- range(fit,-fit, orig, -orig,na.rm=TRUE)[1]
+		max.alpha <- range(fit, -fit, orig, -orig,na.rm=TRUE)[2]
+		pal <- c(
+			rev(colorRampPalette(brewer.pal(9, "Reds"))(300)),
+			(colorRampPalette(brewer.pal(9, "Blues"))(300))
+		)
+		# breaks <- c(seq(min.alpha,1,length.out=300),seq(1,max.alpha,length.out=300))
+		breaks <- seq(min.alpha, max.alpha, length.out=length(pal))
 	}
 	
 	# plot the original data
 	plot.matrix:::plot.matrix(
 		orig,
 		col=pal,
-		breaks=seq(min.alpha, max.alpha, length.out=length(pal)),
+		breaks=breaks,
 		key=NULL,
 		xaxt='n',
 		yaxt='n',
@@ -117,11 +128,14 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 	mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
 	mtext("Response species", 2, outer=FALSE, line=1., xpd=NA, cex=1.75)
 
+	mtext(paste0("Dataset ",j), 2, outer=FALSE, line=3.5, xpd=NA, cex=1.75, font=2)
+
+
 	# plot the fit data
 	plot.matrix:::plot.matrix(
 		fit,
 		col=pal,
-		breaks=seq(min.alpha, max.alpha, length.out=length(pal)),
+		breaks=breaks,
 		key=NULL,
 		xaxt='n',
 		yaxt='n',
@@ -142,7 +156,7 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 	mtext("Response species", 2, outer=FALSE, line=1., xpd=NA, cex=1.75)
 
 	# par(mar = c(5, 1.5, 4.5, 3.0))
-	colorbarr <- t(matrix(seq(min.alpha, max.alpha, length.out=length(pal)), length(pal), 1))
+	colorbarr <- t(matrix(breaks, length(pal), 1))
 	image(
 		colorbarr,
 		col=pal,
@@ -152,11 +166,14 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 	)
 	if(grepl("alpha",stem)){
 		text(2.5, 0.5, "Interaction strength", xpd=NA, cex=2.25, srt=270)
+		mtext("+", 1, outer=FALSE, line=1., xpd=NA, cex=1.75)
+		mtext("-", 3, outer=FALSE, line=0.5, xpd=NA, cex=1.75)
 	}else{
-		text(2.5, 0.5, "Relative yield", xpd=NA, cex=2.25, srt=270)
+		text(2.5, 0.5, "Relative performance", xpd=NA, cex=2.25, srt=270)
+		mtext("-", 1, outer=FALSE, line=1., xpd=NA, cex=1.75)
+		mtext("+", 3, outer=FALSE, line=0.5, xpd=NA, cex=1.75)
 	}
-	mtext("+", 1, outer=FALSE, line=1., xpd=NA, cex=1.75)
-	mtext("-", 3, outer=FALSE, line=0.5, xpd=NA, cex=1.75)
+	
 }
 
 dev.off()
