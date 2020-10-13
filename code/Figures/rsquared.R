@@ -24,7 +24,7 @@ kinlock.files <- grep("Landa",kinlock.files,invert=TRUE,value=TRUE)
 
 # where to save the figure
 setEPS(width=15, height=15)
-postscript('../../manuscript/Figures/rsquared.eps')
+postscript('../../manuscript/Figures/Supps/rsquared.eps')
 
 layout(mat = matrix(
 		1:36,
