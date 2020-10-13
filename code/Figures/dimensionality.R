@@ -17,12 +17,11 @@ kinlock.files <- list.files(kinlock.dir, "rsquared")
 kinlock.files <- paste0(kinlock.dir, kinlock.files)
 
 # remove Engel due to errors in the data and we have it from Levine
-kinlock.files <- grep("Engel",kinlock.files,invert=TRUE,value=TRUE)
 # remove Goldberg & Landa because we have it from Levine
-kinlock.files <- grep("Landa",kinlock.files,invert=TRUE,value=TRUE)
+kinlock.files <- grep("Engel|Landa",kinlock.files,invert=TRUE,value=TRUE)
 
 # put all files together
-all.files <- c(godoyC, godoyT, goldberg, levine.files, kinlock.files)
+all.files <- c(godoyC, godoyT, levine.files, kinlock.files)
 
 dd <- do.call(rbind,sapply(
 	all.files,

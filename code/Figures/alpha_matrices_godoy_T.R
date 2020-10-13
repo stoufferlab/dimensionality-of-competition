@@ -47,7 +47,7 @@ fmax <- max((c(A1,A2,A3,A)))
 fmin <- min((c(A1,A2,A3,A)))
 
 setEPS(width=17, height=8)
-postscript('../../manuscript/Figures/Axes/godoy.T.alphas.eps')
+postscript('../../manuscript/Figures/alphas.godoy.T.eps')
 
 layout(mat = rbind(
 		c(5,6,1,2),

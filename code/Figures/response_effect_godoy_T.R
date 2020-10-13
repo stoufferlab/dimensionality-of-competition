@@ -1,5 +1,4 @@
 
-library(ggplot2)
 library(RColorBrewer)
 # library(plot.matrix)
 
@@ -15,7 +14,7 @@ E3 <- read.table("../../results/Godoy/godoy.T.effect.3.csv")
 se.factor <- 2
 
 setEPS(width=12, height=3.5)
-postscript('../../manuscript/Figures/Axes/traits.xxyy.godoy.T.eps')
+postscript('../../manuscript/Figures/response.effect.godoy.T.eps')
 
 layout(mat = matrix(
 		c(1, 2, 3), 
@@ -65,57 +64,6 @@ axis(
 	# padj=0.5,
 	las=1
 )
-
-# # add deming regression line of best fit to guide eyes
-# source('deming_v00.R')
-# x <- E1[,1]
-# y <- R1[,1]
-# xnew <- seq(-0.1,1,length.out=1000)
-# p <- t(sapply(
-# 	xnew,
-# 	function(xn) deming.ci.xnew(x,y,lambda=1,xnew=xn)
-# ))
-# xnew <- (xnew)
-# p <- as.data.frame((p))
-# # p <- as.data.frame(predict(
-# # 	m,
-# # 	newdata=data.frame(x=x),
-# # 	interval="confidence"
-# # ))
-# polygon(
-# 	c(xnew,rev(xnew)),
-# 	c(p$lwr,rev(p$upr)),
-# 	col='white',
-# 	border=gray(0.5),
-# 	lwd=2,
-# 	lty=5
-# )
-# lines(
-# 	xnew,
-# 	p$estimate,
-# 	lty=1,
-# 	lwd=1.5
-# )
-
-# # show the plot of a linear fit and errors
-# d <- data.frame(R=R1[,1],E=E1[,1])
-# p <- predict(lm(R ~ E, d), se.fit=TRUE, newdata=data.frame(E=seq(-1,1,length.out=1000)))
-# xnew <- seq(-1,1,length.out=1000)
-# polygon(
-# 	c(xnew,rev(xnew)),
-# 	c(p$fit-2*p$se.fit,rev(p$fit+2*p$se.fit)),
-# 	col='white',
-# 	border=gray(0.5),
-# 	lwd=2,
-# 	lty=5
-# )
-# lines(
-# 	xnew,
-# 	p$fit,
-# 	lty=1,
-# 	lwd=1.5
-# )
-
 
 points(
 	R1[,1] ~ E1[,1],

@@ -5,7 +5,7 @@ library(RColorBrewer)
 
 # where to save this bastard
 setEPS(width=4.5, height=8)
-postscript('../../manuscript/Figures/Reshuffle/reshuffle.eps')
+postscript('../../manuscript/Figures/reshuffle.eps')
 
 se.factor <- 2
 
@@ -25,8 +25,8 @@ par(mar = c(3, 6.25, 2.5, 4.5), oma = c(1, 0, 0, 0.0))
 # read in the response/effect pairs for the best fitting model
 lambda1 <- read.table("../../results/Godoy/godoy.C.lambdas.csv")
 lambda2 <- read.table("../../results/Godoy/godoy.T.lambdas.csv")
-alpha1 <- read.table("../../results/Godoy/godoy.C.alphas.csv")
-alpha2 <- read.table("../../results/Godoy/godoy.T.alphas.csv")
+alpha1 <- read.table("../../results/Godoy/godoy.C.alphas.fit.csv")
+alpha2 <- read.table("../../results/Godoy/godoy.T.alphas.fit.csv")
 
 # plot the lambda values
 plot(
