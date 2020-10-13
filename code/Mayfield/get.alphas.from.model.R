@@ -1,12 +1,17 @@
 
 # given a list of model coefficients, targets, and competitors, return an alpha matrix
-get.alphas.from.model <- function(start, targets, competitors){
+get.alphas.from.model <- function(coefs, targets, competitors){
 	alphas <- matrix(NA, length(targets), length(competitors))
 	rownames(alphas) <- targets
 	colnames(alphas) <- competitors
 	for(j in rownames(alphas)){
 		for(k in colnames(alphas)){
-			alpha <- start[which(names(start) == paste0("target",j,":",k))]
+			if(paste0("target",j,":",k) %in% names(coefs)){
+				alpha <- coefs[which(names(coefs) == paste0("target",j,":",k))]
+				alpha <- alpha / coefs[paste0("target",j)]
+			}else{
+				alpha <- NA
+			}
 			alphas[j,k] <- alpha
 		}
 	}
