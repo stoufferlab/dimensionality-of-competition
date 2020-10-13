@@ -104,7 +104,7 @@ for(which.treatment in c('C','T')){
 
 	alphas <- as.data.frame.table(alphas.mean)
 	colnames(alphas) <- c("row","col","alpha")
-	alphas[,"alphas.se$se"] <- alphas.se[,3]
+	alphas[,"alphas.se$se"] <- NA #alphas.se[,3] #DEBUG unscaling of SE by lambda is incorrect
 	write.table(
 		alphas,
 		paste0("../../results/Godoy/godoy.",which.treatment,".alphas.orig.csv"),
