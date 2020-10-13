@@ -6,6 +6,9 @@ library(plotrix)
 godoyC <- "../../results/Godoy/godoy.C.pseudo-rsquared.csv"
 godoyT <- "../../results/Godoy/godoy.T.pseudo-rsquared.csv"
 
+wainwrightOpen <- "../../results/Wainwright/wainwright.Open.pseudo-rsquared.csv"
+wainwrightShade <- "../../results/Wainwright/wainwright.Shade.pseudo-rsquared.csv"
+
 # these datasets were fit from Levine matrix only
 levine.dir <- "../../results/Levine/"
 levine.files <- list.files(levine.dir, "rsquared")
@@ -21,7 +24,7 @@ kinlock.files <- paste0(kinlock.dir, kinlock.files)
 kinlock.files <- grep("Engel|Landa",kinlock.files,invert=TRUE,value=TRUE)
 
 # put all files together
-all.files <- c(godoyC, godoyT, levine.files, kinlock.files)
+all.files <- c(godoyC, godoyT, wainwrightOpen, wainwrightShade, levine.files, kinlock.files)
 
 dd <- do.call(rbind,sapply(
 	all.files,
@@ -35,6 +38,10 @@ dd <- do.call(rbind,sapply(
 # replace Godoy values with the AIC estimate
 dd[1,2] <- 3
 dd[2,2] <- 3
+
+# replace Wainwright values with the AIC estimate
+dd[3,2] <- 1
+dd[4,2] <- 1
 
 # where to save the figure
 h <- 5
