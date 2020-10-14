@@ -5,7 +5,7 @@ library(RColorBrewer)
 
 # where to save this bastard
 setEPS(width=5.5, height=6.33)
-postscript('../../manuscript/Figures/Supps/reshuffle_fecundities.eps')
+postscript('../../manuscript/Supplementary/Figures/reshuffle_fecundities.eps')
 
 se.factor <- 2
 

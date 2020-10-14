@@ -52,7 +52,7 @@ stems <- stems[order(spp, decreasing=TRUE)]
 for(i in 1:9){
 
 setEPS(width=8, height=14)
-postscript(paste0('../../manuscript/Figures/Supps/alphas.',i,'.eps'))
+postscript(paste0('../../manuscript/Supplementary/Figures/alphas.',i,'.eps'))
 
 layout(mat = matrix(
 		1:12,

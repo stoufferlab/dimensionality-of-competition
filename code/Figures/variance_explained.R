@@ -8,6 +8,11 @@ godoyC <- read.table("../../results/Godoy/godoy.C.pseudo-rsquared.csv")
 godoyT <- read.table("../../results/Godoy/godoy.T.pseudo-rsquared.csv")
 
 # these datasets were fit from Levine matrix only
+wainwright.dir <- "../../results/Wainwright/"
+wainwright.files <- list.files(wainwright.dir, "rsquared")
+wainwright.files <- paste0(wainwright.dir, wainwright.files)
+
+# these datasets were fit from Levine matrix only
 levine.dir <- "../../results/Levine/"
 levine.files <- list.files(levine.dir, "rsquared")
 levine.files <- paste0(levine.dir, levine.files)
@@ -24,7 +29,7 @@ kinlock.files <- grep("Landa",kinlock.files,invert=TRUE,value=TRUE)
 
 # where to save the figure
 setEPS(width=15, height=15)
-postscript('../../manuscript/Figures/Supps/variance_explained.eps')
+postscript('../../manuscript/Supplementary/Figures/variance_explained.eps')
 
 layout(mat = matrix(
 		1:36,
@@ -70,7 +75,7 @@ axis(
 	# padj=padj,
 	las=1
 )
-abline(v=1,lwd=2.5,lty='dotted')
+# abline(v=1,lwd=2.5,lty='dotted')
 abline(v=3,lwd=2.5,lty='dashed')
 points(
 	c(0,1:nrow(godoyC)),
@@ -81,6 +86,7 @@ points(
 	cex=2,
 	xpd=TRUE
 )
+text("Dataset 1", x=7, y=0.8, xpd=NA, cex=2, font=2, pos=3)
 
 plot(
 	c(0,1:nrow(godoyT)),
@@ -108,7 +114,7 @@ axis(
 	# padj=padj,
 	las=1
 )
-abline(v=1,lwd=2.5,lty='dotted')
+# abline(v=1,lwd=2.5,lty='dotted')
 abline(v=3,lwd=2.5,lty='dashed')
 points(
 	c(0,1:nrow(godoyT)),
@@ -119,9 +125,10 @@ points(
 	cex=2,
 	xpd=TRUE
 )
+text("Dataset 2", x=7, y=0.8, xpd=NA, cex=2, font=2, pos=3)
 
 # other data sets
-rsquareds <- c(levine.files, kinlock.files)
+rsquareds <- c(wainwright.files, levine.files, kinlock.files)
 
 rsquareds <- sapply(rsquareds, function(x) read.table(x), simplify=FALSE)
 
@@ -161,7 +168,7 @@ for(i in 1:(length(rsquareds))){
 	abline(
 		v = igraph::dim_select(d[,1]),
 		lwd=2.5,
-		lty="dotted"
+		lty="dashed"
 	)
 
 	points(
@@ -173,6 +180,8 @@ for(i in 1:(length(rsquareds))){
 		cex=2,
 		xpd=TRUE
 	)
+
+	text(paste0("Dataset ",i+2), x=0.7*nrow(d), y=0.8, xpd=NA, cex=2, font=2, pos=3)
 
 	if(i == 2){
 		mtext("Variance explained per dimension", 2, outer=TRUE, line=1.8, cex=2)

@@ -60,7 +60,7 @@ se.factor <- 2
 for(i in 1:9){
 
 	setEPS(width=10, height=15)
-	postscript(paste0('../../manuscript/Figures/Supps/response.effect.',i,'.eps'))
+	postscript(paste0('../../manuscript/Supplementary/Figures/response.effect.',i,'.eps'))
 
 	layout(mat = matrix(
 			1:12,
@@ -169,26 +169,26 @@ for(i in 1:9){
 					yaxs='i'
 				)
 
-				axis(
-					1,
-					at=round(seq(-1,1,0.5),2),
-					tcl=0.5,
-					cex.axis=1.4,
-					padj=-0.5
-				)
-				axis(
-					2,
-					at=round(seq(-1,1,0.5),2),
-					tcl=0.5,
-					cex.axis=1.4,
-					# padj=0.5,
-					las=1
-				)
+				# axis(
+				# 	1,
+				# 	at=round(seq(-1,1,0.5),2),
+				# 	tcl=0.5,
+				# 	cex.axis=1.4,
+				# 	padj=-0.5
+				# )
+				# axis(
+				# 	2,
+				# 	at=round(seq(-1,1,0.5),2),
+				# 	tcl=0.5,
+				# 	cex.axis=1.4,
+				# 	# padj=0.5,
+				# 	las=1
+				# )
 
-				if(k==1) mtext("Response trait", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
-				mtext("Effect trait", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.5)
+				# if(k==1) mtext("Response trait", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
+				# mtext("Effect trait", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.5)
 
-				text(0,0,"NA",cex=3)
+				# text(0,0,"NA",cex=3)
 
 			}
 		}
