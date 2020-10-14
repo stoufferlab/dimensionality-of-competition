@@ -156,7 +156,11 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 	mtext("Response species", 2, outer=FALSE, line=1., xpd=NA, cex=1.75)
 
 	# par(mar = c(5, 1.5, 4.5, 3.0))
-	colorbarr <- t(matrix(breaks, length(pal), 1))
+	if(grepl("alpha",stem)){
+		colorbarr <- t(matrix(breaks, length(pal), 1))
+	}else{
+		colorbarr <- t(matrix(rev(breaks), length(pal), 1))
+	}
 	image(
 		colorbarr,
 		col=pal,
@@ -166,13 +170,12 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 	)
 	if(grepl("alpha",stem)){
 		text(2.5, 0.5, "Interaction strength", xpd=NA, cex=2.25, srt=270)
-		mtext("+", 1, outer=FALSE, line=1., xpd=NA, cex=1.75)
-		mtext("-", 3, outer=FALSE, line=0.5, xpd=NA, cex=1.75)
 	}else{
 		text(2.5, 0.5, "Relative performance", xpd=NA, cex=2.25, srt=270)
-		mtext("-", 1, outer=FALSE, line=1., xpd=NA, cex=1.75)
-		mtext("+", 3, outer=FALSE, line=0.5, xpd=NA, cex=1.75)
 	}
+
+	mtext("+", 1, outer=FALSE, line=1., xpd=NA, cex=1.75)
+	mtext("-", 3, outer=FALSE, line=0.5, xpd=NA, cex=1.75)
 	
 }
 

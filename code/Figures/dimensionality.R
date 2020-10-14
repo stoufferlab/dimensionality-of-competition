@@ -45,7 +45,7 @@ dd[4,2] <- 1
 
 # where to save the figure
 h <- 5
-setEPS(width=5.5, height=5)
+setEPS(width=5.5, height=4.)
 postscript('../../manuscript/Figures/dimensionality.eps')
 
 par(mar = c(2, 2.5, 0.5, 1.0), oma = c(2.5, 2.5, 0.5, 1.0))
@@ -107,7 +107,7 @@ points(
 	xpd=TRUE
 )
 
-mtext("Niche dimensionality", 2, outer=TRUE, line=0.5, cex=2)
+mtext("Niche dimensionality", 2, outer=TRUE, line=0.75, cex=2)
 
 mtext("Number of species", 1, outer=TRUE, line=1.0, cex=2)
 

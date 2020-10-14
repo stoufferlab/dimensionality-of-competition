@@ -7,7 +7,7 @@ Rscript dimensionality.R
 # figure 3
 Rscript response_effect_godoy_T.R
 # figure 4
-Rscript control_treatment_godoy.R
+Rscript control_treatment_alphas.R
 
 # supps
 # response effect traits for all other datasets
@@ -17,6 +17,5 @@ Rscript alpha_matrices_obs_fit.R
 # R^2 and variance per dimension for all datasets
 Rscript rsquared.R
 Rscript variance_explained.R
-
-# testing
-Rscript control_treatment_wainwright.R
+# intrinsic species performance
+Rscript control_treatment_fecundity.R
