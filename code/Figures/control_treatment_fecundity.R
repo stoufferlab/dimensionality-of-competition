@@ -146,11 +146,11 @@ segments(
 )
 
 text("a", x=1, y=100, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
-mtext("Intrinsic fecundity", 2, outer=FALSE, line=4.75, xpd=NA, cex=1.3)
+mtext("Intrinsic number of fruits", 2, outer=FALSE, line=4.75, xpd=NA, cex=1.3)
 mtext("(Simulated drought)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
-mtext("Intrinsic fecundity", 1, outer=FALSE, line=1.75, xpd=NA, cex=1.3)
+mtext("Intrinsic number of fruits", 1, outer=FALSE, line=1.75, xpd=NA, cex=1.3)
 mtext("(Control)", 1, outer=FALSE, line=3.00, xpd=NA, cex=1.3)
 # box(lwd=1.5)
 
@@ -279,11 +279,11 @@ segments(
 )
 
 text("b", x=1, y=1000, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
-mtext("Intrinsic fecundity", 2, outer=FALSE, line=4.75, xpd=NA, cex=1.3)
+mtext("Intrinsic seed set", 2, outer=FALSE, line=4.75, xpd=NA, cex=1.3)
 mtext("(Shaded)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
-mtext("Intrinsic fecundity", 1, outer=FALSE, line=1.75, xpd=NA, cex=1.3)
+mtext("Intrinsic seed set", 1, outer=FALSE, line=1.75, xpd=NA, cex=1.3)
 mtext("(Open)", 1, outer=FALSE, line=3.00, xpd=NA, cex=1.3)
 # box(lwd=1.5)
 dev.off()
