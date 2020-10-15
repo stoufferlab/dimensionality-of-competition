@@ -17,5 +17,6 @@ Rscript alpha_matrices_obs_fit.R
 # R^2 and variance per dimension for all datasets
 Rscript rsquared.R
 Rscript variance_explained.R
+Rscript AIC_randomized.R
 # intrinsic species performance
 Rscript control_treatment_fecundity.R
