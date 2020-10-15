@@ -58,7 +58,7 @@ padj <- 0 #.25
 
 plot(
 	dd,
-	xlim=c(0,10),
+	xlim=c(1,10),
 	ylim=c(0,10),
 	type='n',
 	axes=FALSE,
