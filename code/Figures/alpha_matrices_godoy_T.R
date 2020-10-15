@@ -107,7 +107,7 @@ plot(
 	asp=1
 )
 
-title('c  First dimension (32.6%)', line=1.2, cex.main=2.3)
+title('c  First dimension (15.7%)', line=1.2, cex.main=2.3)
 mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
 mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
 
@@ -127,7 +127,7 @@ plot(
 	axis.row=NULL,
 	asp=1
 )
-title('d  Second dimension (21.7%)', line=1.2, cex.main=2.3, xpd=NA)
+title('d  Second dimension (5.6%)', line=1.2, cex.main=2.3, xpd=NA)
 mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
 mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
 # mtext("+", 2, outer=FALSE, line=3.7, xpd=NA, cex=3.5)
@@ -155,7 +155,7 @@ plot(
 	axis.row=NULL,
 	asp=1
 )
-title('e  Third dimension (16.4%)', line=1.2, cex.main=2.3, xpd=NA)
+title('e  Third dimension (3.0%)', line=1.2, cex.main=2.3, xpd=NA)
 mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
 mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
 # mtext("+", 2, outer=FALSE, line=3.7, xpd=NA, cex=3.5)

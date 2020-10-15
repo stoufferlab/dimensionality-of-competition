@@ -12,7 +12,7 @@ for(which.treatment in c('Open','Shade')){
 	best.fits <- lapply(
 		seq.int(length(targets)),
 		function(d){
-			saved.fits <- list.files('../../results/Wainwright/', pattern=paste0(which.treatment,'.optim.D',d))
+			saved.fits <- list.files('../../results/Wainwright/', pattern=paste0(which.treatment,'.optim.D',d,'[.]'))
 			aics <- unlist(sapply(
 				saved.fits,
 				function(x){
@@ -69,7 +69,7 @@ for(which.treatment in c('Open','Shade')){
 			(fargus.best$weights**2) / sum(fargus.best$weights**2),
 			cumsum((fargus.best$weights**2) / sum(fargus.best$weights**2))
 		),
-		file=paste0("../../results/Wainwright/wainwright.",which.treatment,".pseudo-rsquared.csv"),
+		file=paste0("../../results/Wainwright/wainwright.",which.treatment,".SVD-rsquared.csv"),
 		quote=FALSE,
 		col.names=FALSE,
 		sep=" ",
@@ -85,6 +85,28 @@ for(which.treatment in c('Open','Shade')){
 	write.table(
 		Wainwright.AICs,
 		paste0("../../results/Wainwright/wainwright.",which.treatment,".AICs.csv"),
+		quote=FALSE,
+		col.names=FALSE,
+		sep=" ",
+		row.names=FALSE
+	)
+
+	# compare deviance of lowest AIC models to deviance of "null" model
+	best.per.d <- sapply(best.fits, function(x) names(x)[which.min(x)])
+	best.deviances <- sapply(
+		best.per.d,
+		function(x){
+			load(paste0('../../results/Wainwright/', x))
+			assign("y", eval(parse(text = paste0(which.treatment,".optim.lowD"))))
+			return(y[[1]]$value)
+		}
+	)
+	write.table(
+		cbind(
+			best.deviances,
+			1 - best.deviances/gamma.fit.1$deviance
+		),
+		file=paste0("../../results/Wainwright/wainwright.",which.treatment,".pseudo-rsquared.csv"),
 		quote=FALSE,
 		col.names=FALSE,
 		sep=" ",

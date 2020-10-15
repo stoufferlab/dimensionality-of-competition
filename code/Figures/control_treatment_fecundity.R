@@ -173,7 +173,7 @@ plot(
 	xlab='',
 	ylab='',
 	xlim=c(1,10000),
-	ylim=c(1,1000),
+	ylim=c(1,10000),
 	yaxs='i',
 	xaxs='i',
 	xpd=TRUE,
@@ -185,7 +185,7 @@ plot(
 source('deming_v00.R')
 x <- log(lambda1$lambdas.mean)
 y <- log(lambda2$lambdas.mean)
-xnew <- log(seq(0.001,10000,length.out=1000))
+xnew <- log(seq(0.001,11000,length.out=1000))
 p <- t(sapply(
 	xnew,
 	function(xn) deming.ci.xnew(x,y,lambda=1,xnew=xn)
@@ -231,7 +231,7 @@ for(oo in c(0,1,2,3,4,5)){
 }
 axis(
 	2,
-	at=c(1,10,100,1000),
+	at=c(1,10,100,1000,10000),
 	tcl=0.5,
 	cex.axis=1.4,
 	padj=0.5,
@@ -280,10 +280,10 @@ segments(
 
 text("b", x=1, y=1000, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
 mtext("Intrinsic seed set", 2, outer=FALSE, line=4.75, xpd=NA, cex=1.3)
-mtext("(Shaded)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.3)
+mtext("(Artifically shaded)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
 mtext("Intrinsic seed set", 1, outer=FALSE, line=1.75, xpd=NA, cex=1.3)
-mtext("(Open)", 1, outer=FALSE, line=3.00, xpd=NA, cex=1.3)
+mtext("(Control)", 1, outer=FALSE, line=3.00, xpd=NA, cex=1.3)
 # box(lwd=1.5)
 dev.off()

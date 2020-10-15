@@ -45,7 +45,11 @@ stems <- unique(sapply(
 spp <- sapply(
 	stems,
 	function(stem,response.files){
-		nrow(read.table(grep(stem,response.files,value=TRUE)[1]))
+		if(grepl("godoy|wainwright",stem)){
+			100 #nlevels(read.table(grep(stem,alpha.fits,value=TRUE)[1])$row)
+		}else{
+			nrow(read.table(grep(stem,response.files,value=TRUE)[1]))
+		}
 	},
 	response.files=response.files
 )

@@ -5,14 +5,14 @@ source('./polar.transform.R')
 
 for(which.treatment in c('C','T')){
 
-	# read in the mayfield data for the specified treatment and assign some common variables
+	# read in the godoy data for the specified treatment and assign some common variables
 	source('prep.data.R')
 
 	# scrape the shit out of the output files
 	best.fits <- lapply(
 		seq.int(length(targets)),
 		function(d){
-			saved.fits <- list.files('../../results/Godoy/', pattern=paste0(which.treatment,'.optim.D',d))
+			saved.fits <- list.files('../../results/Godoy/', pattern=paste0(which.treatment,'.optim.D',d,'[.]'))
 			aics <- unlist(sapply(
 				saved.fits,
 				function(x){
@@ -67,14 +67,14 @@ for(which.treatment in c('C','T')){
 		ascii = TRUE
 	)
 
-	# write out weights for alternative to the AIC figure
+	# write out SVD-like weights for full dimension fit as pseudo-rsquared
 	write.table(
 		cbind(
 			(fargus.best$weights),
 			(fargus.best$weights**2) / sum(fargus.best$weights**2),
 			cumsum((fargus.best$weights**2) / sum(fargus.best$weights**2))
 		),
-		file=paste0("../../results/Godoy/godoy.",which.treatment,".pseudo-rsquared.csv"),
+		file=paste0("../../results/Godoy/godoy.",which.treatment,".SVD-rsquared.csv"),
 		quote=FALSE,
 		col.names=FALSE,
 		sep=" ",
@@ -90,6 +90,28 @@ for(which.treatment in c('C','T')){
 	write.table(
 		Godoy.AICs,
 		paste0("../../results/Godoy/godoy.",which.treatment,".AICs.csv"),
+		quote=FALSE,
+		col.names=FALSE,
+		sep=" ",
+		row.names=FALSE
+	)
+
+	# compare deviance of lowest AIC models to deviance of "null" model
+	best.per.d <- sapply(best.fits, function(x) names(x)[which.min(x)])
+	best.deviances <- sapply(
+		best.per.d,
+		function(x){
+			load(paste0('../../results/Godoy/', x))
+			assign("y", eval(parse(text = paste0(which.treatment,".optim.lowD"))))
+			return(y[[1]]$value)
+		}
+	)
+	write.table(
+		cbind(
+			best.deviances,
+			1 - best.deviances/gamma.fit.1$deviance
+		),
+		file=paste0("../../results/Godoy/godoy.",which.treatment,".pseudo-rsquared.csv"),
 		quote=FALSE,
 		col.names=FALSE,
 		sep=" ",

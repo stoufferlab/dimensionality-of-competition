@@ -15,6 +15,7 @@ Rscript response_effect_others.R
 # observed vs fit matrices for all datasets
 Rscript alpha_matrices_obs_fit.R
 # R^2 and variance per dimension for all datasets
+Rscript AIC_raw_data.R
 Rscript rsquared.R
 Rscript variance_explained.R
 Rscript AIC_randomized.R
