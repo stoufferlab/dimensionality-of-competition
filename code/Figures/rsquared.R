@@ -134,6 +134,7 @@ rsquareds <- sapply(rsquareds, function(x) read.table(x), simplify=FALSE)
 
 rsquareds <- rsquareds[order(sapply(rsquareds, nrow), decreasing=TRUE)]
 
+set.seed(123456)
 pal <- sample(colorRampPalette(brewer.pal(8, "Dark2"))(length(rsquareds)))
 
 for(i in 1:(length(rsquareds))){

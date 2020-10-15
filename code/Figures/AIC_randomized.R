@@ -31,7 +31,7 @@ par(mar = c(2, 2.5, 2, 4.5), oma = c(3.5, 7.0, 0.5, 0.5))
 cex.axis <- 2
 padj <- 0.25
 
-
+set.seed(321)
 pal <- sample(colorRampPalette(brewer.pal(8, "Dark2"))(length(rsquareds)))
 
 for(i in 1:(length(rsquareds))){
