@@ -49,90 +49,94 @@ padj <- 0.25
 
 # add a color scale for fitness
 
-plot(
-	c(0,1:nrow(godoyC)),
-	c(0,godoyC[,3]),
-	xaxs='i',
-	yaxs='i',
-	axes=FALSE,
-	xlim=c(-0.5,0.5+nrow(godoyC)),
-	ylim=c(0,1.0),
-	type='l'
-)
-axis(
-	1,
-	at=seq(0,1+nrow(godoyC),2),
-	tcl=0.5,
-	cex.axis=cex.axis,
-	padj=padj,
-	gap.axis=0
-)
-axis(
-	2,
-	at=seq(0,1.0,0.2),
-	tcl=0.5,
-	cex.axis=cex.axis,
-	# padj=padj,
-	las=1
-)
-# abline(v=1,lwd=2.5,lty='dotted')
-abline(v=3,lwd=2.5,lty='dashed')
-points(
-	c(0,1:nrow(godoyC)),
-	c(0,godoyC[,3]),
-	pch=21,
-	lwd=1.5,
-	bg="#a6cee3",
-	cex=2,
-	xpd=TRUE
-)
-text("Dataset 1", x=7, y=0.1, xpd=NA, cex=2, font=2, pos=3)
+# plot(
+# 	c(0,1:nrow(godoyC)),
+# 	c(0,godoyC[,3]),
+# 	xaxs='i',
+# 	yaxs='i',
+# 	axes=FALSE,
+# 	xlim=c(-0.5,0.5+nrow(godoyC)),
+# 	ylim=c(0,1.0),
+# 	type='l'
+# )
+# axis(
+# 	1,
+# 	at=seq(0,1+nrow(godoyC),2),
+# 	tcl=0.5,
+# 	cex.axis=cex.axis,
+# 	padj=padj,
+# 	gap.axis=0
+# )
+# axis(
+# 	2,
+# 	at=seq(0,1.0,0.2),
+# 	tcl=0.5,
+# 	cex.axis=cex.axis,
+# 	# padj=padj,
+# 	las=1
+# )
+# # abline(v=1,lwd=2.5,lty='dotted')
+# abline(v=3,lwd=2.5,lty='dashed')
+# points(
+# 	c(0,1:nrow(godoyC)),
+# 	c(0,godoyC[,3]),
+# 	pch=21,
+# 	lwd=1.5,
+# 	bg="#a6cee3",
+# 	cex=2,
+# 	xpd=TRUE
+# )
+# text("Dataset 1", x=7, y=0.1, xpd=NA, cex=2, font=2, pos=3)
 
-plot(
-	c(0,1:nrow(godoyT)),
-	c(0,godoyT[,3]),
-	xaxs='i',
-	yaxs='i',
-	axes=FALSE,
-	xlim=c(-0.5,0.5+nrow(godoyT)),
-	ylim=c(0, 1.0),
-	type='l'
-)
-axis(
-	1,
-	at=seq(0,1+nrow(godoyT),2),
-	tcl=0.5,
-	cex.axis=cex.axis,
-	padj=padj,
-	gap.axis=0
-)
-axis(
-	2,
-	at=seq(0,1,0.2),
-	tcl=0.5,
-	cex.axis=cex.axis,
-	# padj=padj,
-	las=1
-)
-# abline(v=1,lwd=2.5,lty='dotted')
-abline(v=3,lwd=2.5,lty='dashed')
-points(
-	c(0,1:nrow(godoyT)),
-	c(0,godoyT[,3]),
-	pch=21,
-	lwd=1.5,
-	bg="#a6cee3",
-	cex=2,
-	xpd=TRUE
-)
-text("Dataset 2", x=7, y=0.1, xpd=NA, cex=2, font=2, pos=3)
+# plot(
+# 	c(0,1:nrow(godoyT)),
+# 	c(0,godoyT[,3]),
+# 	xaxs='i',
+# 	yaxs='i',
+# 	axes=FALSE,
+# 	xlim=c(-0.5,0.5+nrow(godoyT)),
+# 	ylim=c(0, 1.0),
+# 	type='l'
+# )
+# axis(
+# 	1,
+# 	at=seq(0,1+nrow(godoyT),2),
+# 	tcl=0.5,
+# 	cex.axis=cex.axis,
+# 	padj=padj,
+# 	gap.axis=0
+# )
+# axis(
+# 	2,
+# 	at=seq(0,1,0.2),
+# 	tcl=0.5,
+# 	cex.axis=cex.axis,
+# 	# padj=padj,
+# 	las=1
+# )
+# # abline(v=1,lwd=2.5,lty='dotted')
+# abline(v=3,lwd=2.5,lty='dashed')
+# points(
+# 	c(0,1:nrow(godoyT)),
+# 	c(0,godoyT[,3]),
+# 	pch=21,
+# 	lwd=1.5,
+# 	bg="#a6cee3",
+# 	cex=2,
+# 	xpd=TRUE
+# )
+# text("Dataset 2", x=7, y=0.1, xpd=NA, cex=2, font=2, pos=3)
 
 # other data sets
-rsquareds <- c(wainwright.files, levine.files, kinlock.files)
+rsquareds <- c(levine.files, kinlock.files)
 
 rsquareds <- sapply(rsquareds, function(x) read.table(x), simplify=FALSE)
 
 rsquareds <- rsquareds[order(sapply(rsquareds, nrow), decreasing=TRUE)]
+
+# wainwrights <- sapply(wainwright.files, function(x) read.table(x), simplify=FALSE)
+
+# rsquareds <- c(wainwrights, rsquareds)
 
 set.seed(123456)
 pal <- sample(colorRampPalette(brewer.pal(8, "Dark2"))(length(rsquareds)))
@@ -182,7 +186,7 @@ for(i in 1:(length(rsquareds))){
 		xpd=TRUE
 	)
 
-	text(paste0("Dataset ",i+2), x=0.7*nrow(d), y=0.1, xpd=NA, cex=2, font=2, pos=3)
+	text(paste0("Dataset ",i+4), x=0.7*nrow(d), y=0.1, xpd=NA, cex=2, font=2, pos=3)
 
 	if(i == 2){
 		mtext("Total variance explained", 2, outer=TRUE, line=1.8, cex=2)
