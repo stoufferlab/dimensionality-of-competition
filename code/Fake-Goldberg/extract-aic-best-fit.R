@@ -31,6 +31,33 @@ for(which.fake.data in seq(25)){
 		}
 	)
 
+	# find the best high D model as a point of comparison for the weights
+	best.aics <- unlist(lapply(best.fits, min, na.rm=TRUE))
+	bestest <- names(which.min(best.fits[[length(best.aics)]]))
+	load(paste0(resultsdir, bestest))
+	assign("y", eval(parse(text = paste0("Goldberg.optim.lowD"))))
+	fargus.best <- response.effect.from.pars(
+		y[[1]]$par,
+		targets,
+		competitors,
+		dimensions=length(best.aics),
+		godoy=FALSE
+	)
+
+	# write out weights for alternative to the AIC figure
+	write.table(
+		cbind(
+			(fargus.best$weights),
+			(fargus.best$weights**2) / sum(fargus.best$weights**2),
+			cumsum((fargus.best$weights**2) / sum(fargus.best$weights**2))
+		),
+		file=paste0("../../results/Fake-Goldberg/Fake-Goldberg-",which.fake.data,".pseudo-rsquared.csv"),
+		quote=FALSE,
+		col.names=FALSE,
+		sep=" ",
+		row.names=FALSE
+	)
+
 	# troll through the lists and find the lowest at each dimension and the best overall
 	best.aics <- unlist(lapply(best.fits, min, na.rm=TRUE))
 	best.val <- min(best.aics)
