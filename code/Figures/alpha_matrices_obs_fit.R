@@ -38,7 +38,7 @@ spp <- sapply(
 	stems,
 	function(stem,alpha.fits){
 		if(grepl("godoy|wainwright",stem)){
-			nlevels(read.table(grep(stem,alpha.fits,value=TRUE)[1])$row)
+			100 #nlevels(read.table(grep(stem,alpha.fits,value=TRUE)[1])$row)
 		}else{
 			nrow(read.table(grep(stem,alpha.fits,value=TRUE)[1]))
 		}
