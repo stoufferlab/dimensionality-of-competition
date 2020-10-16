@@ -260,8 +260,8 @@ segments(
 # label the plot and axes
 text("a", x=0.075, y=2, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
 mtext("Per capita impact", 2, outer=FALSE, line=5.0, xpd=NA, cex=1.3)
-mtext("in second environment", 2, outer=FALSE, line=3.75, xpd=NA, cex=1.3)
-mtext("Per capita impact in first environment", 1, outer=FALSE, line=2, xpd=NA, cex=1.3)
+mtext("in simulated drought", 2, outer=FALSE, line=3.75, xpd=NA, cex=1.3)
+mtext("Per capita impact in control", 1, outer=FALSE, line=2, xpd=NA, cex=1.3)
 
 
 # read in the response/effect pairs for the best fitting model
@@ -483,10 +483,10 @@ segments(
 
 text("b", x=0.01, y=10, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
 mtext("Per capita impact", 2, outer=FALSE, line=5.0, xpd=NA, cex=1.3)
-mtext("in second environment", 2, outer=FALSE, line=3.75, xpd=NA, cex=1.3)
+mtext("in artificial shade", 2, outer=FALSE, line=3.75, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
-mtext("Per capita impact in first environment", 1, outer=FALSE, line=2, xpd=NA, cex=1.3)
+mtext("Per capita impact in control", 1, outer=FALSE, line=2, xpd=NA, cex=1.3)
 # mtext("in first environment", 1, outer=FALSE, line=2.85, xpd=NA, cex=1.3)
 # box(lwd=1.5)
 
