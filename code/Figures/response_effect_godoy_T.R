@@ -38,8 +38,8 @@ plot(
 	axes=FALSE,
 	xlab='',
 	ylab='',
-	xlim=c(0,0.6),
-	ylim=c(0,0.6),
+	xlim=c(-0.6,0.6),
+	ylim=c(-0.6,0.6),
 	yaxs='i',
 	xaxs='i',
 	type='n'
@@ -51,19 +51,21 @@ mtext("Effect trait", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.5)
 # box(lwd=1.5)
 axis(
 	1,
-	at=round(seq(-0.1,0.6,0.1),2),
+	at=round(seq(-0.6,0.6,0.2),2),
 	tcl=0.5,
 	cex.axis=1.4,
 	padj=-0.5
 )
 axis(
 	2,
-	at=round(seq(0.0,0.6,0.1),2),
+	at=round(seq(-0.6,0.6,0.2),2),
 	tcl=0.5,
 	cex.axis=1.4,
 	# padj=0.5,
 	las=1
 )
+abline(h=0,lwd=1.5,lty='dotted')
+abline(v=0,lwd=1.5,lty='dotted')
 
 points(
 	R1[,1] ~ E1[,1],
