@@ -109,7 +109,7 @@ points(
 
 mtext("Niche dimensionality", 2, outer=TRUE, line=0.75, cex=2)
 
-mtext("Number of species", 1, outer=TRUE, line=1.0, cex=2)
+mtext("Species richness", 1, outer=TRUE, line=1.0, cex=2)
 
 
 dev.off()
