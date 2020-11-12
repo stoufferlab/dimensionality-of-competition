@@ -4,7 +4,7 @@ library(RColorBrewer)
 # library(plot.matrix)
 
 # where to save this bastard
-setEPS(width=5.5, height=6.33)
+setEPS(width=5.0, height=6.33)
 postscript('../../manuscript/Supplementary/Figures/reshuffle_fecundities.eps')
 
 se.factor <- 2
@@ -20,7 +20,7 @@ layout(mat = matrix(
 )
 
 # I hate defining plot margins
-par(mar = c(3, 6.25, 2.5, 4.5), oma = c(1, 0, 0, 0.0))
+par(mar = c(3, 7.25, 2.5, 2.0), oma = c(1, 0, 0, 0.0))
 
 ######################
 # godoy
@@ -146,8 +146,8 @@ segments(
 )
 
 text("a", x=1, y=100, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
-mtext("Intrinsic number of fruits", 2, outer=FALSE, line=4.75, xpd=NA, cex=1.3)
-mtext("(Simulated drought)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.3)
+mtext("Intrinsic number of fruits", 2, outer=FALSE, line=5.75, xpd=NA, cex=1.3)
+mtext("(Simulated drought)", 2, outer=FALSE, line=4.25, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
 mtext("Intrinsic number of fruits", 1, outer=FALSE, line=1.75, xpd=NA, cex=1.3)
@@ -279,8 +279,8 @@ segments(
 )
 
 text("b", x=1, y=1000, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
-mtext("Intrinsic seed set", 2, outer=FALSE, line=4.75, xpd=NA, cex=1.3)
-mtext("(Artifically shaded)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.3)
+mtext("Intrinsic seed set", 2, outer=FALSE, line=5.75, xpd=NA, cex=1.3)
+mtext("(Artifically shaded)", 2, outer=FALSE, line=4.25, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
 mtext("Intrinsic seed set", 1, outer=FALSE, line=1.75, xpd=NA, cex=1.3)
