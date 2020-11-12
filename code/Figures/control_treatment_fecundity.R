@@ -278,7 +278,7 @@ segments(
 	lwd=1.5
 )
 
-text("b", x=1, y=1000, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
+text("b", x=1, y=10000, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
 mtext("Intrinsic seed set", 2, outer=FALSE, line=5.75, xpd=NA, cex=1.3)
 mtext("(Artifically shaded)", 2, outer=FALSE, line=4.25, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
