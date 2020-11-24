@@ -63,7 +63,7 @@ axis(
 )
 
 mtext("AIC", 2, outer=FALSE, line=4., xpd=NA, cex=1.75)
-mtext(paste0("Dataset ",1), 2, outer=FALSE, line=6.5, xpd=NA, cex=1.75, font=2)
+mtext(paste0("Dataset 1-Wet"), 2, outer=FALSE, line=6.5, xpd=NA, cex=1.75, font=2)
 
 plot(
 	0:nrow(R2),
@@ -141,7 +141,7 @@ axis(
 abline(v=3,lty="dashed",lwd=2.5)
 
 mtext("AIC", 2, outer=FALSE, line=4., xpd=NA, cex=1.75)
-mtext(paste0("Dataset ",2), 2, outer=FALSE, line=6.5, xpd=NA, cex=1.75, font=2)
+mtext(paste0("Dataset 1-Dry"), 2, outer=FALSE, line=6.5, xpd=NA, cex=1.75, font=2)
 
 plot(
 	0:nrow(R2),
@@ -218,7 +218,7 @@ axis(
 abline(v=1,lty="dashed",lwd=2.5)
 
 mtext("AIC", 2, outer=FALSE, line=4., xpd=NA, cex=1.75)
-mtext(paste0("Dataset ",3), 2, outer=FALSE, line=6.5, xpd=NA, cex=1.75, font=2)
+mtext(paste0("Dataset 2-Sun"), 2, outer=FALSE, line=6.5, xpd=NA, cex=1.75, font=2)
 
 plot(
 	0:nrow(R2),
@@ -299,7 +299,7 @@ axis(
 abline(v=1,lty="dashed",lwd=2.5)
 
 mtext("AIC", 2, outer=FALSE, line=4., xpd=NA, cex=1.75)
-mtext(paste0("Dataset ",4), 2, outer=FALSE, line=6.5, xpd=NA, cex=1.75, font=2)
+mtext(paste0("Dataset 2-Shade"), 2, outer=FALSE, line=6.5, xpd=NA, cex=1.75, font=2)
 
 plot(
 	0:nrow(R2),

@@ -128,7 +128,14 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 	mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
 	mtext("Response species", 2, outer=FALSE, line=1., xpd=NA, cex=1.75)
 
-	mtext(paste0("Dataset ",j), 2, outer=FALSE, line=3.5, xpd=NA, cex=1.75, font=2)
+	k <- switch(as.character(j),
+		"1" = "1-Wet",
+		"2" = "1-Dry",
+		"3" = "2-Sun",
+		"4" = "2-Shade",
+		j - 2
+	)
+	mtext(paste0("Dataset ",k), 2, outer=FALSE, line=3.5, xpd=NA, cex=1.75, font=2)
 
 
 	# plot the fit data

@@ -25,7 +25,7 @@ layout(mat = matrix(
        widths = c(2, 2, 2)
 )
 
-par(mar = c(5, 4.5, 4.5, 1), oma = c(0, 0.75, 0, 0.5))
+par(mar = c(5, 4.5, 4.5, 1), oma = c(0, 1.25, 0, 0.5))
 
 # add a color scale for fitness
 
@@ -45,7 +45,7 @@ plot(
 	type='n'
 )
 title('a  First dimension', line=1.2, cex.main=2.2)
-mtext("Response trait", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
+mtext("Response trait", 2, outer=FALSE, line=4.0, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
 mtext("Effect trait", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.5)
 # box(lwd=1.5)

@@ -186,7 +186,7 @@ for(i in 1:(length(rsquareds))){
 		xpd=TRUE
 	)
 
-	text(paste0("Dataset ",i+4), x=0.7*nrow(d), y=0.1, xpd=NA, cex=2, font=2, pos=3)
+	text(paste0("Dataset ",i+2), x=0.7*nrow(d), y=0.1, xpd=NA, cex=2, font=2, pos=3)
 
 	if(i == 2){
 		mtext("Total variance explained", 2, outer=TRUE, line=1.8, cex=2)

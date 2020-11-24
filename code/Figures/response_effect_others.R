@@ -152,10 +152,13 @@ for(i in 1:9){
 
 			if(k==1){
 				mtext("Response trait", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
-				if(j>1)
-					mtext(paste0("Dataset ",j+1), 2, outer=FALSE, line=5.5, xpd=NA, cex=1.75, font=2)
-				else
-					mtext(paste0("Dataset ",j), 2, outer=FALSE, line=5.5, xpd=NA, cex=1.75, font=2)
+				l <- switch(as.character(j),
+					"1" = "1-Wet",
+					"2" = "2-Sun",
+					"3" = "2-Shade",
+					j - 2
+				)
+				mtext(paste0("Dataset ",l), 2, outer=FALSE, line=5.5, xpd=NA, cex=1.75, font=2)
 			}
 			mtext("Effect trait", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.5)
 
