@@ -34,5 +34,7 @@
 dim=$1
 rep=$SGE_TASK_ID
 
+export PATH=/share/apps/gcc-8.3/bin:$PATH
+export LD_LIBRARY_PATH=/share/apps/gcc-8.3/lib64:$LD_LIBRARY_PATH
 /share/apps/R/R-3.6.2/bin/Rscript fit-hampa-dimens-T.R $dim $rep
 
