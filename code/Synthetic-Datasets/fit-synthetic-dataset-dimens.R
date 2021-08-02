@@ -3,7 +3,7 @@
 args <- commandArgs(trailingOnly = TRUE)
 
 # the core dimension for this optimization
-which.fake.data <- as.integer(args[1])
+which.dataset <- as.integer(args[1])
 
 # read in the fake goldberg data
 source('prep.data.R')
