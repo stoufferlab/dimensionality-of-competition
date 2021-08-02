@@ -34,5 +34,5 @@
 dim=$1
 rep=$SGE_TASK_ID
 
-Rscript fit-wainwright-dimens-shade.R $dim $rep
+/share/apps/R/R-3.6.2/bin/Rscript fit-wainwright-dimens-shade.R $dim $rep
 
