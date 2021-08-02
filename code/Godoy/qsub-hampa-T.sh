@@ -34,5 +34,5 @@
 dim=$1
 rep=$SGE_TASK_ID
 
-Rscript fit-hampa-dimens-T.R $dim $rep
+/share/apps/R/R-3.6.2/bin/Rscript fit-hampa-dimens-T.R $dim $rep
 
