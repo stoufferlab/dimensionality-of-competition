@@ -9,7 +9,7 @@ which.dataset <- as.integer(args[1])
 source('prep.data.R')
 
 # specify the model family to fit
-which.family <- poisson(link="inverse")
+which.family <- Gamma()
 
 # the core dimension for this optimization
 dimensions <- as.integer(args[2])
