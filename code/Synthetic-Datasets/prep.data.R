@@ -1,9 +1,6 @@
 
 # read in the synthetic data
-datadir <- "../../data/Synthetic-Datasets/"
-
-# rename the core data frame
-fecundity.data <- read.csv(paste0(datadir,"synthetic_dataset_",which.fake.data,".csv"),row.names=1)
+fecundity.data <- read.csv(paste0("../../data/Synthetic-Datasets/synthetic_dataset_",which.dataset,".csv"),row.names=1)
 
 # make sure that the target is a factor
 fecundity.data$target <- as.factor(fecundity.data$target)
