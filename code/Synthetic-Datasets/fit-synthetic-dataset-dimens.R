@@ -2,10 +2,10 @@
 # we get some input from the command line
 args <- commandArgs(trailingOnly = TRUE)
 
-# the core dimension for this optimization
+# the focal synthetic dataset
 which.dataset <- as.integer(args[1])
 
-# read in the fake goldberg data
+# read in the synthetic dataset
 source('prep.data.R')
 
 # specify the model family to fit
