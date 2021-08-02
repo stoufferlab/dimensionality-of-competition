@@ -1,7 +1,7 @@
 
 # convert parameter vector to "human readable" parameters
 # note transformations of many parameters to match non-standard bounds
-response.effect.from.pars <- function(par, targets, competitors, dimensions, godoy=FALSE){
+response.effect.from.pars <- function(par, targets, competitors, dimensions){
     # the intrinsic fecundities come first
     # these are log transformed in the optimizer to have no effective bounds
     lambdas <- exp(par[seq.int(length(targets))])
@@ -11,8 +11,6 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions, god
     # these are log transformed in the optimizer to have no effective bounds
     weights <- exp(par[seq.int(length(lambdas)+1, length(lambdas)+dimensions)])
 
-    # DEBUG: should we get rid of bounds on these and make them "logistic"?
-
     # angles for response traits come next
     n.angles <- (choose(length(targets),2) - choose(length(targets)-dimensions,2))
     response.angles <- par[seq.int(
@@ -21,8 +19,7 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions, god
     )]
 
     # angles for effect traits come last
-    # the -godoy (-1) comes from "background" being listed as a competitor
-    n.angles <- (choose(length(competitors)-godoy,2) - choose(length(competitors)-godoy-dimensions,2))
+    n.angles <- (choose(length(competitors),2) - choose(length(competitors)-dimensions,2))
     effect.angles <- par[seq.int(
         from=length(targets)+length(weights)+length(response.angles)+1,
         to=length(targets)+length(weights)+length(response.angles)+n.angles
@@ -32,7 +29,7 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions, god
     # we first need to tack on zeros at the end
     response.angles <- c(response.angles, rep(0,choose(length(targets),2) - length(response.angles)))
 
-    # now we turn angles into 
+    # now we turn angles into orthogonal vectors
     response.traits <- gea_orthogonal_from_angles(response.angles)
 
     # and we use the last columns as the actual response traits
@@ -44,22 +41,22 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions, god
 
     # and again for the effects
     # we first need to tack on zeros at the end
-    effect.angles <- c(effect.angles, rep(0,choose(length(competitors)-godoy,2) - length(effect.angles)))
+    effect.angles <- c(effect.angles, rep(0,choose(length(competitors),2) - length(effect.angles)))
 
-    # now we turn angles into 
+    # now we turn angles into orthogonal vectors
     effect.traits <- gea_orthogonal_from_angles(effect.angles)
 
     # and we use the last columns as the actual response traits
     effect.traits <- effect.traits[,seq.int(ncol(effect.traits),ncol(effect.traits)-dimensions+1),drop=FALSE]
 
     # name things
-    rownames(effect.traits) <- competitors[competitors!="SOLO"]
+    rownames(effect.traits) <- competitors
     colnames(effect.traits) <- paste0("effect",seq.int(dimensions))
 
     # generate alphas from matrix multiplication!
     alphas <- response.traits %*% diag(weights,dimensions,dimensions) %*% t(effect.traits)
     rownames(alphas) <- targets
-    colnames(alphas) <- competitors[competitors!="SOLO"]
+    colnames(alphas) <- competitors
 
     # lets reorder things in decreasing order of the weights across each dimension
     response.traits <- response.traits[,order(weights,decreasing = TRUE),drop=FALSE]

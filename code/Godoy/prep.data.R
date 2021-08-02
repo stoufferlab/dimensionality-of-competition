@@ -1,28 +1,48 @@
 
 # read in Oscar's data
-datadir <- "../../data/Godoy/"
-hampa <- read.csv(paste0(datadir, "hampa_neigbours_survey.csv"), row.names=1)
+hampa <- read.csv("../../data/Godoy/hampa_neigbours_survey.csv", row.names=1)
 
 # remove the extra columns at the end
 hampa <- hampa[,which(!grepl("X",colnames(hampa)))]
 
-# turn the NAs for background into a non-existent species SOLO which will help us when using the glm function (or equivalents) for fitting
-levels(hampa$background) <- c(levels(hampa$background),"SOLO")
-hampa$background[which(is.na(hampa$background))] <- "SOLO"
-
-# the data should now be primed for analysis; woohoo!
-
-# let's try just one treatment for simplicity in testing regime
+# select only the treatment of interest
 hampa <- subset(hampa, treatment==which.treatment)
 
-# rename the core data frame
-fecundity.data <- hampa
+# # turn the NAs for background into a non-existent species SOLO which will help us when using the glm function (or equivalents) for fitting
+# levels(hampa$background) <- c(levels(hampa$background),"SOLO")
+# hampa$background[which(is.na(hampa$background))] <- "SOLO"
+
+# reshape hampa into a common-format for analysis
+fecundity.data <- data.frame(
+	data=hampa$date,
+	code=hampa$code,
+	plot=hampa$plot,
+	treatment=hampa$treatment,
+	indiv=hampa$indiv,
+	target=hampa$target,
+	fruits=hampa$fruits
+)
+
+# add empty columns for the different neighbors
+for(neighbor in levels(hampa$background)){
+	fecundity.data[,neighbor] <- 0
+}
+
+# populate neighbors with their abundances
+for(i in seq.int(nrow(hampa))){
+	if(!is.na(hampa$background[i])){
+		fecundity.data[i,as.character(hampa$background[i])] <- hampa$neighbours_number[i]
+	}
+}
 
 # we need a variable called targets for things to work
 targets <- levels(fecundity.data$target)
 
 # we need a variable called competitors for things to work
-competitors <- levels(fecundity.data$background)
+competitors <- levels(hampa$background)
 
 # we need to know what column has the fecundities
 fecundity <- "fruits"
+
+# remove unused variables
+rm(hampa, i, neighbor)
