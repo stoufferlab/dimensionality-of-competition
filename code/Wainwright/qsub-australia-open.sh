@@ -34,5 +34,8 @@
 dim=$1
 rep=$SGE_TASK_ID
 
-/share/apps/R/R-3.6.2/bin/Rscript fit-wainwright-dimens-shade.R $dim $rep
+export PATH=/share/apps/gcc-8.3/bin:$PATH
+export LD_LIBRARY_PATH=/share/apps/gcc-8.3/lib64:$LD_LIBRARY_PATH
+
+/share/apps/R/R-3.6.2/bin/Rscript fit-australia-dimens-open.R $dim $rep
 
