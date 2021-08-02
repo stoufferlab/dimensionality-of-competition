@@ -4,7 +4,7 @@ which.treatment <- "Shade"
 source('prep.data.R')
 
 # specify the model family to fit
-which.family <- Gamma()
+which.family <- poisson(link="inverse")
 
 # we get some input from the command line
 args <- commandArgs(trailingOnly = TRUE)
@@ -16,7 +16,7 @@ which.dimension <- as.integer(args[1])
 which.n.random <- as.integer(args[2])
 
 # run the dimensionality fitting code
-source('../Mayfield/fit.machine.R')
+source('../Utils/fit.machine.R')
 
 # save the fits and write out a table of the AICs
 Shade.optim.lowD <- optim.lowD

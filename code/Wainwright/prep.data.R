@@ -1,7 +1,6 @@
 
 # read in Claire's data
-datadir <- "../../data/Wainwright/"
-wainwright <- read.csv(paste0(datadir, "nhood data wTF.csv"))
+wainwright <- read.csv("../../data/Wainwright/nhood data wTF.csv")
 
 # relabel "focal" as "target"
 cc <- colnames(wainwright)
@@ -11,16 +10,11 @@ colnames(wainwright) <- cc
 # these columns correspond to neighbor densities
 competitors <- colnames(wainwright)[8:39]
 
-# remove NA and 0 
-# WARNING: ask Margie about zero fecundities
-wainwright <- subset(wainwright, !is.na(seeds) & !(seeds==0))
+# remove NA seeds
+wainwright <- subset(wainwright, !is.na(seeds))
 
-# let's try just one treatment for simplicity in testing regime
+# subset to only the treatment of interest
 wainwright <- subset(wainwright, light==which.treatment)
-
-###########
-# the data should largely be primed for analysis; woohoo!
-###########
 
 # we need to remove species that don't appear in this treatment when we fit the low-dimensional versions
 competitors <- names(which(colSums(wainwright[,competitors])>0))
@@ -45,3 +39,4 @@ fecundity <- "seeds"
 
 # rename the core data frame
 fecundity.data <- wainwright
+rm(wainwright, others, cc)
