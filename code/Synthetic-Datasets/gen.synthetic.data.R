@@ -68,5 +68,5 @@ for(i in seq(n.reps)){
 		fake.data[j, paste0("sp.",raw.data$competitor[j])] <- raw.data$abundance[j]
 	}
 
-	write.csv(fake.data, file=paste0("../../data/Fake-Goldberg/fake_goldberg_",i,".csv"))
+	write.csv(fake.data, file=paste0("../../data/Synthetic-Data/synthetic_dataset_",i,".csv"))
 }
