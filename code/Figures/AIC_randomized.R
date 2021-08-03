@@ -1,10 +1,8 @@
 
-# library(ggplot2)
 library(RColorBrewer)
-# library(plot.matrix)
 
-# these datasets were fit from Levine matrix only
-random.dir <- "../../results/Fake-Goldberg/"
+# find the data files for the synthetic datasets
+random.dir <- "../../results/Synthetic-Datasets/"
 random.files <- list.files(random.dir, "rsquared", full.names=TRUE)
 random.aics <- list.files(random.dir, "AICs", full.names=TRUE)
 
