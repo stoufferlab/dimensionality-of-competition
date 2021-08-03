@@ -39,4 +39,6 @@ fecundity <- "seeds"
 
 # rename the core data frame
 fecundity.data <- wainwright
+
+# remove unused variables
 rm(wainwright, others, cc)
