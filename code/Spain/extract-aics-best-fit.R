@@ -1,11 +1,12 @@
 
 # a few utilities we need below
-source('./response.effect.from.pars.R')
-source('./polar.transform.R')
+library(here)
+source(here('code/Utils/response.effect.from.pars.R'))
+source(here('code/Utils/polar.transform.R')
 
 for(which.treatment in c('C','T')){
 
-	# read in the godoy data for the specified treatment and assign some common variables
+	# read in the data for the specified treatment and assign some common variables
 	source('prep.data.R')
 
 	# scrape the shit out of the output files
@@ -41,8 +42,7 @@ for(which.treatment in c('C','T')){
 		y[[1]]$par,
 		targets,
 		competitors,
-		dimensions=length(best.aics),
-		godoy=TRUE
+		dimensions=length(best.aics)
 	)
 
 	# search for the best overall model
@@ -59,8 +59,7 @@ for(which.treatment in c('C','T')){
 		y[[1]]$par,
 		targets,
 		competitors,
-		dimensions=best.d,
-		godoy=TRUE
+		dimensions=best.d
 	)
 	save(Godoy.best,
 		file=paste0("../../results/Godoy/godoy.",which.treatment,".best.Rdata"),
@@ -82,10 +81,10 @@ for(which.treatment in c('C','T')){
 	)
 
 	# fit the classic models as a point of comparison for the AIC figures
-	source('./model.comparison.R')
+	source(here('code/Utils/model.comparison.R'))
 
 	# write out a table of the AICs
-	Godoy.AICs <- c(gamma.fit.1$aic, best.aics)
+	Godoy.AICs <- c(inverse.poisson.fit.1$aic, best.aics)
 	Godoy.AICs <- cbind(seq.int(length(Godoy.AICs))-1, Godoy.AICs)
 	write.table(
 		Godoy.AICs,
@@ -109,7 +108,7 @@ for(which.treatment in c('C','T')){
 	write.table(
 		cbind(
 			best.deviances,
-			1 - best.deviances/gamma.fit.1$deviance
+			1 - best.deviances/inverse.poisson.fit.1$deviance
 		),
 		file=paste0("../../results/Godoy/godoy.",which.treatment,".pseudo-rsquared.csv"),
 		quote=FALSE,
@@ -119,14 +118,15 @@ for(which.treatment in c('C','T')){
 	)
 
 	# write out the alpha coefficients for comparison plots elsewhere
-	source('get.alphas.from.model.R')
-	coef.summary <- summary(gamma.fit.3)$coef
+	source(here('code/Utils/get.alphas.from.model.R')
+
+	coef.summary <- summary(inverse.poisson.fit.3)$coef
 	alphas.mean <- get.alphas.from.model(coef.summary[,"Estimate"],targets,competitors)
 	alphas.se <- get.alphas.from.model(coef.summary[,"Std. Error"],targets,competitors)
 
 	alphas <- as.data.frame.table(alphas.mean)
 	colnames(alphas) <- c("row","col","alpha")
-	alphas[,"alphas.se$se"] <- NA #alphas.se[,3] #DEBUG unscaling of SE by lambda is incorrect
+	alphas[,"alphas.se$se"] <- NA #DEBUG unscaling of SE by lambda is incorrect
 	write.table(
 		alphas,
 		paste0("../../results/Godoy/godoy.",which.treatment,".alphas.orig.csv"),

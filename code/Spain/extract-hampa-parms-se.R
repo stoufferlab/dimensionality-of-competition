@@ -3,8 +3,9 @@
 # and calculate their SE values for when we plot them
 
 # a few utilities we need below
-source('./response.effect.from.pars.R')
-source('./polar.transform.R')
+library(here)
+source(here('code/Utils/response.effect.from.pars.R'))
+source(here('code/Utils/polar.transform.R')
 
 for(which.treatment in c('C','T')){
 

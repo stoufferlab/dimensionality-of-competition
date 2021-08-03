@@ -1,7 +1,8 @@
 
 # a few utilities we need below
-source('./response.effect.from.pars.R')
-source('./polar.transform.R')
+library(here)
+source(here('code/Utils/response.effect.from.pars.R'))
+source(here('code/Utils/polar.transform.R')
 
 for(which.treatment in c('C','T')){
 
@@ -42,8 +43,7 @@ for(which.treatment in c('C','T')){
 		y[[1]]$par,
 		targets,
 		competitors,
-		dimensions=length(best.bics),
-		godoy=TRUE
+		dimensions=length(best.bics)
 	)
 
 	# search for the best overall model
@@ -60,8 +60,7 @@ for(which.treatment in c('C','T')){
 		y[[1]]$par,
 		targets,
 		competitors,
-		dimensions=best.d,
-		godoy=TRUE
+		dimensions=best.d
 	)
 	save(Godoy.best,
 		file=paste0("../../results/Godoy/godoy.",which.treatment,".best.BIC.Rdata"),
@@ -83,10 +82,10 @@ for(which.treatment in c('C','T')){
 	)
 
 	# fit the classic models as a point of comparison for the AIC figures
-	source('./model.comparison.R')
+	source(here('code/Utils/model.comparison.R'))
 
 	# write out a table of the BICs
-	Godoy.BICs <- c(BIC(gamma.fit.1), best.bics)
+	Godoy.BICs <- c(BIC(inverse.poisson.fit.1), best.bics)
 	Godoy.BICs <- cbind(seq.int(length(Godoy.BICs))-1, Godoy.BICs)
 	write.table(
 		Godoy.BICs,
