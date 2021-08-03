@@ -23,6 +23,6 @@ source('../Utils/fit.machine.R')
 # save the fits
 Synthetic.optim.lowD <- optim.lowD
 save(Synthetic.optim.lowD,
-	file=paste0("../../results/Synthetic-Datasets/Synthetic-Dataset-",which.fake.data,"/Synthetic-Dataset-",which.fake.data,".optim.D",which.dimension,".r",which.n.random,".Rdata"),
+	file=paste0("../../results/Synthetic-Datasets/Synthetic-Dataset-",which.dataset,"/Synthetic-Dataset-",which.dataset,".optim.D",dimensions,".r",which.n.random,".Rdata"),
 	ascii = TRUE
 )
