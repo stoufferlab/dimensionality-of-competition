@@ -1,6 +1,6 @@
 
 # read in Claire's data
-wainwright <- read.csv("../../data/Wainwright/nhood data wTF.csv")
+wainwright <- read.csv("../../data/Australia/nhood data wTF.csv")
 
 # relabel "focal" as "target"
 cc <- colnames(wainwright)
