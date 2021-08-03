@@ -1,6 +1,6 @@
 
 # read in Oscar's data
-hampa <- read.csv("../../data/Godoy/hampa_neigbours_survey.csv", row.names=1)
+hampa <- read.csv("../../data/Spain/hampa_neigbours_survey.csv", row.names=1)
 
 # remove the extra columns at the end
 hampa <- hampa[,which(!grepl("X",colnames(hampa)))]
