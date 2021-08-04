@@ -1,5 +1,5 @@
 
-# given a list of model coefficients, targets, and competitors, return an alpha matrix
+# given a list of regression coefficients (with standardized naming scheme), targets, and competitors, return an alpha matrix
 get.alphas.from.model <- function(coefs, targets, competitors){
 	alphas <- matrix(NA, length(targets), length(competitors))
 	rownames(alphas) <- targets

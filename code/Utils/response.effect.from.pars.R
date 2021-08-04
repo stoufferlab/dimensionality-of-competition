@@ -29,13 +29,13 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions){
     # we first need to tack on zeros at the end
     response.angles <- c(response.angles, rep(0,choose(length(targets),2) - length(response.angles)))
 
-    # now we turn angles into orthogonal vectors
+    # now we turn response angles into orthogonal response traits
     response.traits <- gea_orthogonal_from_angles(response.angles)
 
     # and we use the last columns as the actual response traits
     response.traits <- response.traits[,seq.int(ncol(response.traits),ncol(response.traits)-dimensions+1),drop=FALSE]
 
-    # name things
+    # assign names to response traits matrix
     rownames(response.traits) <- targets
     colnames(response.traits) <- paste0("response",seq.int(dimensions))
 
@@ -43,13 +43,13 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions){
     # we first need to tack on zeros at the end
     effect.angles <- c(effect.angles, rep(0,choose(length(competitors),2) - length(effect.angles)))
 
-    # now we turn angles into orthogonal vectors
+    # now we turn effect angles into orthogonal effect traits
     effect.traits <- gea_orthogonal_from_angles(effect.angles)
 
-    # and we use the last columns as the actual response traits
+    # and we use the last columns as the actual effect traits
     effect.traits <- effect.traits[,seq.int(ncol(effect.traits),ncol(effect.traits)-dimensions+1),drop=FALSE]
 
-    # name things
+    # assign names to effect traits matrix
     rownames(effect.traits) <- competitors
     colnames(effect.traits) <- paste0("effect",seq.int(dimensions))
 
@@ -58,7 +58,7 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions){
     rownames(alphas) <- targets
     colnames(alphas) <- competitors
 
-    # lets reorder things in decreasing order of the weights across each dimension
+    # reorder response and effect traits in decreasing order of the weights across each dimension
     response.traits <- response.traits[,order(weights,decreasing = TRUE),drop=FALSE]
     effect.traits <- effect.traits[,order(weights,decreasing = TRUE),drop=FALSE]
     weights <- weights[order(weights, decreasing = TRUE)]
