@@ -15,6 +15,11 @@ dimensions <- as.integer(args[1])
 # which of n random optimizations this is
 which.n.random <- as.integer(args[2])
 
+# set the random seed for reproducibility
+# generated one integer between 1 and 100000 with Random Integer Generator at random.org
+# Timestamp: 2021-08-04 21:05:11 UTC
+set.seed(51318+which.n.random)
+
 # run the dimensionality fitting code
 source('../Utils/fit.machine.R')
 
