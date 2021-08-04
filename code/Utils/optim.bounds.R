@@ -2,10 +2,9 @@
 # automatically generate the bounds for the optimizer
 optim.bounds <- function(targets,competitors,dimensions){
 	# lower bounds on parameters
-	lower <- c(
-		rep(-Inf, length(targets)), # lambdas
-		rep(-Inf, dimensions) # weightings
-	)
+	lambda.bounds <- rep(-Inf, length(targets))
+	weight.bounds <- rep(-Inf, dimensions)
+
 	response.dof <- seq.int(length(targets)-1,0)
 	response.bounds <- unlist(sapply(
 		response.dof[seq.int(min(dimensions,length(targets)-1))],
@@ -16,6 +15,7 @@ optim.bounds <- function(targets,competitors,dimensions){
 			angles
 		}
 	))
+
 	effect.dof <- seq.int(length(competitors)-1,0)
 	effect.bounds <- unlist(sapply(
 		effect.dof[seq.int(min(dimensions,length(competitors)-1))],
@@ -28,14 +28,12 @@ optim.bounds <- function(targets,competitors,dimensions){
 	))
 
 	# stitch all lower bounds together
-	lower <- c(lower, response.bounds, effect.bounds)
+	lower <- c(lambda.bounds, weight.bounds, response.bounds, effect.bounds)
 
 	# upper bounds on parameters
-	# lower bounds on parameters
-	upper <- c(
-		rep(Inf, length(targets)), # lambdas
-		rep(Inf, dimensions) # weightings
-	)
+	lambda.bounds <- rep(Inf, length(targets))
+	weight.bounds <- rep(Inf, dimensions)
+
 	response.dof <- seq.int(length(targets)-1,0)
 	response.bounds <- unlist(sapply(
 		response.dof[seq.int(min(dimensions,length(targets)-1))],
@@ -46,6 +44,7 @@ optim.bounds <- function(targets,competitors,dimensions){
 			angles
 		}
 	))
+
 	effect.dof <- seq.int(length(competitors)-1,0)
 	effect.bounds <- unlist(sapply(
 		effect.dof[seq.int(min(dimensions,length(competitors)-1))],
@@ -58,7 +57,7 @@ optim.bounds <- function(targets,competitors,dimensions){
 	))
 
 	# stitch all upper bounds together
-	upper <- c(upper, response.bounds, effect.bounds)
+	upper <- c(lambda.bounds, weight.bounds, response.bounds, effect.bounds)
 
 	# return both lower and upper bounds
 	list(lower=lower, upper=upper)
