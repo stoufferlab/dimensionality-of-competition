@@ -10,8 +10,15 @@ dev.fun <- function(par, dimensions, x, y, weights=rep(1,length(y)), family, tar
     # use the inverse link function to get in the response scale
     mu <- family$linkinv(eta)
 
+    # check whether or not the parameters lead to valid mu values
+    validmu <- family$validmu(mu)
+
     # the total deviance is the sum of deviance residuals
-    dev <- sum(family$dev.resids(y, mu, weights))
+    dev <- ifelse(
+        validmu,
+        sum(family$dev.resids(y, mu, weights)),
+        Inf
+    )
 
     # if we are monitoring progress, print out some statistics
     if(trace){
