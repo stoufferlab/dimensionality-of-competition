@@ -23,7 +23,6 @@ null.pars <- function(targets, competitors, dimensions, random.angles=FALSE, lam
 				# the first n-1 are in [-pi/2, pi/2]
 				# the last one is in [-pi, pi]
 				angles <- c(runif(x-1, -pi/2, pi/2), runif(1, -pi, pi))
-				angles <- c(rnorm(x-1, 0, 0.1), rnorm(1, 0, 0.1))
 				angles
 			}
 		))
@@ -41,7 +40,6 @@ null.pars <- function(targets, competitors, dimensions, random.angles=FALSE, lam
 				# the first n-1 are in [-pi/2, pi/2]
 				# the last one is in [-pi, pi]
 				angles <- c(runif(x-1, -pi/2, pi/2), runif(1, -pi, pi))
-				angles <- c(rnorm(x-1, 0, 0.1), rnorm(1, 0, 0.1))
 				angles
 			}
 		))
