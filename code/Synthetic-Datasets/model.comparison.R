@@ -24,12 +24,19 @@ gamma.fit.0 <- glm(
 	method=glm.fit2
 )
 
+# use the simpler fit as starting values for the more complex model
+start.names <- colnames(model.matrix(model.formula.1,fecundity.data))
+start <- rep(0,length(start.names))
+names(start) <- start.names
+intercepts <- grep("target",start.names,value=TRUE,invert=FALSE)
+start[intercepts] <- coef(gamma.fit.0)[intercepts]
+
 # fit a model that lumps all targets together
 gamma.fit.1 <- glm(
 	model.formula.1,
 	family=Gamma(link='inverse'),
 	data=fecundity.data,
-	etastart=predict(gamma.fit.0),
+	start=start,
 	control=glm.control(maxit=1000),
 	method=glm.fit2
 )
