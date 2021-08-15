@@ -1,7 +1,11 @@
 
 # see https://github.com/MaterialsDiscovery/PyChemia/blob/b65bfe350003359d2c714588865cdaeabb241675/pychemia/utils/mathematics.py
+# and Generalization of Euler Angles to N-Dimensional Orthogonal Matrices
+#     Journal of Mathematical Physics 13, 528 (1972); https://doi.org/10.1063/1.1666011
+#     David K. Hoffman, Richard C. Rafenetti, and Klaus Ruedenberg
 
 # given an orthonormal vector convert it to euler angles
+# eq 1 from Hoffman (1972)
 gea_angles <- function(uvector){
 	n <- length(uvector)
 	angles <- numeric()
@@ -32,18 +36,19 @@ gea_angles <- function(uvector){
 }
 
 # given a set of euler angles convert them to an orthonormal vector
+# reverse of eq 1 from Hoffman (1972)
 gea_vector <- function(angles){
 	x <- numeric(length(angles))
 	x[1] <- sin(angles[1])
 	for(i in 2:(length(angles)-1)){
 		x[i] <- prod(cos(angles[1:(i-1)])) * sin(angles[i])
 	}
-	# note to self: I do not understand why we omit the last angle here...
 	x[length(angles)] <- prod(cos(angles[1:(length(angles)-1)]))
 	return(x)
 }
 
-# generate an orthogonal matrix given a comprehensive list of n*(n-1)/2 euler angles
+# generate the matrix a from euler angles to construct orthogonal matrix
+# eqs 15-19 from Hoffman (1972)
 gea_matrix_a <- function(angles){
 	n <- length(angles)
 	matrix_a <- diag(n)
@@ -72,31 +77,36 @@ gea_matrix_a <- function(angles){
 	return(matrix_a)
 }
 
-# construct a list of angles which define an orthogonal matrix within polar coordinates
+# construct a list of k*(k-1)/2 angles which define a specified orthogonal matrix
+# to do so we perform a series of transformations while dropping degrees of freedom in the basis set
 gea_all_angles <- function(ortho_matrix){
-	# we perform a series of transformations while dropping degrees of freedom in the basis set
 	b <- ortho_matrix
-	n <- nrow(ortho_matrix)
-	ret <- numeric()
 
-	# take the orthogonal vectors from the last column (DEBUG we could/dshould probably change this)
+	# the vectors get taken from right to left which is somewhat counter-intuitive
+	# we therefore reverse the column order of the matrix before determining the associated angles
+	# b <- b[,order(ncol(b):1)]
+
+	# take the orthogonal vectors right to left
+	n <- ncol(ortho_matrix)
+	ret <- numeric()
 	for(i in seq.int(n-1)){
 		x <- b[,ncol(b)]
 		angles <- gea_angles(x)
+		ret <- c(ret, angles[seq.int(length(angles)-1)])
+
 		a <- gea_matrix_a(angles)
 		b <- t(b) %*% a
 		b <- b[-nrow(b), -ncol(b)]
-
-		ret <- c(ret, angles[seq.int(length(angles)-1)])
 	}
 	return(ret)
 }
 
-# given a list of angles (which are the free parameters) construct an orthogonal matrix right to left
+# given a list of k*(k-1)/2 angles construct the corresponding orthogonal matrix
 gea_orthogonal_from_angles <- function(angles_list){
 	b <- diag(2)
 	n <- round(sqrt(length(angles_list)*8+1)/2 + 0.5)
 
+	# transformation for each successive orthogonal column
 	for(i in seq.int(n-1)){
 		# get the angles corresponding to this vector
 		angles <- c(angles_list[(length(angles_list)-i+1):length(angles_list)], pi/2)
@@ -105,17 +115,25 @@ gea_orthogonal_from_angles <- function(angles_list){
 		angles_list <- angles_list[1:(length(angles_list)-i)]
 
 		# generate a matrix corresponding to this vector
-		ma <- gea_matrix_a(angles)
+		a <- gea_matrix_a(angles)
 
-		# something from a paper I should read
-		b <- t(b %*% t(ma))
+		# print(t(b))
 
+		# apply transformation of b by the matrix a
+		b <- a %*% t(b)
+
+		# the next b matrix is the transformed matrix with a unit matrix added to it
 		if(i < n-1){
 			c <- diag(i+2)
 			c[seq.int(i+1),seq.int(i+1)] <- b
 			b <- c
 		}
+
+		# print(t(b))
 	}
+
+	# the method constructs from left to right so we reverse columns at the end
+	# b <- b[,order(ncol(b):1)]
 	return(b)
 }
 
@@ -124,7 +142,7 @@ gea_orthogonal_from_angles <- function(angles_list){
 gea_random_angles <- function(n, dimensions=n){
 	dof <- seq.int(n-1, 1)
 
-	phis <- sapply(
+	phis <- unlist(sapply(
 		seq.int(length(dof)),
 		function(x, dof, d){
 			if(x <= d){
@@ -135,7 +153,7 @@ gea_random_angles <- function(n, dimensions=n){
 		},
 		dof = dof,
 		d = dimensions
-	)
+	))
 
 	return(phis)
 }
