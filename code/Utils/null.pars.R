@@ -1,53 +1,43 @@
 
 # given the data set up some null parameters to start with in the optimizer
-null.pars <- function(targets, competitors, dimensions, random.angles=FALSE, lambdas=NULL){
+null.pars <- function(targets, competitors, dimensions, lambdas=NULL){
 	# lambdas and weights are most straightforward
 	if(is.null(lambdas)){
 		lambdas <- log(rep(1,length(targets)))
 	}else{
 		lambdas <- log(lambdas)
 	}
-	names(lambdas) <- targets
+	names(lambdas) <- paste0("lambda",targets)
 
-	weights <- log(0.01 / seq.int(dimensions)) # weights; note log transformation
-	names(weights) <- paste0("weight",seq.int(dimensions))
-	
-	# the number of response angles is constrained by orthogonality
-	response.dof <- seq.int(length(targets)-1,0)
-	if(!random.angles){
-		response.angles <- rep(0, sum(response.dof[seq.int(dimensions)]))
-	}else{
-		response.angles <- unlist(sapply(
-			response.dof[seq.int(min(dimensions,length(targets)-1))],
-			function(x){
-				# the first n-1 are in [-pi/2, pi/2]
-				# the last one is in [-pi, pi]
-				angles <- c(runif(x-1, -pi/2, pi/2), runif(1, -pi, pi))
-				angles
-			}
-		))
-	}
-	names(response.angles) <- paste0("response",seq.int(length(response.angles)))
+	# generate a matrix of uniform [0,1] alpha coefficients as a starting point
+	alphas <- matrix(
+		runif(length(targets)*length(competitors)),
+		length(targets),
+		length(competitors)
+	)
 
-	# the number of effect angles is constrained by orthogonality
-	effect.dof <- seq.int(length(competitors)-1,0)
-	if(!random.angles){
-		effect.angles <- rep(0, sum(effect.dof[seq.int(dimensions)]))	
-	}else{
-		effect.angles <- unlist(sapply(
-			effect.dof[seq.int(min(dimensions,length(competitors)-1))],
-			function(x){
-				# the first n-1 are in [-pi/2, pi/2]
-				# the last one is in [-pi, pi]
-				angles <- c(runif(x-1, -pi/2, pi/2), runif(1, -pi, pi))
-				angles
-			}
-		))
-	}	
-	names(effect.angles) <- paste0("effect",seq.int(length(effect.angles)))
+	# use QR decomposition to get starting points for the parameterization of the matrix
+	alphas.qr <- qr(alphas)
+	S <- diag(sign(diag(qr.R(alphas.qr))))
+	R <- qr.Q(alphas.qr) %*% S
+	E <- t(S %*% qr.R(alphas.qr))
+	R <- R[,seq.int(dimensions),drop=FALSE]
+	E <- E[,seq.int(dimensions),drop=FALSE]
+
+	# the number of response parameters is constrained by orthogonality
+	response.params <- InverseRmatrix(R, length(targets), dimensions)
+	names(response.params) <- paste0("response",seq_along(response.params))
+
+	# effect diagonal elements are constrained to be positive
+	effect.diag <- log(diag(E)) # note log transformation
+	names(effect.diag) <- paste0("effect.diag",seq_along(effect.diag))
+
+	# effect lower-triangular elements are unconstrained
+	effect.lower <- E[lower.tri(E)]
+	names(effect.lower) <- paste0("effect.lower",seq_along(effect.lower))
 
 	# put the parameters together in the standardized order
-	par <- c(lambdas, weights, response.angles, effect.angles)
-	
+	par <- c(lambdas, response.params, effect.diag, effect.lower)
+
 	return(par)
 }

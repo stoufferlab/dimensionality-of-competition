@@ -3,65 +3,84 @@
 # note transformations of many parameters to match non-standard bounds
 response.effect.from.pars <- function(par, targets, competitors, dimensions){
     # the intrinsic fecundities come first
-    # these are log transformed in the optimizer to have no effective bounds
+    # these are constrained to be positive
     lambdas <- exp(par[seq.int(length(targets))])
     names(lambdas) <- targets
 
-    # "eigenvalues" for the different dimensions come next
-    # these are log transformed in the optimizer to have no effective bounds
-    weights <- exp(par[seq.int(length(lambdas)+1, length(lambdas)+dimensions)])
+    # trim the lambdas off
+    par <- par[-seq.int(length(targets))]
 
-    # angles for response traits come next
-    n.angles <- (choose(length(targets),2) - choose(length(targets)-dimensions,2))
-    response.angles <- par[seq.int(
-        from=length(targets)+length(weights)+1,
-        to=length(targets)+length(weights)+n.angles
-    )]
+    # parameters for the response matrix come next
+    response.dof <- length(targets)*dimensions - dimensions*(dimensions+1)/2
+    response.params <- par[seq.int(response.dof)]
 
-    # angles for effect traits come last
-    n.angles <- (choose(length(competitors),2) - choose(length(competitors)-dimensions,2))
-    effect.angles <- par[seq.int(
-        from=length(targets)+length(weights)+length(response.angles)+1,
-        to=length(targets)+length(weights)+length(response.angles)+n.angles
-    )]
+    # trim the response params off
+    par <- par[-seq.int(response.dof)]
 
-    # now we need to convert the response and effect angles into usable low-dimensional traits
-    # we first need to tack on zeros at the end
-    response.angles <- c(response.angles, rep(0,choose(length(targets),2) - length(response.angles)))
+    # parameters for the effect diagonal come next
+    # these are constrained to be positive
+    effect.diag <- exp(par[seq.int(dimensions)])
 
-    # now we turn response angles into orthogonal response traits
-    response.traits <- gea_orthogonal_from_angles(response.angles)
+    # trim the effect diag off
+    par <- par[-seq.int(dimensions)]
 
-    # and we use the last columns as the actual response traits
-    response.traits <- response.traits[,seq.int(ncol(response.traits),ncol(response.traits)-dimensions+1),drop=FALSE]
+    # parameters for the rest of the effect matrix come next
+    effect.dof <- length(competitors)*dimensions - dimensions*(dimensions+1)/2
+    effect.lower <- par[seq.int(effect.dof)]
+
+    # trim the effect lower off
+    par <- par[-seq.int(effect.dof)]
+
+    # convert response parameters to orthogonal R matrix
+    R <- Rmatrix(length(targets), dimensions, response.params)
+
+    # convert effect parameters to lower triangular matrix
+    E <- Ematrix(length(competitors), dimensions, effect.diag, effect.lower)
+
+    # generate alphas from matrix multiplication!
+    alphas <- R %*% t(E)
+    rownames(alphas) <- targets
+    colnames(alphas) <- competitors
+
+    # perform SVD to get "proper" response and effect traits
+    S <- svd(alphas)
+
+    # weights are the singular values
+    weights <- S$d[seq.int(dimensions),drop=FALSE]
+
+    # response and effect traits are the columns 1 to dimensions of u and v
+    response.traits <- S$u[,seq.int(dimensions),drop=FALSE]
+    effect.traits <- S$v[,seq.int(dimensions),drop=FALSE]
+
+    # for uniqueness keep "diagonal" of effect traits positive
+    response.traits <- sweep(
+        response.traits,
+        2,
+        sign(diag(effect.traits)),
+        "*"
+    )
+    effect.traits <- sweep(
+        effect.traits,
+        2,
+        sign(diag(effect.traits)),
+        "*"
+    )
 
     # assign names to response traits matrix
     rownames(response.traits) <- targets
     colnames(response.traits) <- paste0("response",seq.int(dimensions))
 
-    # and again for the effects
-    # we first need to tack on zeros at the end
-    effect.angles <- c(effect.angles, rep(0,choose(length(competitors),2) - length(effect.angles)))
-
-    # now we turn effect angles into orthogonal effect traits
-    effect.traits <- gea_orthogonal_from_angles(effect.angles)
-
-    # and we use the last columns as the actual effect traits
-    effect.traits <- effect.traits[,seq.int(ncol(effect.traits),ncol(effect.traits)-dimensions+1),drop=FALSE]
-
     # assign names to effect traits matrix
     rownames(effect.traits) <- competitors
     colnames(effect.traits) <- paste0("effect",seq.int(dimensions))
 
-    # generate alphas from matrix multiplication!
-    alphas <- response.traits %*% diag(weights,dimensions,dimensions) %*% t(effect.traits)
-    rownames(alphas) <- targets
-    colnames(alphas) <- competitors
-
-    # reorder response and effect traits in decreasing order of the weights across each dimension
-    response.traits <- response.traits[,order(weights,decreasing = TRUE),drop=FALSE]
-    effect.traits <- effect.traits[,order(weights,decreasing = TRUE),drop=FALSE]
-    weights <- weights[order(weights, decreasing = TRUE)]
-
-    return(list(lambdas=lambdas, weights=weights, response=response.traits, effect=effect.traits, alphas=alphas))
+    # put all variables together in a list
+    ret <- list(
+        lambdas=lambdas,
+        alphas=alphas,
+        response=response.traits,
+        effect=effect.traits,
+        weights=weights
+    )
+    return(ret)
 }
