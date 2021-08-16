@@ -33,60 +33,73 @@ par.start <- null.pars(
 	lambdas=which.family$linkinv(coef(inverse.poisson.fit.0))
 )
 
-# check if the parameters are compatible with the model
+# calculate the starting deviance before optimization
 dev.start <- dev.fun(par.start, dimensions, x, y, family=which.family, targets=targets, competitors=competitors)
 
-# bunk starting conditions
-if(is.na(dev.start)){
-	message("Message: Aborting due to NA starting conditions for optimization")
-}else{
-	# print out starting conditions just for kicks
-	glm.coefs <- glm.coefs.from.traits(par.start, targets, competitors, dimensions, colnames(x))
-	mu <- which.family$linkinv(x %*% glm.coefs)
-	aic <- which.family$aic(y,length(y),mu,rep(1,length(y)),dev.start) + 2*length(par.start)
-	message("Message --> Attempt ",which.n.random,": From Deviance = ",dev.start," / AIC = ", aic)
+# make sure we have viable starting parameter values
+while(!is.finite(dev.start)){
+	par.start <- null.pars(
+		targets,
+		competitors,
+		dimensions,
+		lambdas=which.family$linkinv(coef(inverse.poisson.fit.0))
+	)
+	dev.start <- dev.fun(par.start, dimensions, x, y, family=which.family, targets=targets, competitors=competitors)
+}
 
-	# try to optimize the fit of the data given the parameter vector
-	optim <- try(
-		nloptr::sbplx(
-			x0=par.start,
-			fn=dev.fun,
-			control=list(ftol_rel=1e-8, maxeval=100000),
-			# trace=TRUE,
-			dimensions=dimensions,
-			x=x,
-			y=y,
-			family=which.family,
-			targets=targets,
-			competitors=competitors
-		)
+# print out starting conditions just for kicks
+glm.coefs <- glm.coefs.from.traits(par.start, targets, competitors, dimensions, colnames(x))
+mu <- which.family$linkinv(x %*% glm.coefs)
+aic <- which.family$aic(y,length(y),mu,rep(1,length(y)),dev.start) + 2*length(par.start)
+message("Message: Attempt ",which.n.random," from Deviance = ",dev.start," / AIC = ", aic)
+
+# try to optimize the fit of the data given the parameter vector
+optim <- try(
+	nloptr::sbplx(
+		x0=par.start,
+		fn=dev.fun,
+		control=list(ftol_rel=1e-8, maxeval=100000),
+		# trace=TRUE,
+		dimensions=dimensions,
+		x=x,
+		y=y,
+		family=which.family,
+		targets=targets,
+		competitors=competitors
+	)
+)
+
+# who'd have thunk it, it worked!
+if(!inherits(optim, "try-error")){
+	glm.coefs <- glm.coefs.from.traits(optim$par, targets, competitors, dimensions, colnames(x))
+	mu <- which.family$linkinv(x %*% glm.coefs)
+	aic <- which.family$aic(y,length(y),mu,rep(1,length(y)),optim$value) + 2*length(optim$par)
+	message("Message: Attempt ",which.n.random,"   to Deviance = ", optim$value, " / AIC = ", aic)
+
+	optim.lowD <- list(
+		dimensions=dimensions,
+		value=optim$value,
+		aic=aic,
+		par=optim$par,
+		x=x,
+		y=y
+	)
+}else{
+	warning(
+		"Warning: Attempt ",
+		which.n.random,
+		" at Dimension = ",
+		dimensions,
+		" Failed",
+		call. = FALSE,
+		immediate. = TRUE
 	)
 
-	# who'd have thunk it, it worked!
-	if(!inherits(optim, "try-error")){
-		glm.coefs <- glm.coefs.from.traits(optim$par, targets, competitors, dimensions, colnames(x))
-		mu <- which.family$linkinv(x %*% glm.coefs)
-		aic <- which.family$aic(y,length(y),mu,rep(1,length(y)),optim$value) + 2*length(optim$par)
-		message("Message --> Attempt ",which.n.random,":   To Deviance = ", optim$value, " / AIC = ", aic)
-
-		optim.lowD <- list(
-			value=optim$value,
-			aic=aic,
-			par=optim$par,
-			x=x,
-			y=y,
-			coefs=glm.coefs,
-			mu=mu
-		)
-	}else{
-		warning(
-			"Warning: Attempt ",
-			which.n.random,
-			" at Dimension = ",
-			dimensions,
-			" Failed",
-			call. = FALSE,
-			immediate. = TRUE
-		)
-	}
+	# save an empty/null output of the optimization
+	optim.lowD <- list(
+		dimensions=dimensions,
+		value=NA,
+		aic=NA,
+		par=NA
+	)
 }
