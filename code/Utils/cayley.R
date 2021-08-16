@@ -1,4 +1,15 @@
 
+# QR-like parameterization based method using Cayley transformations appearing in
+# The multifacet graphically contracted function method. II. A general procedure for the parameterization of orthogonal matrices and its application to arc factors
+# The represtnation and parameterizatoin of orthogonal matrices
+# The Journal of Physical Chemistry (2015)
+# https://doi.org/10.1021/acs.jpca.5b02015
+# Shepard, Brozell, and Gidofalvi
+# and
+# Random orthogonal matrices and the Cayley transform (2018)
+# https://arxiv.org/abs/1810.02881
+# Jauch, Hoff, and Dunson
+
 # take vector of lower triangular values for first d columns of S x S matrix
 # fill matrix column wise and then and convert it to a skew-symmetric S x S matrix
 Xmatrix <- function(S, d, v){

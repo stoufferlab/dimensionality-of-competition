@@ -15,7 +15,7 @@ source(here('code/Utils/cayley.R'))
 source(here('code/Utils/model.comparison.R'))
 
 # Print out the null model deviance as a point of reference
-message("Message --> Null Model: Deviance = ",inverse.poisson.fit.0$deviance," / AIC = ", inverse.poisson.fit.0$aic)
+message("Message: Null Model Deviance = ",inverse.poisson.fit.0$deviance," / AIC = ", inverse.poisson.fit.0$aic)
 
 # the full competition model whose coefficients get replaced with response-effect versions
 model.formula <- as.formula(paste0(fecundity," ~ 0 + target + ",paste0("target:",competitors,collapse=" + ")))
