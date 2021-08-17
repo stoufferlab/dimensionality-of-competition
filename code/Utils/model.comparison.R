@@ -9,11 +9,16 @@ fecundity.data$neighbors <- rowSums(fecundity.data[,competitors])
 model.formula.0 <- as.formula(paste0(fecundity," ~ 0 + target"))
 model.formula.1 <- as.formula(paste0(fecundity," ~ 0 + target + neighbors"))
 model.formula.2 <- as.formula(paste0(fecundity," ~ 0 + target + target:neighbors"))
-model.formula.3 <- as.formula(paste0(fecundity," ~ 0 + target + ",paste0("target:",competitors,collapse=" + ")))
+model.formula.3 <- as.formula(paste0(fecundity," ~ 0 + target + ",paste0(competitors,collapse=" + ")))
+model.formula.4 <- as.formula(paste0(fecundity," ~ 0 + target + ",paste0("target:",competitors,collapse=" + ")))
 
 ########################################
 # POISSON DISTRIBUTION WITH INVERSE LINK
 ########################################
+
+#########
+# MODEL 1
+#########
 
 # a model that just fits intercepts
 inverse.poisson.fit.0 <- glm(
@@ -24,7 +29,11 @@ inverse.poisson.fit.0 <- glm(
 	method=glm.fit2
 )
 
-# fit a model that lumps all targets together
+#########
+# MODEL 2
+#########
+
+# fit a model that lumps all neighbors together
 inverse.poisson.fit.1 <- glm(
 	model.formula.1,
 	family=poisson(link='inverse'),
@@ -33,6 +42,10 @@ inverse.poisson.fit.1 <- glm(
 	control=glm.control(maxit=1000),
 	method=glm.fit2
 )
+
+#########
+# MODEL 2
+#########
 
 # use the simpler fit as starting values for the more complex model
 start.names <- colnames(model.matrix(model.formula.2,fecundity.data))
@@ -54,8 +67,36 @@ inverse.poisson.fit.2 <- glm(
 	method=glm.fit2
 )
 
-# fill in intercepts and species-specific baseline interaction before fitting the full pairwise model
+#########
+# MODEL 3
+#########
+
+# use the simpler fit as starting values for the more complex model
 start.names <- colnames(model.matrix(model.formula.3,fecundity.data))
+start <- rep(0,length(start.names))
+names(start) <- start.names
+intercepts <- grep("target",start.names,value=TRUE)
+start[intercepts] <- coef(inverse.poisson.fit.1)[intercepts]
+for(focal in intercepts){
+	start[grep("target",names(start),value=TRUE,invert=TRUE)] <- coef(inverse.poisson.fit.1)["neighbors"]
+}
+
+# fit a model that separates targets but lumps all neighbors together
+inverse.poisson.fit.3 <- glm(
+	model.formula.3,
+	family=poisson(link='inverse'),
+	data=fecundity.data,
+	start=start,
+	control=glm.control(maxit=1000),
+	method=glm.fit2
+)
+
+#########
+# MODEL 4
+#########
+
+# fill in intercepts and species-specific baseline interaction before fitting the full pairwise model
+start.names <- colnames(model.matrix(model.formula.4,fecundity.data))
 start <- rep(0,length(start.names))
 names(start) <- start.names
 intercepts <- grep(":",start.names,value=TRUE,invert=TRUE)
@@ -65,8 +106,8 @@ for(focal in intercepts){
 }
 
 # fit the full model
-inverse.poisson.fit.3 <- glm(
-	model.formula.3,
+inverse.poisson.fit.4 <- glm(
+	model.formula.4,
 	family=poisson(link='inverse'),
 	data=fecundity.data,
 	start=start,
