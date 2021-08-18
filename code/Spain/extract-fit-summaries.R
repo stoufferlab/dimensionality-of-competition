@@ -25,8 +25,9 @@ for(which.treatment in c('C','T')){
 				saved.fits,
 				function(x){
 					q <- try(load(paste0('../../results/Spain/',x)))
+					# print(paste0('../../results/Spain/',x))
 					assign("y", eval(parse(text = paste0(which.treatment,".optim.lowD"))))
-					if(is.na(y$value)){
+					if(!y@details$good){
 						ret <- c(
 							d,
 							NA,
@@ -36,15 +37,15 @@ for(which.treatment in c('C','T')){
 						return(ret)
 					}else{
 						refp <- response.effect.from.pars(
-							y$par,
+							y@coef,
 							targets,
 							competitors,
 							d
 						)
 						ret <- c(
 							d,
-							y$value,
-							y$aic,
+							y@min,
+							AIC(y),
 							refp$weights,rep(.Machine$double.eps,length(targets)-d)
 						)
 						return(ret)
@@ -59,7 +60,7 @@ for(which.treatment in c('C','T')){
 	colnames(all.fits) <- c(
 		"dimensions",
 		"deviance",
-		"aic",
+		"AIC",
 		paste0("weight.",seq.int(length(targets)))
 	)
 	all.fits <- data.frame(all.fits)
