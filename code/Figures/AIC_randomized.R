@@ -1,10 +1,8 @@
 
-# library(ggplot2)
 library(RColorBrewer)
-# library(plot.matrix)
 
-# these datasets were fit from Levine matrix only
-random.dir <- "../../results/Fake-Goldberg/"
+# find the data files for the synthetic datasets
+random.dir <- "../../results/Synthetic-Datasets/"
 random.files <- list.files(random.dir, "rsquared", full.names=TRUE)
 random.aics <- list.files(random.dir, "AICs", full.names=TRUE)
 
@@ -32,9 +30,9 @@ cex.axis <- 2
 padj <- 0.25
 
 set.seed(321)
-pal <- sample(colorRampPalette(brewer.pal(8, "Dark2"))(length(rsquareds)))
+pal <- sample(colorRampPalette(brewer.pal(8, "Dark2"))(length(AICs)))
 
-for(i in 1:(length(rsquareds))){
+for(i in 1:(length(AICs))){
 	d <- AICs[[i]] #rsquareds[[i]]
 
 	plot(
