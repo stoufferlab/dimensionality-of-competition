@@ -30,9 +30,10 @@ par.start <- null.pars(
 
 # a necessary evil when to using vector parameters and mle2
 parnames(dev.fun) <- names(as.list(par.start))
+parnames(nll.fun) <- names(as.list(par.start))
 
 # shove everything through mle2 to register the starting point
-optim.lowD <- mle2(
+start.lowD <- mle2(
 	dev.fun,
 	start=par.start,
 	data=list(
@@ -43,19 +44,14 @@ optim.lowD <- mle2(
 		competitors=competitors,
 		dimensions=dimensions),
 	vecpar=TRUE,
-	control=list(
-		# trace=5,
-		maxit=100000,
-		parscale=abs(par.start)
-	),
 	eval.only = TRUE
 )
 
 # print out the initial details prior to optimzation
-message("Message: Attempt ",which.n.random," at Dimension = ",dimensions," from Deviance = ",-logLik(optim.lowD))
+message("Message: Attempt ",which.n.random," at Dimension = ",dimensions," from Deviance = ",-logLik(start.lowD))
 
 # optimize with mle2
-optim.lowD <- mle2(
+optim.lowD <- try(mle2(
 	dev.fun,
 	start=par.start,
 	data=list(
@@ -72,30 +68,56 @@ optim.lowD <- mle2(
 		parscale=abs(par.start)
 	),
 	skip.hessian=TRUE
-)
+))
 
-# print out the final details after optimization
-message("Message: Attempt ",which.n.random," at Dimension = ",dimensions," to   Deviance = ",-logLik(optim.lowD))
+# store different output whether or not the optimization failed (which is usually driven by random initial parameter values)
+if(!inherits(optim.lowD, "try-error")){
+	# print out the final details after optimization
+	message("Message: Attempt ",which.n.random," at Dimension = ",dimensions," to   Deviance = ",-logLik(optim.lowD))
 
-# a necessary evil when to using vector parameters and mle2
-parnames(nll.fun) <- names(as.list(par.start))
+	# a necessary evil when to using vector parameters and mle2
+	parnames(nll.fun) <- names(as.list(par.start))
 
-# re-evaluate with loglikelihood and not deviance for SE purposes later since we require the hessian of the nll and not the 
-optim.lowD <- mle2(
-	nll.fun,
-	start=optim.lowD@coef,
-	data=list(
-		family=which.family,
-		X=X,
-		y=y,
-		targets=targets,
-		competitors=competitors,
-		dimensions=dimensions),
-	vecpar=TRUE,
-	control=list(
-		# trace=5,
-		maxit=100000,
-		parscale=abs(par.start)
-	),
-	eval.only = TRUE
-)
+	# re-evaluate with loglikelihood and not deviance for SE purposes later since we require the hessian of the nll and not the 
+	optim.lowD <- mle2(
+		nll.fun,
+		start=optim.lowD@coef,
+		data=list(
+			family=which.family,
+			X=X,
+			y=y,
+			targets=targets,
+			competitors=competitors,
+			dimensions=dimensions),
+		vecpar=TRUE,
+		control=list(
+			# trace=5,
+			maxit=100000,
+			parscale=abs(par.start)
+		),
+		eval.only = TRUE
+	)
+	optim.lowD@details$good <- TRUE
+}else{
+	message("Message: Attempt ",which.n.random," at Dimension = ",dimensions," to   Deviance = ",-logLik(start.lowD))
+
+	# a necessary evil when to using vector parameters and mle2
+	parnames(nll.fun) <- names(as.list(par.start))
+
+	# store an unoptimized fit
+	optim.lowD <- mle2(
+		nll.fun,
+		start=par.start,
+		data=list(
+			family=which.family,
+			X=X,
+			y=y,
+			targets=targets,
+			competitors=competitors,
+			dimensions=dimensions),
+		vecpar=TRUE,
+		eval.only = TRUE,
+		skip.hessian=TRUE
+	)
+	optim.lowD@details$good <- FALSE
+}
