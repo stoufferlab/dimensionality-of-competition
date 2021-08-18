@@ -37,7 +37,6 @@ par.start <- guess.pars(
 	m1=inverse.poisson.fit.1,
 	m2=inverse.poisson.fit.2,
 	m3=inverse.poisson.fit.3,
-	m4=inverse.poisson.fit.4,
 	sigma=0.001
 )
 
