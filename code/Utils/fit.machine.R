@@ -70,7 +70,7 @@ optim.lowD <- try(mle2(
 	skip.hessian=TRUE
 ))
 
-# store different output whether or not the optimization failed (which is usually driven by random initial parameter values)
+# store different output whether or not the optimization failed (which is usually driven by poorly chosen initial parameter values)
 if(!inherits(optim.lowD, "try-error")){
 	# print out the final details after optimization
 	message("Message: Attempt ",which.n.random," at Dimension = ",dimensions," to   Deviance = ",-logLik(optim.lowD))
