@@ -2,10 +2,10 @@
 # calculate the deviance for the fit according to family's specified deviance function
 dev.fun <- function(par, family, X, y, targets, competitors, dimensions, trace=FALSE){
     # convert a long vector of parameters (par) to their glm equivalent
-    coefs <- glm.coefs.from.traits(par, targets, competitors, dimensions, colnames(x))
+    coefs <- glm.coefs.from.traits(par, targets, competitors, dimensions, colnames(X))
 
     # calculate the linear predictor
-    eta <- drop(x %*% coefs)
+    eta <- drop(X %*% coefs)
 
     # use the inverse link function to get in the response scale
     mu <- family$linkinv(eta)
@@ -32,10 +32,10 @@ dev.fun <- function(par, family, X, y, targets, competitors, dimensions, trace=F
 # calculate the negative log likelihood for the fit
 nll.fun <- function(par, family, X, y, targets, competitors, dimensions, trace=FALSE){
     # convert a long vector of parameters (par) to their glm equivalent
-    coefs <- glm.coefs.from.traits(par, targets, competitors, dimensions, colnames(x))
+    coefs <- glm.coefs.from.traits(par, targets, competitors, dimensions, colnames(X))
 
     # calculate the linear predictor
-    eta <- drop(x %*% coefs)
+    eta <- drop(X %*% coefs)
 
     # use the inverse link function to get in the response scale
     mu <- family$linkinv(eta)
