@@ -19,7 +19,7 @@ response.effect.from.pars <- function(par, targets, competitors, dimensions){
 
     # parameters for the effect diagonal come next
     # these are constrained to be positive
-    effect.diag <- exp(par[seq.int(dimensions)])
+    effect.diag <- pmin(exp(par[seq.int(dimensions)]), .Machine$double.xmax)
 
     # trim the effect diag off
     par <- par[-seq.int(dimensions)]
