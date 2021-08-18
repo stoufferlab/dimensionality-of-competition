@@ -1,20 +1,30 @@
 
 # given the data set up some null parameters to start with in the optimizer
-null.pars <- function(targets, competitors, dimensions, lambdas=NULL){
-	# lambdas and weights are most straightforward
+null.pars <- function(targets, competitors, dimensions, lambdas=NULL, alphas=NULL){
 	if(is.null(lambdas)){
+		# very poor guess of starting intercepts: all = 1
 		lambdas <- log(rep(1,length(targets)))
 	}else{
-		lambdas <- log(lambdas)
+		lambdas <- log(lambdas) # note log transformation
+	}
+
+	if(is.null(alphas)){
+		# very poor guess at starting alphas: a matrix of uniform [0,1] alpha coefficients as a starting point
+		alphas <- matrix(
+			runif(length(targets)*length(competitors)),
+			length(targets),
+			length(competitors)
+		)
+	}else{
+		# use SVD to reduce the dimensionality a priori
+		S <- svd(alphas)
+		if(dimensions>1){
+			alphas <- S$u[,seq.int(dimensions),drop=FALSE] %*% diag(S$d[seq.int(dimensions)]) %*% t(S$v[,seq.int(dimensions),drop=FALSE])
+		}else{
+			alphas <- S$u[,seq.int(dimensions),drop=FALSE] %*% S$d[1] %*% t(S$v[,seq.int(dimensions),drop=FALSE])
+		}
 	}
 	names(lambdas) <- paste0("lambda",targets)
-
-	# generate a matrix of uniform [0,1] alpha coefficients as a starting point
-	alphas <- matrix(
-		runif(length(targets)*length(competitors)),
-		length(targets),
-		length(competitors)
-	)
 
 	# use QR decomposition to get starting points for the parameterization of the matrix
 	alphas.qr <- qr(alphas)
