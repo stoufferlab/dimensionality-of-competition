@@ -42,7 +42,7 @@ par.start <- guess.pars(
 )
 
 # run the dimensionality fitting code
-source('../Utils/fit.machine.R')
+source(here('code/Utils/fit.machine.R'))
 
 # save the fits and write out a table of the AICs
 Control.optim.lowD <- optim.lowD
