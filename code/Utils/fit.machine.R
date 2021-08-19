@@ -75,6 +75,9 @@ if(!inherits(optim.lowD, "try-error")){
 	# print out the final details after optimization
 	message("Message: Attempt ",which.n.random," at Dimension = ",dimensions," to   Deviance = ",-logLik(optim.lowD))
 
+	# save the deviance for subsequent comparison purposes
+	dev.tmp <- optim.lowD@min
+
 	# a necessary evil when to using vector parameters and mle2
 	parnames(nll.fun) <- names(as.list(par.start))
 
@@ -97,6 +100,7 @@ if(!inherits(optim.lowD, "try-error")){
 		),
 		eval.only = TRUE
 	)
+	optim.lowD@details$deviance <- dev.tmp
 	optim.lowD@details$good <- TRUE
 }else{
 	message("Message: Attempt ",which.n.random," at Dimension = ",dimensions," to   Deviance = ",-logLik(start.lowD))
@@ -119,5 +123,6 @@ if(!inherits(optim.lowD, "try-error")){
 		eval.only = TRUE,
 		skip.hessian=TRUE
 	)
+	optim.lowD@details$deviance <- start.lowD@min
 	optim.lowD@details$good <- FALSE
 }
