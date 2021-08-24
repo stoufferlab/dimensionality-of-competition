@@ -4,26 +4,27 @@ library(RColorBrewer)
 library(plot.matrix)
 
 # figure out what alpha files exist
-godoy.dir <- "../../results/Godoy"
-godoy.alphas <- list.files(godoy.dir,"[.]fit[.]csv",full.names=TRUE)
-
-wainwright.dir <- "../../results/Wainwright"
-wainwright.alphas <- list.files(wainwright.dir,"[.]fit[.]csv",full.names=TRUE)
-
-# datasets from the Levine collection
-levine.dir <- "../../results/Levine"
-levine.alphas <- list.files(levine.dir,"[.]fit[.]csv",full.names=TRUE)
 
 # datasets from the Kinlock collection
 kinlock.dir <- "../../results/Kinlock"
 kinlock.alphas <- list.files(kinlock.dir,"[.]fit[.]csv",full.names=TRUE)
 
-# remove Engel and Landa studies since they are part of Levine collection
-kinlock.alphas <- grep("Landa|Engel",kinlock.alphas,invert=TRUE,value=TRUE)
-
 # put everything together
-alpha.fits <- c(godoy.alphas, wainwright.alphas, levine.alphas, kinlock.alphas)
-alpha.orig <- gsub("fit", "orig", alpha.fits)
+alpha.fits <- c(
+	"../../results/Spain/spain.Control.D2.alphas.fit.csv",
+	"../../results/Spain/spain.Treatment.D3.alphas.fit.csv",
+	"../../results/Australia/australia.Open.D1.alphas.fit.csv",
+	"../../results/Australia/australia.Shade.D2.alphas.fit.csv",
+	kinlock.alphas
+)
+
+alpha.orig <- c(
+	"../../results/Spain/spain.Control.alphas.regression.csv",
+	"../../results/Spain/spain.Treatment.alphas.regression.csv",
+	"../../results/Australia/australia.Open.alphas.regression.csv",
+	"../../results/Australia/australia.Shade.alphas.regression.csv",
+	gsub("fit", "orig", kinlock.alphas)
+)
 
 # determine unique stems/datasets
 stems <- unique(sapply(
@@ -37,7 +38,7 @@ stems <- unique(sapply(
 spp <- sapply(
 	stems,
 	function(stem,alpha.fits){
-		if(grepl("godoy|wainwright",stem)){
+		if(grepl("spain|australia",stem)){
 			100 #nlevels(read.table(grep(stem,alpha.fits,value=TRUE)[1])$row)
 		}else{
 			nrow(read.table(grep(stem,alpha.fits,value=TRUE)[1]))
@@ -48,8 +49,10 @@ spp <- sapply(
 
 # reorder in decreasing number of species
 stems <- stems[order(spp, decreasing=TRUE)]
+alpha.orig <- alpha.orig[order(spp, decreasing=TRUE)]
+alpha.fits <- alpha.fits[order(spp, decreasing=TRUE)]
 
-for(i in 1:9){
+for(i in 1:4){
 
 setEPS(width=8, height=14)
 postscript(paste0('../../manuscript/Supplementary/Figures/alphas.',i,'.eps'))
@@ -68,45 +71,22 @@ par(mar = c(5, 6, 4.5, 0), oma = c(0, 0, 0, 3.5))
 
 for(j in (1+4*(i-1)):min(4*i,length(stems))){
 	stem <- stems[j]
-
-	orig <- grep(stem,alpha.orig,value=TRUE)
-	fit <- grep(stem,alpha.fits,value=TRUE)
 	
-	if(grepl("godoy|wainwright",stem)){
-		orig <- read.table(orig)
-		orig <- xtabs(alpha ~ row + col, orig, na.action=na.pass)
-		fit <- read.table(fit)
-		fit <- xtabs(alpha ~ row + col, fit, na.action=na.pass)
-	}else{
-		orig <- read.table(orig)
-		fit <- read.table(fit)
-	}
+	orig <- read.table(alpha.orig[j])
+	fit <- read.table(alpha.fits[j])
 
 	orig <- as.matrix(orig)
 	fit <- as.matrix(fit)
 
-	if(grepl("alpha",stem)){
-		min.alpha <- range(fit,-fit,orig,-orig,na.rm=TRUE)[1]
-		max.alpha <- range(fit,-fit,orig,-orig,na.rm=TRUE)[2]
+	min.alpha <- range(orig,-orig,na.rm=TRUE)[1]
+	max.alpha <- range(orig,-orig,na.rm=TRUE)[2]
 
-		# add a color scale for interactions
-		pal <- c(
-			rev(colorRampPalette(brewer.pal(9, "Blues"))(300)),
-			(colorRampPalette(brewer.pal(9, "Reds"))(300))
-		)
-		breaks <- seq(min.alpha, max.alpha, length.out=length(pal))
-	}else{
-		fit <- log(fit)
-		orig <- log(orig)
-		min.alpha <- range(fit,-fit, orig, -orig,na.rm=TRUE)[1]
-		max.alpha <- range(fit, -fit, orig, -orig,na.rm=TRUE)[2]
-		pal <- c(
-			rev(colorRampPalette(brewer.pal(9, "Reds"))(300)),
-			(colorRampPalette(brewer.pal(9, "Blues"))(300))
-		)
-		# breaks <- c(seq(min.alpha,1,length.out=300),seq(1,max.alpha,length.out=300))
-		breaks <- seq(min.alpha, max.alpha, length.out=length(pal))
-	}
+	# add a color scale for interactions
+	pal <- c(
+		rev(colorRampPalette(brewer.pal(9, "Blues"))(300)),
+		(colorRampPalette(brewer.pal(9, "Reds"))(300))
+	)
+	breaks <- seq(min.alpha, max.alpha, length.out=length(pal))
 	
 	# plot the original data
 	plot.matrix:::plot.matrix(
@@ -121,7 +101,8 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 		main='',
 		axes=FALSE,
 		axis.col=NULL,
-		axis.row=NULL
+		axis.row=NULL,
+		na.col='black'
 	)
 
 	title('Observed', line=1.2, cex.main=2.3)
@@ -137,6 +118,15 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 	)
 	mtext(paste0("Dataset ",k), 2, outer=FALSE, line=3.5, xpd=NA, cex=1.75, font=2)
 
+	min.alpha <- range(fit,-fit,na.rm=TRUE)[1]
+	max.alpha <- range(fit,-fit,na.rm=TRUE)[2]
+
+	# add a color scale for interactions
+	pal <- c(
+		rev(colorRampPalette(brewer.pal(9, "Blues"))(300)),
+		(colorRampPalette(brewer.pal(9, "Reds"))(300))
+	)
+	breaks <- seq(min.alpha, max.alpha, length.out=length(pal))
 
 	# plot the fit data
 	plot.matrix:::plot.matrix(
