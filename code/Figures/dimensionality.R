@@ -3,16 +3,16 @@ library(RColorBrewer)
 library(plotrix)
 
 # read in GOF by dimensionality measures
-godoyC <- "../../results/Godoy/godoy.C.pseudo-rsquared.csv"
-godoyT <- "../../results/Godoy/godoy.T.pseudo-rsquared.csv"
+godoyC <- "../../results/Spain/spain.Control.pseudo-rsquared.csv"
+godoyT <- "../../results/Spain/spain.Treatment.pseudo-rsquared.csv"
 
-wainwrightOpen <- "../../results/Wainwright/wainwright.Open.pseudo-rsquared.csv"
-wainwrightShade <- "../../results/Wainwright/wainwright.Shade.pseudo-rsquared.csv"
+wainwrightOpen <- "../../results/Australia/australia.Open.pseudo-rsquared.csv"
+wainwrightShade <- "../../results/Australia/australia.Shade.pseudo-rsquared.csv"
 
-# these datasets were fit from Levine matrix only
-levine.dir <- "../../results/Levine/"
-levine.files <- list.files(levine.dir, "rsquared")
-levine.files <- paste0(levine.dir, levine.files)
+# # these datasets were fit from Levine matrix only
+# levine.dir <- "../../results/Levine/"
+# levine.files <- list.files(levine.dir, "rsquared")
+# levine.files <- paste0(levine.dir, levine.files)
 
 # these datasets were fit from Kinlock matrix only
 kinlock.dir <- "../../results/Kinlock/"
@@ -21,45 +21,70 @@ kinlock.files <- paste0(kinlock.dir, kinlock.files)
 
 # remove Engel due to errors in the data and we have it from Levine
 # remove Goldberg & Landa because we have it from Levine
-kinlock.files <- grep("Engel|Landa",kinlock.files,invert=TRUE,value=TRUE)
+# kinlock.files <- grep("Engel|Landa",kinlock.files,invert=TRUE,value=TRUE)
 
 # put all files together
-all.files <- c(godoyC, godoyT, wainwrightOpen, wainwrightShade, levine.files, kinlock.files)
+all.files <- c(
+	godoyC,
+	godoyT,
+	wainwrightOpen,
+	wainwrightShade,
+	kinlock.files
+)
 
 dd <- do.call(rbind,sapply(
 	all.files,
 	function(f) {
 		d <- read.table(f)
-		return(cbind(nrow(d),igraph::dim_select(d[,1])))
+		return(cbind(
+			nrow(d),
+			igraph::dim_select(d[,1]),
+			min(which(d[,3] > 0.95)),
+			d[1,2],
+			d[igraph::dim_select(d[,1]),3],
+			d[min(which(d[,3] > 0.95)),3]
+		))
 	},
 	simplify = FALSE
 ))
 
-# replace Godoy values with the AIC estimate
-dd[1,2] <- 3
-dd[2,2] <- 3
+dd <- as.data.frame(dd)
+colnames(dd) <- c(
+	"species",
+	"dimselect",
+	"ninetyfivepercent",
+	"varexp.first",
+	"varexp.dimselect",
+	"varexp.ninetyfivepercent"
+)
+rownames(dd) <- all.files
 
-# replace Wainwright values with the AIC estimate
-dd[3,2] <- 1
-dd[4,2] <- 1
+# # replace Godoy values with the AIC estimate
+# dd[1,2] <- 3
+# dd[2,2] <- 3
+
+# # replace Wainwright values with the AIC estimate
+# dd[3,2] <- 1
+# dd[4,2] <- 1
 
 # where to save the figure
 h <- 5
-setEPS(width=5.5, height=4.)
+setEPS(width=5.5, height=3.7)
 postscript('../../manuscript/Figures/dimensionality.eps')
 
-par(mar = c(2, 2.5, 0.5, 1.0), oma = c(2.5, 2.5, 0.5, 1.0))
+par(mar = c(2, 2.5, 0.5, 1.0), oma = c(2.5, 2.5, 0.75, 1.0))
 
 # define some sizes
-cex.axis <- 2
+cex.axis <- 1.7
 padj <- 0 #.25
 
 # add a color scale for fitness
 
 plot(
-	dd,
-	xlim=c(1,10),
-	ylim=c(0,10),
+	x=NA,
+	y=NA,
+	xlim=c(1,12),
+	ylim=c(1,12),
 	type='n',
 	axes=FALSE,
 	xlab='',
@@ -72,7 +97,7 @@ plot(
 # add the x axis
 axis(
 	1,
-	at=seq(0,10,2),
+	at=c(1,4,8,12),
 	tcl=0.5,
 	cex.axis=cex.axis,
 	padj=padj,
@@ -82,7 +107,8 @@ axis(
 # add the y axis
 axis(
 	2,
-	at=seq(0,10,2),
+	at=c(1,4,8,12),
+	# labels=c("","1","4","8","12"),
 	tcl=0.5,
 	cex.axis=cex.axis,
 	# padj=padj,
@@ -90,11 +116,37 @@ axis(
 )
 
 # add a 45 degree line
-abline(0,1,lwd=2.5,lty='dashed')
+abline(0,1,lwd=2.5,lty='dotted')
 abline(h=1,lwd=2.5,lty='dotted')
 
+xpred <- seq(1,12,length.out=1000)
+
+prediction <- predict(
+	glm(ninetyfivepercent ~ 0+I(species-1), family="poisson", data=dd),
+	newdata=data.frame(species=xpred),
+	type="response",
+	se.fit=TRUE
+)
+
+polygon(
+	x=c(xpred, rev(xpred)),
+	y=c(prediction$fit+prediction$se.fit, rev(prediction$fit-prediction$se.fit)),
+	col=grey(0.75),
+	border=NA
+)
+
+lines(
+	x=xpred,
+	y=prediction$fit,
+	col=grey(0.25)
+)
+
 # spread points out to show redundancy
-xy <- cluster.overplot(dd[,1],dd[,2])
+xy <- cluster.overplot(
+	dd[,"species"],
+	dd[,"ninetyfivepercent"],
+	away=c(0.25,0.25)
+)
 
 # plot the points
 points(
@@ -107,9 +159,10 @@ points(
 	xpd=TRUE
 )
 
-mtext("Niche dimensionality", 2, outer=TRUE, line=0.75, cex=2)
+mtext("Niche dimensionality", 2, line=3.15, xpd=NA, adj=0.5, cex=2)
 
-mtext("Species richness", 1, outer=TRUE, line=1.0, cex=2)
+mtext("Species richness", 1, outer=FALSE, xpd=NA, line=3.15, cex=2, adj=0.50)
+
 
 
 dev.off()
