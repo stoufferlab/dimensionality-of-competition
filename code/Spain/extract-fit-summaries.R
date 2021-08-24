@@ -2,6 +2,7 @@
 # a few utilities we need below
 library(here)
 source(here('code/Utils/cayley.R'))
+source(here('code/Utils/get.alphas.from.model.R'))
 source(here('code/Utils/response.effect.from.pars.R'))
 
 for(which.treatment in c('C','T')){
@@ -32,6 +33,7 @@ for(which.treatment in c('C','T')){
 							d,
 							NA,
 							NA,
+							NA,
 							rep(NA,length(targets))
 						)
 						return(ret)
@@ -44,6 +46,7 @@ for(which.treatment in c('C','T')){
 						)
 						ret <- c(
 							d,
+							y@details$deviance,
 							y@min,
 							AIC(y),
 							refp$weights,rep(.Machine$double.eps,length(targets)-d)
@@ -60,6 +63,7 @@ for(which.treatment in c('C','T')){
 	colnames(all.fits) <- c(
 		"dimensions",
 		"deviance",
+		"logLik",
 		"AIC",
 		paste0("weight.",seq.int(length(targets)))
 	)
@@ -100,4 +104,73 @@ for(which.treatment in c('C','T')){
 		all.fits,
 		file=paste0("../../results/Spain/spain.",which.treatment,".fit.summary.csv")
 	)
+
+	# fit the regression models as a point of comparison
+	source(here('code/Utils/model.comparison.R'))
+
+	# extract and save the "full" model fit alphas
+	alphas <- get.alphas.from.model(inverse.poisson.fit.4, 4, targets, competitors)$alphas
+	write.table(
+		alphas,
+		paste0("../../results/Spain/spain.",which.treatment,".alphas.regression.csv")
+	)
+
+	# obtain the best full dimension fit and write out its alpha decomposition
+	which.fit <- which.min(subset(all.fits, dimensions==max(all.fits$dimensions))$AIC)
+	load(paste0('../../results/Spain/',rownames(subset(all.fits, dimensions==max(all.fits$dimensions))[which.fit,])))
+	assign("y", eval(parse(text = paste0(which.treatment,".optim.lowD"))))
+	refp <- response.effect.from.pars(
+		y@coef,
+		targets,
+		competitors,
+		max(all.fits$dimensions)
+	)
+	# interactions
+	write.table(
+		refp$alphas,
+		paste0("../../results/Spain/spain.",which.treatment,".full.alphas.fit.csv")
+	)
+	# R^2
+	write.table(
+			cbind(
+				refp$weights,
+				refp$weights**2 / sum(refp$weights**2),
+				cumsum(refp$weights**2 / sum(refp$weights**2))
+			),
+			file=paste0(
+				"../../results/Spain/spain.",
+				which.treatment,
+				".pseudo-rsquared.csv"
+			),
+			row.names=FALSE,
+			col.names=FALSE
+	)
+
+
+	# write out the dimension by dimension alphas
+	for(d in seq.int(max(all.fits$dimensions))){
+		alphas.d <- refp$weights[d] * (refp$response[,d] %*% t(refp$effect[,d]))
+		write.table(
+			alphas.d,
+			paste0("../../results/Spain/spain.",which.treatment,".full.alphas.",d,".fit.csv")
+		)
+	}
+
+	which.dim <- min(which(cumsum(refp$weights**2 / sum(refp$weights**2))>0.95))
+
+	# obtain the best 1D fit and write out its alpha values
+	which.fit <- which.min(subset(all.fits, dimensions==which.dim)$AIC)
+	load(paste0('../../results/Spain/',rownames(subset(all.fits, dimensions==which.dim)[which.fit,])))
+	assign("y", eval(parse(text = paste0(which.treatment,".optim.lowD"))))
+	refp <- response.effect.from.pars(
+		y@coef,
+		targets,
+		competitors,
+		which.dim
+	)
+	write.table(
+		refp$alphas,
+		paste0("../../results/Spain/spain.",which.treatment,".D",which.dim,".alphas.fit.csv")
+	)
+
 }
