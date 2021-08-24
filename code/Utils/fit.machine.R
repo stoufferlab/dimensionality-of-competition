@@ -1,12 +1,12 @@
 
 library(bbmle)
 library(here)
+source(here('code/Utils/cayley.R'))
 source(here('code/Utils/dev.fun.R'))
 source(here('code/Utils/get.alphas.from.model.R'))
 source(here('code/Utils/glm.coefs.from.traits.R'))
 source(here('code/Utils/null.pars.R'))
 source(here('code/Utils/response.effect.from.pars.R'))
-source(here('code/Utils/cayley.R'))
 
 ###############################################################################
 ###############################################################################
