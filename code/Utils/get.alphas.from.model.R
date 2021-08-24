@@ -9,7 +9,11 @@ get.alphas.from.model <- function(model, model.type=c(0,1,2,3,4), targets, compe
 	lambdas <- 1 / coefs[paste0("target",targets), "Estimate"]
 
 	# generate a container for alphas coefficients
-	alphas <- matrix(0, length(targets), length(competitors))
+	if(zeros){
+		alphas <- matrix(0, length(targets), length(competitors))
+	}else{
+		alphas <- matrix(NA, length(targets), length(competitors))
+	}
 	rownames(alphas) <- targets
 	colnames(alphas) <- competitors
 
