@@ -19,14 +19,13 @@ for(which.treatment in c('C','T')){
 		seq.int(length(targets)),
 		function(d){
 			saved.fits <- list.files(
-				'../../results/Spain/',
+				'../../fits/Spain/',
 				pattern=paste0(which.treatment,'.optim.D',d,'[.]')
 			)
 			aics <- sapply(
 				saved.fits,
 				function(x){
-					q <- try(load(paste0('../../results/Spain/',x)))
-					# print(paste0('../../results/Spain/',x))
+					q <- try(load(paste0('../../fits/Spain/',x)))
 					assign("y", eval(parse(text = paste0(which.treatment,".optim.lowD"))))
 					if(!y@details$good){
 						ret <- c(
@@ -117,7 +116,7 @@ for(which.treatment in c('C','T')){
 
 	# obtain the best full dimension fit and write out its alpha decomposition
 	which.fit <- which.min(subset(all.fits, dimensions==max(all.fits$dimensions))$AIC)
-	load(paste0('../../results/Spain/',rownames(subset(all.fits, dimensions==max(all.fits$dimensions))[which.fit,])))
+	load(paste0('../../fits/Spain/',rownames(subset(all.fits, dimensions==max(all.fits$dimensions))[which.fit,])))
 	assign("y", eval(parse(text = paste0(which.treatment,".optim.lowD"))))
 	refp <- response.effect.from.pars(
 		y@coef,
@@ -158,9 +157,9 @@ for(which.treatment in c('C','T')){
 
 	which.dim <- min(which(cumsum(refp$weights**2 / sum(refp$weights**2))>0.95))
 
-	# obtain the best 1D fit and write out its alpha values
+	# obtain the best low-D fit and write out its alpha values
 	which.fit <- which.min(subset(all.fits, dimensions==which.dim)$AIC)
-	load(paste0('../../results/Spain/',rownames(subset(all.fits, dimensions==which.dim)[which.fit,])))
+	load(paste0('../../fits/Spain/',rownames(subset(all.fits, dimensions==which.dim)[which.fit,])))
 	assign("y", eval(parse(text = paste0(which.treatment,".optim.lowD"))))
 	refp <- response.effect.from.pars(
 		y@coef,

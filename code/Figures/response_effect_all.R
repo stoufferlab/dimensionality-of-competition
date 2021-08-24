@@ -95,22 +95,22 @@ for(i in 1:4){
 				if(j==1){
 					all.fits <- read.table('../../results/Spain/spain.Control.fit.summary.csv')
 					which.fit <- which.min(subset(all.fits, dimensions==2)$AIC)
-					load(paste0('../../results/Spain/',rownames(subset(all.fits, dimensions==2)[which.fit,])))
+					load(paste0('../../fits/Spain/',rownames(subset(all.fits, dimensions==2)[which.fit,])))
 					assign("optim.lowD", eval(parse(text = paste0("Control.optim.lowD"))))
 				}else if(j==2){
 					all.fits <- read.table('../../results/Spain/spain.Treatment.fit.summary.csv')
 					which.fit <- which.min(subset(all.fits, dimensions==3)$AIC)
-					load(paste0('../../results/Spain/',rownames(subset(all.fits, dimensions==3)[which.fit,])))
+					load(paste0('../../fits/Spain/',rownames(subset(all.fits, dimensions==3)[which.fit,])))
 					assign("optim.lowD", eval(parse(text = paste0("Treatment.optim.lowD"))))
 				}else if(j==3){
 					all.fits <- read.table('../../results/Australia/australia.Open.fit.summary.csv')
 					which.fit <- which.min(subset(all.fits, dimensions==1)$AIC)
-					load(paste0('../../results/Australia/',rownames(subset(all.fits, dimensions==1)[which.fit,])))
+					load(paste0('../../fits/Australia/',rownames(subset(all.fits, dimensions==1)[which.fit,])))
 					assign("optim.lowD", eval(parse(text = paste0("Open.optim.lowD"))))
 				}else{
 					all.fits <- read.table('../../results/Australia/australia.Shade.fit.summary.csv')
 					which.fit <- which.min(subset(all.fits, dimensions==2)$AIC)
-					load(paste0('../../results/Australia/',rownames(subset(all.fits, dimensions==2)[which.fit,])))
+					load(paste0('../../fits/Australia/',rownames(subset(all.fits, dimensions==2)[which.fit,])))
 					assign("optim.lowD", eval(parse(text = paste0("Shade.optim.lowD"))))
 				}
 				if(which.trait <= optim.lowD@data$dimensions){

@@ -22,7 +22,7 @@ par(mar = c(5, 4, 2.5, 1.5))
 
 all.fits <- read.table('../../results/Spain/spain.Control.fit.summary.csv')
 which.fit <- which.min(subset(all.fits, dimensions==2)$AIC)
-load(paste0('../../results/Spain/',rownames(subset(all.fits, dimensions==2)[which.fit,])))
+load(paste0('../../fits/Spain/',rownames(subset(all.fits, dimensions==2)[which.fit,])))
 assign("optim.lowD", eval(parse(text = paste0("Control.optim.lowD"))))
 
 which.trait <- 1
@@ -105,7 +105,7 @@ y1 <- grconvertY(apply(responses, 1, quantile, probs=c(0.5)), to="ndc")
 
 all.fits <- read.table('../../results/Spain/spain.Treatment.fit.summary.csv')
 which.fit <- which.min(subset(all.fits, dimensions==3)$AIC)
-load(paste0('../../results/Spain/',rownames(subset(all.fits, dimensions==3)[which.fit,])))
+load(paste0('../../fits/Spain/',rownames(subset(all.fits, dimensions==3)[which.fit,])))
 assign("optim.lowD", eval(parse(text = paste0("Treatment.optim.lowD"))))
 
 which.trait <- 1
