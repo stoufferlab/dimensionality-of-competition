@@ -19,8 +19,8 @@ kinlock.transformed <- apply(
 				nrow=spp,
 				ncol=spp
 			)
-			res$alpha <- (1 - res$RII)/(1 + res$RII)-1
-			res$usable <- ifelse(any(is.na(res$alpha)),FALSE,TRUE)
+			res$alphaijNj <- (1 - res$RII)/(1 + res$RII) - 1
+			res$usable <- ifelse(any(is.na(res$alphaijNj)),FALSE,TRUE)
 		}else{
 			res$RII <- matrix(
 				as.numeric(strsplit(as.character(x["NetworkMonoCtrl"]),",")[[1]]),
@@ -28,9 +28,8 @@ kinlock.transformed <- apply(
 				nrow=spp,
 				ncol=spp
 			)
-			res$P <- (1 + res$RII)/(1 - res$RII)
-			res$Q <- 1/res$P
-			res$usable <- ifelse(any(is.na(res$Q)),FALSE,TRUE)
+			res$RelativeYield <- (1 + res$RII)/(1 - res$RII)
+			res$usable <- FALSE #ifelse(any(is.na(res$RelativeYield)),FALSE,TRUE)
 		}
 		
 		return(res)
@@ -44,11 +43,12 @@ kinlock.full <- kinlock.transformed[which(sapply(kinlock.transformed,function(x)
 kinlock.full <- lapply(
 	kinlock.full,
 	function(x) {
-		if("alpha" %in% names(x)){
-			x$SVD <- svd(x$alpha)
-		}else{
-			x$SVD <- svd(x$P)
+		if("alphaijNj" %in% names(x)){
+			x$SVD <- svd(x$alphaijNj)
 		}
+		# else{
+		# 	x$SVD <- svd(x$RelativeYield)
+		# }
 		return(x)
 	}
 )
@@ -72,7 +72,7 @@ lapply(
 		)
 
 		# leading traits
-		dhat <- igraph::dim_select(x$SVD$d)
+		dhat <- min(which(rsq.cum > 0.95))
 		response.traits <- x$SVD$u[,1:dhat,drop=FALSE]
 		effect.traits <- x$SVD$v[,1:dhat,drop=FALSE]
 
@@ -102,7 +102,7 @@ lapply(
 			approximation <- response.traits %*% x$SVD$d[1] %*% t(effect.traits)
 		}
 
-		if("alpha" %in% names(x)){
+		if("alphaijNj" %in% names(x)){
 			write.table(
 				approximation,
 				file=paste0("../../results/Kinlock/",prefix,".alphas.fit.csv"),
