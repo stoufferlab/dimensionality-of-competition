@@ -154,6 +154,20 @@ for(i in 1:4){
 					abline(h=0,lwd=1.5,lty='dotted')
 					abline(v=0,lwd=1.5,lty='dotted')
 
+					quants <- 0.25
+					segments(
+						apply(effects, 1, quantile, probs=c(quants)),
+						apply(responses, 1, quantile, probs=c(0.5)),
+						apply(effects, 1, quantile, probs=c(1-quants)),
+						apply(responses, 1, quantile, probs=c(0.5))
+					)
+					segments(
+						apply(effects, 1, quantile, probs=c(0.5)),
+						apply(responses, 1, quantile, probs=c(quants)),
+						apply(effects, 1, quantile, probs=c(0.5)),
+						apply(responses, 1, quantile, probs=c(1-quants)),
+					)
+
 					if(which.trait==1){
 						mtext("Response trait", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 						l <- switch(as.character(j),
