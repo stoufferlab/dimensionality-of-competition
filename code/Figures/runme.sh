@@ -15,9 +15,8 @@ Rscript response_effect_all.R
 # observed vs fit matrices for all datasets
 Rscript alpha_matrices_obs_fit.R
 # R^2 and variance per dimension for all datasets
-#TODO Rscript AIC_raw_data.R
-#TODO Rscript rsquared.R
-#TODO Rscript variance_explained.R
+Rscript rsquared.R
+Rscript variance_explained.R
 
 Rscript AIC_randomized.R
 # intrinsic species performance
