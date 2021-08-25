@@ -205,12 +205,11 @@ for(i in 1:4){
 				e.traits <- read.table(effe[k])
 				e.traits <- e.traits[grep("Other",rownames(e.traits),invert=TRUE,value=TRUE),,drop=FALSE]
 
-				# check for less intuitive sign structure and reverse signs if needed
-				if(sum((r.traits[,1]<0) + (e.traits[,1]<0))/(nrow(r.traits)+nrow(e.traits)) > 0.5){
-					r.traits <- -r.traits
-					e.traits <- -e.traits
-				}
-			
+				# # check for less intuitive sign structure and reverse signs if needed
+				# if(sum((r.traits[,1]<0) + (e.traits[,1]<0))/(nrow(r.traits)+nrow(e.traits)) > 0.5){
+				# 	r.traits <- -r.traits
+				# 	e.traits <- -e.traits
+				# }
 				
 				# DEBUG check for SEs
 				par(xpd=TRUE)

@@ -76,6 +76,20 @@ lapply(
 		response.traits <- x$SVD$u[,1:dhat,drop=FALSE]
 		effect.traits <- x$SVD$v[,1:dhat,drop=FALSE]
 
+		# for uniqueness keep "diagonal" of effect traits positive
+	    response.traits <- sweep(
+	        response.traits,
+	        2,
+	        sign(diag(effect.traits)),
+	        "*"
+	    )
+	    effect.traits <- sweep(
+	        effect.traits,
+	        2,
+	        sign(diag(effect.traits)),
+	        "*"
+	    )
+
 		for(i in 1:dhat){
 			write.table(
 				response.traits[,i],

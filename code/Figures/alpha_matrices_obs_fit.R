@@ -144,11 +144,11 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 		axis.row=NULL
 	)
 
-	dhat <- igraph::dim_select(svd(fit)$d)
+	dhat <- qr(fit)$rank
 	
 	# title(expression(paste0('Fitted (hat(d)=',dhat,')')), line=1.2, cex.main=2.3)
 	# title(expression(bold('Low dimension fit')), line=2.15, cex.main=2.1, xpd=TRUE)
-	title('Low dimension fit', line=1.2, cex.main=2.3, xpd=TRUE)
+	title(paste0(dhat,'-dimension fit'), line=1.2, cex.main=2.3, xpd=TRUE)
 	mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
 	mtext("Response species", 2, outer=FALSE, line=1., xpd=NA, cex=1.75)
 
