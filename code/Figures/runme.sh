@@ -1,23 +1,24 @@
 #!/bin/bash
 
 # figure 1
-Rscript alpha_matrices_godoy_T.R
+Rscript alpha_matrices_spain_treatment.R
 # figure 2
 Rscript dimensionality.R
 # figure 3
-Rscript response_effect_godoy_T.R
+Rscript response_effect_spain_treatment.R
 # figure 4
-Rscript control_treatment_alphas.R
+#TODO Rscript control_treatment_alphas.R
 
 # supps
 # response effect traits for all other datasets
-Rscript response_effect_others.R
+Rscript response_effect_all.R
 # observed vs fit matrices for all datasets
 Rscript alpha_matrices_obs_fit.R
 # R^2 and variance per dimension for all datasets
-Rscript AIC_raw_data.R
-Rscript rsquared.R
-Rscript variance_explained.R
+#TODO Rscript AIC_raw_data.R
+#TODO Rscript rsquared.R
+#TODO Rscript variance_explained.R
+
 Rscript AIC_randomized.R
 # intrinsic species performance
-Rscript control_treatment_fecundity.R
+#TODO Rscript control_treatment_fecundity.R
