@@ -46,6 +46,6 @@ source(here('code/Utils/fit.machine.R'))
 # save the fits and write out a table of the AICs
 Control.optim.lowD <- optim.lowD
 save(Control.optim.lowD,
-	file=paste0("../../results/Spain/Control.optim.D",dimensions,".r",which.n.random,".Rdata"),
+	file=paste0("../../fits/Spain/Control.optim.D",dimensions,".r",which.n.random,".Rdata"),
 	ascii = TRUE
 )
