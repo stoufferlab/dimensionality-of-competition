@@ -6,11 +6,11 @@ library(RColorBrewer)
 
 # determine the best 
 
-A <- as.matrix(read.table("../../results/Spain/spain.Treatment.full.alphas.fit.csv"))
-A1 <- as.matrix(read.table("../../results/Spain/spain.Treatment.full.alphas.1.fit.csv"))
-A2 <- as.matrix(read.table("../../results/Spain/spain.Treatment.full.alphas.2.fit.csv"))
-A3 <- as.matrix(read.table("../../results/Spain/spain.Treatment.full.alphas.3.fit.csv"))
-A4 <- as.matrix(read.table("../../results/Spain/spain.Treatment.full.alphas.4.fit.csv"))
+A <- as.matrix(read.table("../../results/Spain/spain.Control.full.alphas.fit.csv"))
+A1 <- as.matrix(read.table("../../results/Spain/spain.Control.full.alphas.1.fit.csv"))
+A2 <- as.matrix(read.table("../../results/Spain/spain.Control.full.alphas.2.fit.csv"))
+A3 <- as.matrix(read.table("../../results/Spain/spain.Control.full.alphas.3.fit.csv"))
+A4 <- as.matrix(read.table("../../results/Spain/spain.Control.full.alphas.4.fit.csv"))
 #A <- A1 + A2 + A3 #as.matrix(read.table("../../results/Godoy/godoy.T.alphas.csv"))
 
 rownames(A) <- colnames(A) <- letters[1:nrow(A)]
@@ -94,7 +94,7 @@ plot(
 	asp=1
 )
 
-title('b First dimension (91.0%)', line=1.2, cex.main=2.3)
+title('b First dimension (91.2%)', line=1.2, cex.main=2.3)
 mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
 mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
 
@@ -116,7 +116,7 @@ plot(
 	asp=1
 )
 
-title('c Second dimension (3.7%)', line=1.2, cex.main=2.3)
+title('c Second dimension (6.0%)', line=1.2, cex.main=2.3)
 mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
 mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
 
@@ -136,7 +136,7 @@ plot(
 	axis.row=NULL,
 	asp=1
 )
-title('d Third dimension (2.3%)', line=1.2, cex.main=2.3, xpd=NA)
+title('d Third dimension (1.0%)', line=1.2, cex.main=2.3, xpd=NA)
 mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
 mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
 # mtext("+", 2, outer=FALSE, line=3.7, xpd=NA, cex=3.5)
@@ -164,7 +164,7 @@ plot(
 	axis.row=NULL,
 	asp=1
 )
-title('e Fourth dimension (2.0%)', line=1.2, cex.main=2.3, xpd=NA)
+title('e Fourth dimension (0.7%)', line=1.2, cex.main=2.3, xpd=NA)
 mtext("Effect species", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
 mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
 # mtext("+", 2, outer=FALSE, line=3.7, xpd=NA, cex=3.5)
