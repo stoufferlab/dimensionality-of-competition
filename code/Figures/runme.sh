@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # figure 1
-Rscript alpha_matrices_spain_treatment.R
+Rscript alpha_matrices_spain_control.R
 # figure 2
 Rscript dimensionality.R
 # figure 3
-Rscript response_effect_spain_treatment.R
+Rscript response_effect_spain.R
 # figure 4
 #TODO Rscript control_treatment_alphas.R
 
