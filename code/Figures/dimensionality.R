@@ -117,7 +117,7 @@ axis(
 
 # add a 45 degree line
 abline(0,1,lwd=2.5,lty='dotted')
-abline(h=1,lwd=2.5,lty='dotted')
+#abline(h=1,lwd=2.5,lty='dotted')
 
 xpred <- seq(1,12,length.out=1000)
 
