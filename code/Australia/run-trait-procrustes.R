@@ -1,42 +1,47 @@
 
 # conduct procrustes tests between species-species trait matrices
 
-# empty containers for the traits
-control.traits <- list(
-	response = NULL,
-	effect = NULL
+library(here)
+source(here('code/Utils/response.effect.from.pars.R'))
+source(here('code/Utils/cayley.R'))
+
+# read in the best low-D control fit
+all.fits <- read.table('../../results/Australia/australia.Open.fit.summary.csv')
+which.fit <- which.min(subset(all.fits, dimensions==1)$AIC)
+load(paste0('../../fits/Australia/',rownames(subset(all.fits, dimensions==1)[which.fit,])))
+control.traits <- response.effect.from.pars(
+	Open.optim.lowD@coef,
+	Open.optim.lowD@data$targets,
+	Open.optim.lowD@data$competitors, 
+	Open.optim.lowD@data$dimensions
 )
-treatment.traits <- list(
-	response = NULL,
-	effect = NULL
+
+# read in the best low-D treatment fit
+all.fits <- read.table('../../results/Australia/australia.Shade.fit.summary.csv')
+which.fit <- which.min(subset(all.fits, dimensions==2)$AIC)
+load(paste0('../../fits/Australia/',rownames(subset(all.fits, dimensions==2)[which.fit,])))
+treatment.traits <- response.effect.from.pars(
+	Shade.optim.lowD@coef,
+	Shade.optim.lowD@data$targets,
+	Shade.optim.lowD@data$competitors, 
+	Shade.optim.lowD@data$dimensions
 )
 
-# read in the control response traits
-control.traits$response <- data.frame(T1=read.table("../../results/Wainwright/wainwright.Open.response.1.csv")[,1])
-# control.traits$response$T2 <- read.table("../../results/Godoy/godoy.C.response.2.csv")[,1]
-# control.traits$response$T3 <- read.table("../../results/Godoy/godoy.C.response.3.csv")[,1]
+# remove the "Other" effect species
+control.traits$effect <- control.traits$effect[rownames(control.traits$effect)!="Other",,drop=FALSE]
+treatment.traits$effect <- treatment.traits$effect[rownames(treatment.traits$effect)!="Other",,drop=FALSE]
 
-# read in the control effect traits
-control.traits$effect <- data.frame(T1=read.table("../../results/Wainwright/wainwright.Open.effect.1.csv")[,1])
-# control.traits$effect$T2 <- read.table("../../results/Godoy/godoy.C.effect.2.csv")[,1]
-# control.traits$effect$T3 <- read.table("../../results/Godoy/godoy.C.effect.3.csv")[,1]
-control.traits$effect <- control.traits$effect[-9,]
-
-# read in the treatment response traits
-treatment.traits$response <- data.frame(T1=read.table("../../results/Wainwright/wainwright.Shade.response.1.csv")[,1])
-# treatment.traits$response$T2 <- read.table("../../results/Godoy/godoy.T.response.2.csv")[,1]
-# treatment.traits$response$T3 <- read.table("../../results/Godoy/godoy.T.response.3.csv")[,1]
-
-# read in the treatment effect traits
-treatment.traits$effect <- data.frame(T1=read.table("../../results/Wainwright/wainwright.Shade.effect.1.csv")[,1])
-# treatment.traits$effect$T2 <- read.table("../../results/Godoy/godoy.T.effect.2.csv")[,1]
-# treatment.traits$effect$T3 <- read.table("../../results/Godoy/godoy.T.effect.3.csv")[,1]
-treatment.traits$effect <- treatment.traits$effect[-9,]
 
 ## all traits
 proc.test <- vegan::protest(
-	dist(cbind(control.traits$response, control.traits$effect)),
-	dist(cbind(treatment.traits$response, treatment.traits$response))
+	dist(cbind(
+		control.traits$response,
+		control.traits$effect
+	)),
+	dist(cbind(
+		treatment.traits$response,
+		treatment.traits$effect
+	))
 )
 print(proc.test)
 
