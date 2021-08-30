@@ -194,6 +194,6 @@ x2 <- apply(effects, 1, quantile, probs=c(0.5))
 y2 <- apply(responses, 1, quantile, probs=c(0.5))
 
 par(xpd=NA)
-segments(x1, y1, x2, y2, col='grey32', lty='dotted')
+segments(x1, y1, x2, y2, col='grey32', lty='dotted', lwd=1.5)
 
 dev.off()
