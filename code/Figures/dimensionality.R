@@ -124,20 +124,20 @@ xpred <- seq(1,12,length.out=1000)
 prediction <- predict(
 	glm(ninetyfivepercent ~ 0+I(species-1), family="poisson", data=dd),
 	newdata=data.frame(species=xpred),
-	type="response",
+	#type="response",
 	se.fit=TRUE
 )
 
 polygon(
 	x=c(xpred, rev(xpred)),
-	y=c(prediction$fit+prediction$se.fit, rev(prediction$fit-prediction$se.fit)),
+	y=exp(c(prediction$fit+prediction$se.fit, rev(prediction$fit-prediction$se.fit))),
 	col=grey(0.75),
 	border=NA
 )
 
 lines(
 	x=xpred,
-	y=prediction$fit,
+	y=exp(prediction$fit),
 	col=grey(0.25)
 )
 
