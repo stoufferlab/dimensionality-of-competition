@@ -1,4 +1,6 @@
 
+set.seed(67890)
+
 # library(ggplot2)
 library(RColorBrewer)
 # library(plot.matrix)
@@ -15,19 +17,10 @@ wainwright.dir <- "../../results/Australia"
 wainwright.resp <- list.files(wainwright.dir,"response[.][[:digit:]][.]csv",full.names=TRUE)
 wainwright.effe <- list.files(wainwright.dir,"effect[.][[:digit:]][.]csv",full.names=TRUE)
 
-# # datasets from the Levine collection
-# levine.dir <- "../../results/Levine"
-# levine.resp <- list.files(levine.dir,"response[.][[:digit:]][.]csv",full.names=TRUE)
-# levine.effe <- list.files(levine.dir,"effect[.][[:digit:]][.]csv",full.names=TRUE)
-
 # datasets from the Kinlock collection
 kinlock.dir <- "../../results/Kinlock"
 kinlock.resp <- list.files(kinlock.dir,"response[.][[:digit:]][.]csv",full.names=TRUE)
 kinlock.effe <- list.files(kinlock.dir,"effect[.][[:digit:]][.]csv",full.names=TRUE)
-
-# # remove Engel and Landa studies since they are part of Levine collection
-# kinlock.resp <- grep("Landa|Engel",kinlock.resp,invert=TRUE,value=TRUE)
-# kinlock.effe <- grep("Landa|Engel",kinlock.effe,invert=TRUE,value=TRUE)
 
 # put everything together
 response.files <- c(
