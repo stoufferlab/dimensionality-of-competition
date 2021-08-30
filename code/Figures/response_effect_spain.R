@@ -1,8 +1,10 @@
 
+set.seed(12345)
+
 library(RColorBrewer)
 # library(plot.matrix)
 
-setEPS(width=11, height=4.)
+setEPS(width=11, height=5.)
 postscript('../../manuscript/Figures/response.effect.spain.eps')
 
 layout(mat = matrix(
@@ -10,13 +12,13 @@ layout(mat = matrix(
         nrow = 1, 
         ncol = 2
        ),
-       heights = 1,
+       heights = 2.4,
        widths = c(2,2)
 )
 
 par(oma = c(0, 2.5, 0, 2.5))
 
-par(mar = c(5, 4, 2.5, 1.5))
+par(mar = c(4, 4, 2.5, 1.5))
 
 # Control values
 
@@ -120,7 +122,7 @@ padj <- 0 #.25
 
 # par(mar = c(5, 4.5, 4.5, 0.5), oma = c(0, 1.25, 0, 5.5))
 
-par(mar = c(5, 1.5, 2.5, 4))
+par(mar = c(4, 1.5, 2.5, 4))
 
 plot(
 	x=NA,
