@@ -196,7 +196,7 @@ mtext("Response species", 2, outer=FALSE, line=0.8, xpd=NA, cex=3)
 # pal <- brewer.pal(9, "Blues")
 # pal <- colorRampPalette(pal)(10000)
 par(mar = c(5, 1.5, 4.5, 3.0))
-colorbarr <- t(matrix(seq(-1.5, 3, length.out=length(pal)), length(pal), 1))
+colorbarr <- t(matrix(seq(-1.5, 5.5, length.out=length(pal)), length(pal), 1))
 image(
 	colorbarr,
 	col=pal,
