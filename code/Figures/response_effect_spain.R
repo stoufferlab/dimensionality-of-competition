@@ -53,7 +53,7 @@ plot(
 # abline(h=0,lwd=1.5,lty='dashed',col='grey')
 # abline(v=0,lwd=1.5,lty='dashed',col='grey')
 
-mtext('a  Dataset 1-Wet', 3, line=0.85, cex=2.2)
+mtext('A  Dataset 1-Wet', 3, line=0.85, cex=2.2)
 text(-0.25,0.4,"Response trait", adj=0.5, xpd=NA, cex=2, srt=90)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
 mtext("Effect trait", 1, outer=FALSE, line=2.75, xpd=NA, cex=2)
@@ -140,7 +140,7 @@ plot(
 # abline(h=0,lwd=1.5,lty='dashed',col='grey')
 # abline(v=0,lwd=1.5,lty='dashed',col='grey')
 
-mtext('b  Dataset 1-Dry', 3, line=0.85, cex=2.2)
+mtext('B  Dataset 1-Dry', 3, line=0.85, cex=2.2)
 text(1.25,0.4,"Response trait", adj=0.5, xpd=NA, cex=2, srt=270)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
 mtext("Effect trait", 1, outer=FALSE, line=2.75, xpd=NA, cex=2)
