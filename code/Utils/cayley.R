@@ -27,8 +27,8 @@ Xmatrix <- function(S, d, v){
     return(X)
 }
 
-# modified Cayley transform to produce S x d matrix from S x S matrix X
-cayley <- function(X, d){
+# Cayley transform to produce S x S orthonormal matrix from S x S matrix X
+cayley <- function(X){
     S <- nrow(X)
     C <- (diag(S) + X) %*% solve(diag(S) - X)
     return(C)
