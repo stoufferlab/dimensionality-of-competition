@@ -122,7 +122,7 @@ abline(0,1,lwd=2.5,lty='dotted')
 xpred <- seq(1,12,length.out=1000)
 
 prediction <- predict(
-	glm(ninetyfivepercent ~ 0+I(species-1), family="poisson", data=dd),
+	glm(ninetyfivepercent ~ 0+I(species-1), family="gaussian", data=dd, offset=rep(1,length(species))),
 	newdata=data.frame(species=xpred),
 	#type="response",
 	se.fit=TRUE
@@ -130,14 +130,14 @@ prediction <- predict(
 
 polygon(
 	x=c(xpred, rev(xpred)),
-	y=exp(c(prediction$fit+prediction$se.fit, rev(prediction$fit-prediction$se.fit))),
+	y=(c(prediction$fit+prediction$se.fit, rev(prediction$fit-prediction$se.fit))),
 	col=grey(0.75),
 	border=NA
 )
 
 lines(
 	x=xpred,
-	y=exp(prediction$fit),
+	y=(prediction$fit),
 	col=grey(0.25)
 )
 
