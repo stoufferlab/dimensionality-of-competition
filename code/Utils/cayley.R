@@ -1,7 +1,6 @@
 
 # QR-like parameterization based method using Cayley transformations appearing in
-# The multifacet graphically contracted function method. II. A general procedure for the parameterization of orthogonal matrices and its application to arc factors
-# The represtnation and parameterizatoin of orthogonal matrices
+# The representation and parameterization of orthogonal matrices
 # The Journal of Physical Chemistry (2015)
 # https://doi.org/10.1021/acs.jpca.5b02015
 # Shepard, Brozell, and Gidofalvi
