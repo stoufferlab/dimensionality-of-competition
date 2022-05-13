@@ -69,7 +69,7 @@ rownames(dd) <- all.files
 
 # where to save the figure
 h <- 5
-setEPS(width=5.5, height=3.7)
+setEPS(width=4.0, height=3.7)
 postscript('../../manuscript/Figures/dimensionality.eps')
 
 par(mar = c(2, 2.5, 0.5, 1.0), oma = c(2.5, 2.5, 0.75, 1.0))
