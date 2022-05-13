@@ -97,7 +97,8 @@ plot(
 # add the x axis
 axis(
 	1,
-	at=c(1,4,8,12),
+	at=seq(1,12,1),
+	labels=c("1","","","4","","","","8","","","","12"),
 	tcl=0.5,
 	cex.axis=cex.axis,
 	padj=padj,
@@ -107,12 +108,15 @@ axis(
 # add the y axis
 axis(
 	2,
-	at=c(1,4,8,12),
-	# labels=c("","1","4","8","12"),
+	line=0,
+	at=seq(1,12,1),
+	labels=c("1","","","4","","","","8","","","","12"),
 	tcl=0.5,
 	cex.axis=cex.axis,
-	# padj=padj,
-	las=1
+	hadj=0.75,
+	padj=0.50,
+	las=1,
+	gap.axis=0
 )
 
 # add a 45 degree line

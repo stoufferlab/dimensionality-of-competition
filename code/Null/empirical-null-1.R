@@ -1,4 +1,6 @@
 
+library(plotrix)
+
 # read in the Kinlock data
 kinlock <- read.csv("../../data/Kinlock/Data_PlantInteractionNetworks.csv")
 
@@ -113,8 +115,8 @@ cex.axis <- 1.7
 padj <- 0
 
 plot(
-	spp-0.125,
-	obs,
+	NA,
+	NA,
 	xlim=c(1,12),
 	ylim=c(1,12),
 	# xlab="Species richness",
@@ -132,7 +134,8 @@ plot(
 # add the x axis
 axis(
 	1,
-	at=c(1,4,8,12),
+	at=seq(1,12,1),
+	labels=c("1","","","4","","","","8","","","","12"),
 	tcl=0.5,
 	cex.axis=cex.axis,
 	padj=padj,
@@ -142,12 +145,15 @@ axis(
 # add the y axis
 axis(
 	2,
-	at=c(1,4,8,12),
-	# labels=c("","1","4","8","12"),
+	line=0,
+	at=seq(1,12,1),
+	labels=c("1","","","4","","","","8","","","","12"),
 	tcl=0.5,
 	cex.axis=cex.axis,
-	# padj=padj,
-	las=1
+	hadj=0.75,
+	padj=0.50,
+	las=1,
+	gap.axis=0
 )
 
 abline(0,1,lty='dotted')
@@ -230,9 +236,16 @@ segments(
 	y1=null.mean - null.sd
 )
 
-points(
+# spread points out to show redundancy
+jitteredxy <- cluster.overplot(
 	spp-0.125,
 	obs,
+	away=c(0.25,0.25)
+)
+
+points(
+	jitteredxy$x,
+	jitteredxy$y,
 	pch=21,
 	bg="#a6cee3",
 	cex=1,
@@ -249,7 +262,7 @@ points(
 	cex=1
 )
 
-mtext("Niche dimensionality", 2, line=3.15, xpd=NA, adj=0.5, cex=2)
+mtext("Niche dimensionality", 2, line=2.75, xpd=NA, adj=0.5, cex=2)
 
 mtext("Species richness", 1, outer=FALSE, xpd=NA, line=3.15, cex=2, adj=0.50)
 
