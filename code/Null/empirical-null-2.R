@@ -182,11 +182,11 @@ for(i in 1:(length(observed.data))){
 
 
 
-	# abline(
-	# 	v = obs$dhat,
-	# 	lwd=2.5,
-	# 	lty="dashed"
-	# )
+	abline(
+		v = obs$dhat,
+		lwd=2.5,
+		lty="dashed"
+	)
 
 	points(
 		c(0,1:spp),
