@@ -184,7 +184,7 @@ polygon(
 lines(
 	x=xpred,
 	y=(prediction$fit),
-	col=grey(0.25)
+	col='red' #grey(0.25)
 )
 
 # prediction for observed data
@@ -209,29 +209,29 @@ lines(
 )
 
 
-segments(
-	x0=spp-0.125,
-	x1=spp+0.125,
-	y0=obs,
-	y1=null.mean,
-	lwd=1.5,
-	lty=2,
-	col=grey(0.33)
-)
+# segments(
+# 	x0=spp,
+# 	x1=spp,
+# 	y0=obs,
+# 	y1=null.mean,
+# 	lwd=1.5,
+# 	lty=2,
+# 	col=grey(0.33)
+# )
+
+# segments(
+# 	x0=spp,
+# 	x1=spp,
+# 	y0=obs,
+# 	y1=null.mean,
+# 	lwd=1.5,
+# 	lty=2,
+# 	col=grey(0.5)
+# )
 
 segments(
-	x0=spp-0.125,
-	x1=spp+0.125,
-	y0=obs,
-	y1=null.mean,
-	lwd=1.5,
-	lty=2,
-	col=grey(0.5)
-)
-
-segments(
-	x0=spp+0.125,
-	x1=spp+0.125,
+	x0=spp,
+	x1=spp,
 	y0=null.mean + null.sd,
 	y1=null.mean - null.sd
 )
@@ -244,8 +244,8 @@ jitteredxy <- cluster.overplot(
 )
 
 points(
-	jitteredxy$x,
-	jitteredxy$y,
+	spp,
+	obs,
 	pch=21,
 	bg="#a6cee3",
 	cex=1,
@@ -254,7 +254,7 @@ points(
 )
 
 points(
-	spp+0.125,
+	spp,
 	null.mean,
 	# col='red',
 	pch=22,
