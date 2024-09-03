@@ -147,11 +147,11 @@ segments(
 
 text("a", x=1, y=100, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
 mtext("Intrinsic number of fruits", 2, outer=FALSE, line=5.75, xpd=NA, cex=1.3)
-mtext("(Simulated drought)", 2, outer=FALSE, line=4.25, xpd=NA, cex=1.3)
+mtext("(Dry)", 2, outer=FALSE, line=4.25, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
 mtext("Intrinsic number of fruits", 1, outer=FALSE, line=1.75, xpd=NA, cex=1.3)
-mtext("(Control/Wet)", 1, outer=FALSE, line=3.00, xpd=NA, cex=1.3)
+mtext("(Wet)", 1, outer=FALSE, line=3.00, xpd=NA, cex=1.3)
 # box(lwd=1.5)
 
 ##################
@@ -280,10 +280,10 @@ segments(
 
 text("b", x=1, y=10000, xpd=NA, cex=2, font=2, adj=c(-1,1.3))
 mtext("Intrinsic seed set", 2, outer=FALSE, line=5.75, xpd=NA, cex=1.3)
-mtext("(Artifically shaded)", 2, outer=FALSE, line=4.25, xpd=NA, cex=1.3)
+mtext("(Shade)", 2, outer=FALSE, line=4.25, xpd=NA, cex=1.3)
 # mtext("(treatment)", 2, outer=FALSE, line=3.25, xpd=NA, cex=1.5)
 # mtext("Trait", 1, outer=FALSE, line=1.5, xpd=NA, cex=1.5)
 mtext("Intrinsic seed set", 1, outer=FALSE, line=1.75, xpd=NA, cex=1.3)
-mtext("(Control/Sun)", 1, outer=FALSE, line=3.00, xpd=NA, cex=1.3)
+mtext("(Sun)", 1, outer=FALSE, line=3.00, xpd=NA, cex=1.3)
 # box(lwd=1.5)
 dev.off()
