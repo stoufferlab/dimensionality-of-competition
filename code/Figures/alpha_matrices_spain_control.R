@@ -14,6 +14,24 @@ A4 <- as.matrix(read.table("../../results/Spain/spain.Control.full.alphas.4.fit.
 #A <- A1 + A2 + A3 #as.matrix(read.table("../../results/Godoy/godoy.T.alphas.csv"))
 
 rownames(A) <- colnames(A) <- letters[1:nrow(A)]
+
+# weights <- c(0.9,0.9)
+# hmm <- weights[1]*rowMeans(A) + weights[2]*colMeans(A)
+# # hmm <- 0.5*(apply(A,1,max) + apply(A,2,max))
+# # # # hmm <- 0.5*(apply(A,))
+# hmm.order <- (names(sort(rank(hmm),decreasing=TRUE))) #order(hmm, decreasing=TRUE)
+
+S <- svd(A)
+hmm <- S$u[,1]
+names(hmm) <- rownames(A)
+hmm.order <- (names(sort(rank(hmm),decreasing=FALSE)))
+
+# A1 <- S$d[1] * S$u[,1,drop=FALSE] %*% t(S$v[,1,drop=FALSE])
+# A2 <- S$d[2] * S$u[,2,drop=FALSE] %*% t(S$v[,2,drop=FALSE])
+# A3 <- S$d[3] * S$u[,3,drop=FALSE] %*% t(S$v[,3,drop=FALSE])
+# A4 <- S$d[4] * S$u[,4,drop=FALSE] %*% t(S$v[,4,drop=FALSE])
+
+rownames(A) <- colnames(A) <- letters[1:nrow(A)]
 rownames(A1) <- colnames(A1) <- letters[1:nrow(A1)]
 rownames(A2) <- colnames(A2) <- letters[1:nrow(A2)]
 rownames(A3) <- colnames(A3) <- letters[1:nrow(A3)]
@@ -27,11 +45,6 @@ rownames(A4) <- colnames(A4) <- letters[1:nrow(A4)]
 # make the first dimension relative
 # A1 <- A1 - A0
 
-weights <- c(0.9,0.9)
-hmm <- weights[1]*rowMeans(A) + weights[2]*colMeans(A)
-# hmm <- 0.5*(apply(A,1,max) + apply(A,2,max))
-# # # hmm <- 0.5*(apply(A,))
-hmm.order <- (names(sort(rank(hmm),decreasing=TRUE))) #order(hmm, decreasing=TRUE)
 
 A <- A[hmm.order,]
 A <- A[,hmm.order]
@@ -72,16 +85,19 @@ par(mar = c(5, 6, 4.5, 1.0), oma = c(0, 0, 0, 0.75))
 
 # add a color scale for fitness
 
+fmin <- round(fmin)
+fmax <- round(fmax)
+
 pal <- c(
-	rev(colorRampPalette(brewer.pal(9, "Blues"))(150)),
-	(colorRampPalette(brewer.pal(9, "Reds"))(550))
+	rev(colorRampPalette(brewer.pal(9, "Blues"))(1000*abs(fmin)/(fmax - fmin))),
+	(colorRampPalette(brewer.pal(9, "Reds"))(1000*abs(fmax)/(fmax - fmin)))
 )
 
 # plot the mean overall
 plot(
 	A1,
 	col=pal,
-	breaks=seq(-1.5, 5.5, length.out=length(pal)),
+	breaks=seq(fmin, fmax, length.out=length(pal)),
 	key=NULL,
 	xaxt='n',
 	yaxt='n',
@@ -103,7 +119,7 @@ mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
 plot(
 	A2,
 	col=pal,
-	breaks=seq(-1.5, 5.5, length.out=length(pal)),
+	breaks=seq(fmin, fmax, length.out=length(pal)),
 	key=NULL,
 	xaxt='n',
 	yaxt='n',
@@ -124,7 +140,7 @@ mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
 plot(
 	A3,
 	col=pal,
-	breaks=seq(-1.5, 5.5, length.out=length(pal)),
+	breaks=seq(fmin, fmax, length.out=length(pal)),
 	key=NULL,
 	xaxt='n',
 	yaxt='n',
@@ -152,7 +168,7 @@ mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
 plot(
 	A4,
 	col=pal,
-	breaks=seq(-1.5, 5.5, length.out=length(pal)),
+	breaks=seq(fmin, fmax, length.out=length(pal)),
 	key=NULL,
 	xaxt='n',
 	yaxt='n',
@@ -174,7 +190,7 @@ mtext("Response species", 2, outer=FALSE, line=0.0, xpd=NA, cex=1.75)
 plot(
 	A,
 	col=pal,
-	breaks=seq(-1.5, 5.5, length.out=length(pal)),
+	breaks=seq(fmin, fmax, length.out=length(pal)),
 	key=NULL,
 	xaxt='n',
 	yaxt='n',
@@ -196,7 +212,7 @@ mtext("Response species", 2, outer=FALSE, line=0.8, xpd=NA, cex=3)
 # pal <- brewer.pal(9, "Blues")
 # pal <- colorRampPalette(pal)(10000)
 par(mar = c(5, 1.5, 4.5, 3.0))
-colorbarr <- t(matrix(seq(-1.5, 5.5, length.out=length(pal)), length(pal), 1))
+colorbarr <- t(matrix(seq(fmin, fmax, length.out=length(pal)), length(pal), 1))
 image(
 	colorbarr,
 	col=pal,
@@ -205,8 +221,8 @@ image(
 	mgp=c(0.5,0.5,0.5)
 )
 text(1.75, 0.5, "Interaction strength", xpd=NA, cex=3.5, srt=270)
-mtext("+", 1, outer=FALSE, line=1.5, xpd=NA, cex=2.25)
-mtext("-", 3, outer=FALSE, line=0.5, xpd=NA, cex=2.25)
+mtext(paste0("+",abs(fmin)), 1, outer=FALSE, line=2.1, xpd=NA, cex=2.25)
+mtext(paste0("-",abs(fmax)), 3, outer=FALSE, line=0.5, xpd=NA, cex=2.25)
 
 # dev.copy(device=x11)
 # dev.print()#height=3, width=7)
