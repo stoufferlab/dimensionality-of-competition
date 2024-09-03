@@ -27,7 +27,7 @@ params <- list(
 )
 
 # initial condition for simulation in "dry" conditions
-N0 <- c(A=50,B=50)
+N0 <- c(A=1,B=95)
 
 # "dry" parameters
 params$alpha <- alphas[["dry"]]
@@ -43,7 +43,7 @@ pop_dyn_dry <- ode(
 )
 
 # initial condition for simulation in "wet" conditions
-N0 <- c(A=50,B=50)
+N0 <- c(A=95,B=1)
 
 # "wet" parameters
 params$alpha <- alphas[["wet"]]
@@ -57,9 +57,10 @@ pop_dyn_wet <- ode(
 	parms = params,
 	method='iteration'
 )
+pop_dyn_wet <- data.frame(pop_dyn_wet, interval_type = "wet")
 
 # alternate between "prolonged" wet and dry periods
-N0 <- c(A=50,B=50)
+N0 <- c(A=36,B=36)
 years_per_interval <- 5
 for(i in 1:10){
 	if(i %% 2){
@@ -98,7 +99,7 @@ for(i in 1:10){
 
 # alternate randomly between wet and dry periods
 set.seed(926541178)
-N0 <- c(A=50,B=50)
+N0 <- c(A=36,B=36)
 years_per_interval <- 1
 for(i in 1:50){
 	if(runif(1) < 0.5){
@@ -136,12 +137,12 @@ for(i in 1:50){
 }
 
 # make a figure of the predicted population dynamics
-setEPS(width=7, height=7)
-postscript('../../manuscript/Figures/cohen_watkinson.eps')
+setEPS(width=7, height=5.25)
+postscript('../../manuscript/Supplementary/Figures/cohen_watkinson.eps')
 
 layout(mat = matrix(
-		c(1, 2, 3, 4), 
-        nrow = 4, 
+		c(1, 2, 3), 
+        nrow = 3, 
         ncol = 1
        ),
        heights = rep(2.4, 4),
@@ -157,7 +158,12 @@ padj <- 0 #.25
 
 # prediction under only dry conditions
 lapply(
-	list(pop_dyn_dry,pop_dyn_wet,pop_dyn_regular_fluctuations,pop_dyn_irregular_fluctuations),
+	list(
+		pop_dyn_wet,
+		pop_dyn_dry,
+		# pop_dyn_regular_fluctuations,
+		pop_dyn_irregular_fluctuations
+	),
 	function(pop_dyn){
 		plot(
 			pop_dyn[,"time"],
@@ -173,9 +179,9 @@ lapply(
 		)
 		# if the type of interval varies
 		if("interval_type" %in% colnames(pop_dyn)){
-			for(i in 1:(nrow(pop_dyn)-1)){
+			for(i in 1:(nrow(pop_dyn))){
 				if(pop_dyn$interval_type[i] == 'wet'){
-					polygon(c(i-1,i-2,i-2,i-1),c(0,0,400,400),col='grey87',lty=0)
+					polygon(pop_dyn$time[i] + c(0,-1,-1,0),c(0,0,400,400),col='grey87',lty=0)
 				}
 			}
 		}
@@ -225,9 +231,9 @@ axis(
 )
 mtext("Years", 1, outer=FALSE, line=2.75, xpd=NA, cex=1.3)
 
-text(49.5,505,"Dry conditions", adj=1, xpd=NA, cex=2, srt=0)
-text(49.5,375,"Wet conditions", adj=1, xpd=NA, cex=2, srt=0)
-text(49.5,225,"Regular fluctuations", adj=1, xpd=NA, cex=2, srt=0)
-text(49.5,90,"Irregular fluctuations", adj=1, xpd=NA, cex=2, srt=0)
+text(49.75,368,"Wet conditions", adj=1, xpd=NA, cex=2, srt=0)
+text(49.75,228,"Dry conditions", adj=1, xpd=NA, cex=2, srt=0)
+# text(49.5,225,"Regular fluctuations", adj=1, xpd=NA, cex=2, srt=0)
+text(49.75,90,"Varying conditions", adj=1, xpd=NA, cex=2, srt=0)
 
 dev.off()
