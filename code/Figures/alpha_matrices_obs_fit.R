@@ -80,18 +80,55 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 		fit$Other <- NULL
 	}
 
+	# order using first singular vector
+	S <- svd(orig)
+	hmm <- S$u[,1]
+	# names(hmm) <- rownames(orig)
+	hmm.order <- order(hmm, decreasing = FALSE)
+
+	orig <- orig[hmm.order,]
+	orig <- orig[,hmm.order]
+
+	fit <- fit[hmm.order,]
+	fit <- fit[,hmm.order]
+
+	# convert to a matrix to play nice with figure generation
 	orig <- as.matrix(orig)
 	fit <- as.matrix(fit)
 
-	min.alpha <- range(orig,-orig,na.rm=TRUE)[1]
-	max.alpha <- range(orig,-orig,na.rm=TRUE)[2]
+
+
+
+	# stop()
+
+	# find the limits of the interactions
+	min.alpha <- range(orig,fit,-orig,-fit,na.rm=TRUE)[1]
+	max.alpha <- range(orig,fit,-orig,-fit,na.rm=TRUE)[2]
+
+	# if(j == 1){
+	# 	min.alpha <- -3
+	# 	max.alpha <- 11
+	# }
 
 	# add a color scale for interactions
-	pal <- c(
-		rev(colorRampPalette(brewer.pal(9, "Blues"))(300)),
-		(colorRampPalette(brewer.pal(9, "Reds"))(300))
-	)
-	breaks <- seq(min.alpha, max.alpha, length.out=length(pal))
+	# all interactions are competitive
+	if(min.alpha > 0 && max.alpha > 0){
+		pal <- colorRampPalette(brewer.pal(9, "Reds"))(600)
+		breaks <- seq(min.alpha, max.alpha, length.out=length(pal))
+	}else{
+		# there are competitive and facilitative interactions
+		if(min.alpha < 0 & max.alpha > 0){
+			facil <- colorRampPalette(brewer.pal(9, "Blues"))(round(300 * abs(min.alpha)/(max.alpha - min.alpha)))
+			compe <- colorRampPalette(brewer.pal(9, "Reds"))(round(300 * abs(max.alpha)/(max.alpha - min.alpha)))
+			pal <- c(
+				rev(facil),				
+				compe
+			)
+			breaks <- seq(min.alpha, max.alpha, length.out=length(pal))
+		}else{
+			stop("are you sure about this?")
+		}
+	}
 	
 	# plot the original data
 	plot.matrix:::plot.matrix(
@@ -127,15 +164,15 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 	)
 	mtext(paste0("Dataset ",k), 2, outer=FALSE, line=3.5, xpd=NA, cex=1.75, font=2)
 
-	min.alpha <- range(fit,-fit,na.rm=TRUE)[1]
-	max.alpha <- range(fit,-fit,na.rm=TRUE)[2]
+	# min.alpha <- range(fit,-fit,na.rm=TRUE)[1]
+	# max.alpha <- range(fit,-fit,na.rm=TRUE)[2]
 
-	# add a color scale for interactions
-	pal <- c(
-		rev(colorRampPalette(brewer.pal(9, "Blues"))(300)),
-		(colorRampPalette(brewer.pal(9, "Reds"))(300))
-	)
-	breaks <- seq(min.alpha, max.alpha, length.out=length(pal))
+	# # add a color scale for interactions
+	# pal <- c(
+	# 	rev(colorRampPalette(brewer.pal(9, "Blues"))(300)),
+	# 	(colorRampPalette(brewer.pal(9, "Reds"))(300))
+	# )
+	# breaks <- seq(min.alpha, max.alpha, length.out=length(pal))
 
 	# plot the fit data
 	plot.matrix:::plot.matrix(
@@ -180,8 +217,8 @@ for(j in (1+4*(i-1)):min(4*i,length(stems))){
 		text(2.5, 0.5, "Relative performance", xpd=NA, cex=2.25, srt=270)
 	}
 
-	mtext("+", 1, outer=FALSE, line=1., xpd=NA, cex=1.75)
-	mtext("-", 3, outer=FALSE, line=0.5, xpd=NA, cex=1.75)
+	mtext(paste0("+",round(abs(min.alpha),2)), 1, outer=FALSE, line=1.5, xpd=NA, cex=1.75)
+	mtext(paste0("-",round(abs(max.alpha),2)), 3, outer=FALSE, line=0.75, xpd=NA, cex=1.75)
 	
 }
 
