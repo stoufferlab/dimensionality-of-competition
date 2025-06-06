@@ -220,7 +220,7 @@ for(i in 1:(length(observed.data))){
 	text(paste0("Dataset ",l), x=0.7*spp, y=0.8, xpd=NA, cex=2, font=2, pos=3)
 
 	if(i == 2){
-		mtext("Niche variation explained per niche dimension", 2, outer=TRUE, line=1.8, cex=2)
+		mtext("Variation explained per niche dimension", 2, outer=TRUE, line=1.8, cex=2)
 	}
 
 	if(i == 6){
