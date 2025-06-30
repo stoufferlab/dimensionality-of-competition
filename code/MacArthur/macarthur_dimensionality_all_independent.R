@@ -222,14 +222,6 @@ plot(
 
 mtext('Variation in resource utilization parameters', 1, outer=FALSE, line=2.8, cex=1.)
 
-# polygon(
-# 	x = c(plot_data$x,rev(plot_data$x)),
-# 	# y = c(plot_data$y_min,rev(plot_data$y_max)),
-# 	y=c(plot_data$y_max, rev(plot_data$y_min)),
-# 	border = NA,
-# 	col = 'grey'
-# )
-
 points(plot_data$x,plot_data$y,col='black',pch=21,bg='black')
 
 abline(h=0.95,lty=2,lwd=1.5,col='red')

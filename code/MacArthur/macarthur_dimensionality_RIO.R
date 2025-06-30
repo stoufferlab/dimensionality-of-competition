@@ -97,15 +97,6 @@ mtext('Variation in resource dynamics parameters', 1, outer=FALSE, line=2.8, cex
 
 mtext(title_exp, 3, line=0.5) #, outer=TRUE, cex=2, xpd=TRUE)
 
-
-# polygon(
-# 	x = c(plot_data$x,rev(plot_data$x)),
-# 	# y = c(plot_data$y_min,rev(plot_data$y_max)),
-# 	y=c(plot_data$y_max, rev(plot_data$y_min)),
-# 	border = NA,
-# 	col = 'grey'
-# )
-
 points(plot_data$x,plot_data$y,col='black',pch=21,bg='black')
 
 # abline(h=0.95,lty=2,lwd=1.5,col='red')
@@ -186,17 +177,7 @@ A2.list <- lapply(
 	}
 )
 
-
-
-# pal <- colorRampPalette(brewer.pal(9, "Reds"))(1000)
-fmin <- min(c(unlist(A.list),unlist(A1.list),unlist(A2.list)))
-fmax <- max(c(unlist(A.list),unlist(A1.list),unlist(A2.list)))
-# fmin <- -0.5
-# fmax <- 0.5
-
-fmin <- -max(abs(c(fmin,fmax)))
-fmax <- max(abs(c(fmin,fmax)))
-
+# limits of decomposed CR alphas
 fmin <- -0.5
 fmax <- 0.5
 
