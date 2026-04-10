@@ -35,7 +35,7 @@ random_cr_model <- function(S, d, w_var = TRUE, c_var = TRUE, l_var = TRUE){
 			'/'
 		)
 	}else{
-		c_mat <- matrix(0.5, S, d)
+		c_mat <- matrix(1/d, S, d)
 	}
 
 	# resource dynamics parameters
@@ -63,6 +63,7 @@ cr_model_A_matrix <- function(cr_parms){
 	) %*% t(cr_parms$c)
 
 	# additive version partitioned across resource dimensions
+	d <- ncol(cr_parms$c)
 	A_mats <- array(NA, dim = c(nrow(A_mat), ncol(A_mat), d))
 	for(i in 1:d){
 		A_mats[,,i] <- cr_parms$K_div_rho[i] * outer(cr_parms$w[,i] * cr_parms$c[,i], cr_parms$c[,i])
@@ -139,4 +140,23 @@ angle_btw <- function(v1, v2) {
   }
 
   a * 180 / pi
+}
+
+# decompose parms
+decompose_cr_parms <- function(cr_parms){
+	A <- cr_model_A_matrix(cr_parms)$A
+
+	S <- svd(A)
+	R <- S$u
+	Sigma <- S$d
+	E <- S$v
+
+	# additive version partitioned across resource dimensions
+	d <- length(Sigma)
+	A_mats <- array(NA, dim = c(nrow(A), ncol(A), d))
+	for(i in 1:d){
+		A_mats[,,i] <- Sigma[i] * R[,i,drop=FALSE] %*% t(E[,i,drop=FALSE])
+	}
+
+	return(A_mats)
 }
