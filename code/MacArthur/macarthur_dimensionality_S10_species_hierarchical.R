@@ -142,9 +142,9 @@ p1 <- plot_data |>
 	ggplot(aes(x = step, y = dimens)) + #, group = factor(letters[merge]), color = factor(letters[merge]))) +#, color = fct_rev(factor(species)), group = species)) +
 	theme_classic() +
 	geom_line() +
-	ylim(c(1,10)) +
+	# ylim(c(1,10)) +
 	scale_y_continuous(name = 'Dimensionality', breaks = 1:10) +
-	scale_x_continuous(name = 'Position along tree', breaks = NULL, labels = NULL) +
+	scale_x_continuous(name = 'Position along similarity tree', breaks = NULL, labels = NULL) +
 	theme(
 		axis.title.x = element_text(margin = margin_auto(10))
 	)
@@ -156,7 +156,7 @@ p1 <- plot_data |>
 
 
 segs <- as.data.frame(rbind(
-	c(0,10,10,10),
+	c(0,10,9,10),
 	c(0,9,1,10),
 	c(0,8,5,8),
 	c(5,8,6,10),
@@ -193,11 +193,14 @@ p2 <- segs |>
 	theme_classic() +
 	# theme(panel.background = element_blank()) +
 	geom_segment() +
-	scale_y_reverse(name = 'Dimensionality', breaks = 1:10) +
+	geom_point(aes(x = res_x[1] + 1/9*(res_x[2] - res_x[1]), y = 1), shape = 21, color = 'black', fill = 'red', size = 5) +
+	geom_point(aes(x = res_x[1] + 5/9*(res_x[2] - res_x[1]), y = 3), shape = 21, color = 'black', fill = 'blue', size = 5) +
+	geom_point(aes(x = res_x[1] + 6/9*(res_x[2] - res_x[1]), y = 1), shape = 21, color = 'black', fill = 'white', size = 5) +
+	scale_y_reverse(name = 'Species', breaks = 1:10) +
 	scale_x_continuous(name = 'Position along tree', breaks = NULL, labels = NULL) +
 	theme(
 		axis.title.x = element_text(color = 'white'),
-		axis.title.y = element_text(color = 'white'),
+		# axis.title.y = element_text(color = 'white'),
 		axis.line = element_line(linewidth = 0),
 		# axis.text = element_text(color = 'white'),
 		axis.ticks = element_line(color = 'white')
@@ -211,6 +214,8 @@ p <- ggarrange(
 )
 
 print(p)
+
+
 
 # plot(dimens ~ step, plot_data)
 

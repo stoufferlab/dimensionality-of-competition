@@ -97,7 +97,10 @@ p1 <- plot_data |>
 	geom_line() +
 	ylim(c(1,10)) +
 	scale_y_continuous(name = 'Dimensionality', breaks = 1:10) +
-	scale_x_continuous(name = 'Position along tree', breaks = NULL, labels = NULL)
+	scale_x_continuous(name = 'Position along tree', breaks = NULL, labels = NULL) +
+	theme(
+		axis.title.x = element_text(margin = margin_auto(10))
+	)
 	# scale_color_discrete(
 	# 	guide = guide_legend(
 	# 		title = "Branch"
@@ -107,7 +110,7 @@ p1 <- plot_data |>
 # plot(dimens ~ step, plot_data)
 
 segs <- as.data.frame(rbind(
-	c(0,10,10,10),
+	c(0,10,9,10),
 	c(0,9,1,10),
 	c(0,8,1,8),
 	c(1,8,2,10),
@@ -135,18 +138,26 @@ res_seg <- c(min(segs$x),max(segs$xend))
 segs$x <- res_x[1] + (segs$x - res_seg[1])/(res_seg[2] - res_seg[1]) * (res_x[2] - res_x[1])
 segs$xend <- res_x[1] + (segs$xend - res_seg[1])/(res_seg[2] - res_seg[1]) * (res_x[2] - res_x[1])
 
+segs$y <- 1 + 10 - segs$y
+segs$yend <- 1 + 10 - segs$yend
+
 p2 <- segs |>
 	ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
 	# theme_void() +
 	theme_classic() +
 	# theme(panel.background = element_blank()) +
 	geom_segment() +
-	scale_y_continuous(name = 'Dimensionality', breaks = 1:10) +
-	scale_x_continuous(name = 'Position along tree', breaks = NULL, labels = NULL) +
+	geom_point(aes(x = res_x[1] + 1/9*(res_x[2] - res_x[1]), y = 1), shape = 21, color = 'black', fill = 'red', size = 5) +
+	geom_point(aes(x = res_x[1] + 2/9*(res_x[2] - res_x[1]), y = 1), shape = 21, color = 'black', fill = 'blue', size = 5) +
+	geom_point(aes(x = res_x[1] + 3/9*(res_x[2] - res_x[1]), y = 1), shape = 21, color = 'black', fill = 'white', size = 5) +
+	scale_y_reverse(name = 'Species', breaks = 1:10) +
+	scale_x_continuous(name = 'Position along similarity tree', breaks = NULL, labels = NULL) +
 	theme(
 		axis.title.x = element_text(color = 'white'),
-		axis.title.y = element_text(color = 'white'),
-		axis.line = element_line(linewidth = 0)
+		# axis.title.y = element_text(color = 'white'),
+		axis.line = element_line(linewidth = 0),
+		# axis.text = element_text(color = 'white'),
+		axis.ticks = element_line(color = 'white')
 	)
 
 library(ggpubr)
