@@ -96,8 +96,8 @@ p1 <- plot_data |>
 	theme_classic() +
 	geom_line() +
 	ylim(c(1,10)) +
-	scale_y_continuous(name = 'Dimensionality', breaks = 1:10) +
-	scale_x_continuous(name = 'Position along tree', breaks = NULL, labels = NULL) +
+	scale_y_continuous(name = 'Inferred dimensionality', breaks = 1:10) +
+	scale_x_continuous(name = 'Position along species similarity tree', breaks = NULL, labels = NULL) +
 	theme(
 		axis.title.x = element_text(margin = margin_auto(10))
 	)
@@ -148,10 +148,10 @@ p2 <- segs |>
 	# theme(panel.background = element_blank()) +
 	geom_segment() +
 	geom_point(aes(x = res_x[1] + 1/9*(res_x[2] - res_x[1]), y = 1), shape = 21, color = 'black', fill = 'red', size = 5) +
-	geom_point(aes(x = res_x[1] + 2/9*(res_x[2] - res_x[1]), y = 1), shape = 21, color = 'black', fill = 'blue', size = 5) +
-	geom_point(aes(x = res_x[1] + 3/9*(res_x[2] - res_x[1]), y = 1), shape = 21, color = 'black', fill = 'white', size = 5) +
+	geom_point(aes(x = res_x[1] + 2/9*(res_x[2] - res_x[1]), y = 1), shape = 22, color = 'black', fill = 'blue', size = 5) +
+	geom_point(aes(x = res_x[1] + 3/9*(res_x[2] - res_x[1]), y = 1), shape = 23, color = 'black', fill = 'white', size = 5) +
 	scale_y_reverse(name = 'Species', breaks = 1:10) +
-	scale_x_continuous(name = 'Position along similarity tree', breaks = NULL, labels = NULL) +
+	scale_x_continuous(name = 'Position along species similarity tree', breaks = NULL, labels = NULL) +
 	theme(
 		axis.title.x = element_text(color = 'white'),
 		# axis.title.y = element_text(color = 'white'),
