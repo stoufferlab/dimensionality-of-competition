@@ -65,7 +65,8 @@ p1 <- plot_data |>
 	ggplot(aes(x = step, y = dimens)) +
 	theme_classic() +
 	geom_line() +
-	ylim(c(1,10)) +
+	# ylim(c(1,10)) +
+	# geom_vline(xintercept = (0:9)*n_vals, linetype = 'dotted') +
 	scale_y_continuous(name = 'Inferred dimensionality', breaks = 1:10) +
 	scale_x_continuous(name = "Extent focal resource is limiting", breaks = NULL, labels = NULL) +
 	scale_color_discrete(

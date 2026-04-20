@@ -142,9 +142,11 @@ p1 <- plot_data |>
 	ggplot(aes(x = step, y = dimens)) + #, group = factor(letters[merge]), color = factor(letters[merge]))) +#, color = fct_rev(factor(species)), group = species)) +
 	theme_classic() +
 	geom_line() +
+	# geom_vline(xintercept = (0:9)*n_vals, linetype = 'dotted') +
 	# ylim(c(1,10)) +
 	scale_y_continuous(name = 'Inferred dimensionality', breaks = 1:10) +
-	scale_x_continuous(name = 'Position along species similarity tree', breaks = NULL, labels = NULL) +
+	# scale_x_continuous(name = 'Position along species similarity tree', breaks = NULL, labels = NULL) +
+	scale_x_continuous(name = '', breaks = NULL, labels = NULL) +
 	theme(
 		axis.title.x = element_text(margin = margin_auto(10))
 	)
