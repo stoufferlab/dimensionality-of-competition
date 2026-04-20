@@ -168,9 +168,10 @@ p2 <- segs |>
 	theme(
 		axis.title.x = element_text(color = 'white'),
 		# axis.title.y = element_text(color = 'white'),
-		axis.line = element_line(linewidth = 0),
+		axis.line = element_line(color = 'white',linewidth = 0),
 		# axis.text = element_text(color = 'white'),
-		axis.ticks = element_line(color = 'white')
+		axis.ticks = element_line(color = 'white'),
+		axis.ticks.length = unit(0,'cm')
 	)
 
 library(ggpubr)
@@ -181,6 +182,13 @@ p <- ggarrange(
 )
 
 print(p)
+
+ggsave(
+	'macarthur_S10_species_sequential.pdf',
+	p,
+	width = 5,
+	height = 6
+)
 
 # plot_data |>
 # 	filter(is.finite(dimens)) |>
