@@ -29,6 +29,17 @@ cr_parms$c <- diag(S)
 # 			'/'
 # 		)
 
+ondiag <- 0.95
+cfill <- (1 - ondiag) / (ondiag * (d-1))
+cr_parms$c <- matrix(cfill, S, d)
+diag(cr_parms$c) <- 1
+cr_parms$c <- sweep(
+			cr_parms$c,
+			1,
+			rowSums(cr_parms$c),
+			'/'
+		)
+
 merges <- list(
 	list(
 		from = c(2),

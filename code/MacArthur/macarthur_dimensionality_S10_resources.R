@@ -18,8 +18,17 @@ n_vals <- 1000
 # start with no variation
 cr_parms <- random_cr_model(S, d, w_var = FALSE, c_var = FALSE, l_var = FALSE)
 
-# immediately make all niches different
-cr_parms$c <- diag(S)
+# immediately make all niches almost entirely different
+ondiag <- 0.95
+cfill <- (1 - ondiag) / (ondiag * (d-1))
+cr_parms$c <- matrix(cfill, S, d)
+diag(cr_parms$c) <- 1
+cr_parms$c <- sweep(
+			cr_parms$c,
+			1,
+			rowSums(cr_parms$c),
+			'/'
+		)
 
 cntr <- 1
 res <- list()
