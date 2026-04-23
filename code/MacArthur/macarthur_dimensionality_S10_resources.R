@@ -1,5 +1,7 @@
 
 library(ecodist)
+library(plot.matrix)
+library(RColorBrewer)
 library(tidyverse)
 library(zoo)
 
@@ -18,17 +20,8 @@ n_vals <- 1000
 # start with no variation
 cr_parms <- random_cr_model(S, d, w_var = FALSE, c_var = FALSE, l_var = FALSE)
 
-# immediately make all niches almost entirely different
-ondiag <- 0.95
-cfill <- (1 - ondiag) / (ondiag * (d-1))
-cr_parms$c <- matrix(cfill, S, d)
-diag(cr_parms$c) <- 1
-cr_parms$c <- sweep(
-			cr_parms$c,
-			1,
-			rowSums(cr_parms$c),
-			'/'
-		)
+# make all species have unique resource utilization
+cr_parms$c <- diag(S)
 
 cntr <- 1
 res <- list()
@@ -39,7 +32,7 @@ for(resource in d:2){
 		var_dat <- estimate_cr_variation(cr_parms)
 
 		res[[cntr]] <- var_dat
-
+		res[[cntr]]$cr_parms <- cr_parms
 		res[[cntr]]$resource <- resource
 		res[[cntr]]$resource_val <- val
 
@@ -67,6 +60,8 @@ plot_data <- do.call(
 
 plot_data$step <- 1:nrow(plot_data)
 
+which.steps <- c(1,4500,9000)
+
 p1 <- plot_data |>
 	filter(is.finite(dimens)) |>
 	mutate(resource_val = resource_val / 0.5) |>
@@ -75,9 +70,10 @@ p1 <- plot_data |>
 	theme_classic() +
 	geom_line() +
 	# ylim(c(1,10)) +
-	# geom_vline(xintercept = (0:9)*n_vals, linetype = 'dotted') +
+	geom_vline(xintercept = which.steps, linetype = 'dotted') +
 	scale_y_continuous(name = 'Inferred dimensionality', breaks = 1:10) +
-	scale_x_continuous(name = "Extent focal resource is limiting", breaks = NULL, labels = NULL) +
+	# scale_x_continuous(name = "Extent focal resource is limiting", breaks = NULL, labels = NULL) +
+	scale_x_continuous(name = '', breaks = which.steps, labels = c('a','b','c')) +
 	scale_color_discrete(
 		guide = guide_legend(
 			title = "Focal resource"
@@ -92,42 +88,8 @@ p1 <- plot_data |>
 		axis.ticks.length = unit(0,'cm')
 	)
 
-# segs <- as.data.frame(rbind(
-# 	c(0,10,9,10),
-# 	c(0,9,1,10),
-# 	c(0,8,5,8),
-# 	c(5,8,6,10),
-# 	c(0,7,4,7),
-# 	c(4,7,5,8),
-# 	c(0,6,7,6),
-# 	c(7,6,8,10),
-# 	c(0,5,2,5),
-# 	c(2,5,3,6),
-# 	c(0,4,8,4),
-# 	c(8,4,9,10),
-# 	c(0,3,3,3),
-# 	c(3,3,4,4),
-# 	c(0,2,6,2),
-# 	c(6,2,7,4),
-# 	c(0,1,1,1),
-# 	c(1,1,2,2)
-# ))
-
-# colnames(segs) <- c('x','y','xend','yend')
-
-res_x <- range(plot_data$step)
-# res_seg <- c(min(segs$x),max(segs$xend))
-
-# segs$x <- res_x[1] + (segs$x - res_seg[1])/(res_seg[2] - res_seg[1]) * (res_x[2] - res_x[1])
-# segs$xend <- res_x[1] + (segs$xend - res_seg[1])/(res_seg[2] - res_seg[1]) * (res_x[2] - res_x[1])
-
-# segs$y <- 1 + 10 - segs$y
-# segs$yend <- 1 + 10 - segs$yend
-
 p2 <- ggplot() +
-	# theme_void() +
 	theme_classic() +
-	# theme(panel.background = element_blank()) +
 	geom_line(aes(x = seq(1,9000,length.out=100), y = 1, alpha = 1, linewidth=2)) +
 	geom_line(aes(x = seq(1,8000,length.out=100), y = 2, alpha = 1, linewidth=2)) +
 	geom_line(aes(x = seq(8000,9000,length.out=100), y = 2, alpha = seq(1,0,length.out=100), linewidth=2)) +
@@ -161,8 +123,6 @@ p2 <- ggplot() +
 		axis.ticks = element_line(color = 'white')
 	)
 
-# plot(p2)
-
 library(ggpubr)
 
 p <- ggarrange(
@@ -170,14 +130,99 @@ p <- ggarrange(
 	nrow = 2
 )
 
-print(p)
-
+# save combined plot
 ggsave(
 	'macarthur_S10_resources.pdf',
 	p,
-	width = 5,
+	width = 4,
 	height = 6
 )
+
+# make a second plot of the interaction matrices to guide the reader
+
+pdf(
+	'macarthur_S10_resources_mats.pdf',
+	width=10,
+	height=4
+)
+
+layout(mat = cbind(
+		matrix(1:3,1,3,byrow=TRUE),
+		c(4)
+       ),
+       widths = c(1.5, 1.5, 1.5, 0.5),
+       heights = rep(0.25,4)
+)
+
+par(mar = c(1.5, 1.5, 1.5, 1), oma = c(0, 1.75, 0, 3.75))
+
+c.list <- lapply(
+	res[c(1,4500,9000)],
+	function(x){
+		x$cr_parms$c
+	}
+)
+A.list <- lapply(
+	res[c(1,4500,9000)],
+	function(x){
+		cr_model_A_matrix(x$cr_parms)$A
+	}
+)
+
+# limits of resource utilization
+fmin <- 0
+fmax <- max(A.list[[1]])
+
+pal <- c(
+	# rev(colorRampPalette(brewer.pal(9, "Blues"))(1000*abs(fmin)/(fmax - fmin))),
+	(colorRampPalette(brewer.pal(9, "Reds"))(1000*abs(fmax)/(fmax - fmin)))
+)
+
+# plot the full matrices
+sapply(
+	seq_along(c.list),
+	function(i,c.list){
+		plot(
+			c.list[[i]],
+			col=pal,
+			breaks=seq(fmin, fmax, length.out=length(pal)),
+			key=NULL,
+			xaxt='n',
+			yaxt='n',
+			xlab='',
+			ylab='',
+			main='',
+			axes=FALSE,
+			axis.col=NULL,
+			axis.row=NULL,
+			asp=1
+		)
+		text(0, 11.25, letters[i], xpd=NA, cex=2.5)
+		if(i == 1){
+			mtext('Species', 2, xpd=NA, cex=1.5, padj=-0.4)
+			mtext('Species', 1, xpd=NA, cex=1.5, padj=-2.4)
+		}
+		# text(3, 1.5, "=", xpd=NA, cex=4.5)
+	},
+	c.list = A.list
+)
+
+# plot the color bar
+par(mar = c(6.0, 0.5, 6, 1.5))
+colorbarr <- t(matrix(seq(fmin, fmax, length.out=length(pal)), length(pal), 1))
+image(
+	colorbarr,
+	col=pal,
+	xaxt='n',
+	yaxt='n',
+	mgp=c(0.5,0.5,0.5)
+)
+text(2.00, 0.5, "Interaction strength", xpd=NA, cex=2.0, srt=270)
+
+mtext(paste0("Weak"), 1, outer=FALSE, line=1.3, xpd=NA, cex=1.5, adj=1)
+mtext(paste0("Strong"), 3, outer=FALSE, line=0.5, xpd=NA, cex=1.5, adj=1)
+
+dev.off()
 
 # plot_data |>
 # 	filter(is.finite(dimens)) |>

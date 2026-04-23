@@ -1,5 +1,7 @@
 
 library(ecodist)
+library(plot.matrix)
+library(RColorBrewer)
 library(tidyverse)
 library(zoo)
 
@@ -18,6 +20,8 @@ n_vals <- 100
 # start with no variation
 cr_parms <- random_cr_model(S, d, w_var = FALSE, c_var = FALSE, l_var = FALSE)
 
+# cr_parms$w <- 0.5 + matrix(rnorm(10,0,0.025), S, d, byrow=TRUE)
+
 # immediately make all niches different
 cr_parms$c <- diag(S)
 # cr_parms$c <- matrix(runif(S*d,0,0.05),S,d)
@@ -29,16 +33,16 @@ cr_parms$c <- diag(S)
 # 			'/'
 # 		)
 
-ondiag <- 0.95
-cfill <- (1 - ondiag) / (ondiag * (d-1))
-cr_parms$c <- matrix(cfill, S, d)
-diag(cr_parms$c) <- 1
-cr_parms$c <- sweep(
-			cr_parms$c,
-			1,
-			rowSums(cr_parms$c),
-			'/'
-		)
+# ondiag <- 0.95
+# cfill <- (1 - ondiag) / (ondiag * (d-1))
+# cr_parms$c <- matrix(cfill, S, d)
+# diag(cr_parms$c) <- 1
+# cr_parms$c <- sweep(
+# 			cr_parms$c,
+# 			1,
+# 			rowSums(cr_parms$c),
+# 			'/'
+# 		)
 
 merges <- list(
 	list(
@@ -146,6 +150,8 @@ plot_data <- do.call(
 
 plot_data$step <- 1:length(res)
 
+which.steps <- c(75,375,690)
+
 p1 <- plot_data |>
 	filter(is.finite(dimens)) |>
 	# mutate(species_val = resource_val / 0.5) |>
@@ -153,11 +159,12 @@ p1 <- plot_data |>
 	ggplot(aes(x = step, y = dimens)) + #, group = factor(letters[merge]), color = factor(letters[merge]))) +#, color = fct_rev(factor(species)), group = species)) +
 	theme_classic() +
 	geom_line() +
-	# geom_vline(xintercept = (0:9)*n_vals, linetype = 'dotted') +
+	geom_vline(xintercept = which.steps, linetype = 'dotted') +
+	# annotate("text", x = 1, y = 10.5, label = "a") +
 	# ylim(c(1,10)) +
-	scale_y_continuous(name = 'Inferred dimensionality', breaks = 1:10) +
+	scale_y_continuous(name = 'Inferred dimensionality', breaks = 1:10, limits=c(0,10)) +
 	# scale_x_continuous(name = 'Position along species similarity tree', breaks = NULL, labels = NULL) +
-	scale_x_continuous(name = '', breaks = NULL, labels = NULL) +
+	scale_x_continuous(name = '', breaks = which.steps, labels = c('a','b','c')) +
 	theme(
 		axis.title.x = element_text(margin = margin_auto(10))
 	)
@@ -227,31 +234,150 @@ p <- ggarrange(
 	nrow = 2
 )
 
-print(p)
-
 ggsave(
 	'macarthur_S10_species_hierarchical.pdf',
 	p,
-	width = 5,
+	width = 4,
 	height = 6
 )
 
-# plot(dimens ~ step, plot_data)
+pdf(
+	'macarthur_S10_species_hierarchical_mats.pdf',
+	width=10,
+	height=8
+)
 
-# plot_data |>
-# 	filter(is.finite(dimens)) |>
-# 	# filter(species > 8) |>
-# 	# mutate(species_val = resource_val / 0.5) |>
-# 	# mutate(species = 10 - species + 1 ) |>	
-# 	ggplot(aes(x = species_val, y = rsquared, color = fct_rev(factor(merge)), group = merge)) +
-# 	theme_classic() +
-# 	geom_line() +
-# 	# ylim(c(0.5,1)) +
-# 	geom_hline(yintercept = 0.95, linetype = 'dotted') +
-# 	# scale_y_continuous(name = 'Total variation captured by leading dimensions', limits = c(0.5,1)) +
-# 	scale_x_continuous(name = "Extent focal species shows niche differences") +
-# 	scale_color_discrete(
-# 		guide = guide_legend(
-# 			title = "Focal species"
-# 		)
-# 	)
+layout(mat = rbind(
+		c(1,2,3,4),
+		c(5,6,7,8)
+       ),
+       widths = c(1.5, 1.5, 1.5, 0.5),
+       heights = c(0.5,0.5)
+)
+
+par(mar = c(1.5, 1.5, 1.5, 1), oma = c(0, 1.75, 0, 3.75))
+
+c.list <- lapply(
+	res[which.steps],
+	function(x){
+		x$cr_parms$c
+	}
+)
+A.list <- lapply(
+	res[which.steps],
+	function(x){
+		cr_model_A_matrix(x$cr_parms)$A
+	}
+)
+
+# limits of resource utilization
+fmin <- min(unlist(c.list))
+fmax <- max(unlist(c.list))
+
+pal <- c(
+	# rev(colorRampPalette(brewer.pal(9, "Blues"))(1000*abs(fmin)/(fmax - fmin))),
+	(colorRampPalette(brewer.pal(9, "Reds"))(1000*abs(fmax)/(fmax - fmin)))
+)
+
+# plot the full matrices
+sapply(
+	seq_along(c.list),
+	function(i,c.list){
+		plot(
+			c.list[[i]],
+			col=pal,
+			breaks=seq(fmin, fmax, length.out=length(pal)),
+			key=NULL,
+			xaxt='n',
+			yaxt='n',
+			xlab='',
+			ylab='',
+			main='',
+			axes=FALSE,
+			axis.col=NULL,
+			axis.row=NULL,
+			asp=1
+		)
+		text(0, 11.25, letters[i], xpd=NA, cex=2.5)
+		if(i == 1){
+			mtext('Species', 2, xpd=NA, cex=1.5, padj=-0.4)
+			mtext('Resource', 1, xpd=NA, cex=1.5, padj=-2.4)
+		}
+		# text(3, 1.5, "=", xpd=NA, cex=4.5)
+	},
+	c.list = c.list
+)
+
+# plot the color bar
+par(mar = c(6, 0.5, 6, 1.5))
+colorbarr <- t(matrix(seq(fmin, fmax, length.out=length(pal)), length(pal), 1))
+image(
+	colorbarr,
+	col=pal,
+	xaxt='n',
+	yaxt='n',
+	mgp=c(0.5,0.5,0.5)
+)
+text(2.0, 0.5, "Resource utlization", xpd=NA, cex=2.0, srt=270)
+
+mtext(paste0("High"), 1, outer=FALSE, line=1.3, xpd=NA, cex=1.5, adj=1)
+mtext(paste0("Low "), 3, outer=FALSE, line=0.5, xpd=NA, cex=1.5, adj=1)
+
+
+# limits of resource utilization
+fmin <- min(unlist(A.list))
+fmax <- max(unlist(A.list))
+
+pal <- c(
+	# rev(colorRampPalette(brewer.pal(9, "Blues"))(1000*abs(fmin)/(fmax - fmin))),
+	(colorRampPalette(brewer.pal(9, "Reds"))(1000*abs(fmax)/(fmax - fmin)))
+)
+
+par(mar = c(1.5, 1.5, 1.5, 1))
+
+# plot the full matrices
+sapply(
+	seq_along(A.list),
+	function(i,A.list){
+		plot(
+			A.list[[i]],
+			col=pal,
+			breaks=seq(fmin, fmax, length.out=length(pal)),
+			key=NULL,
+			xaxt='n',
+			yaxt='n',
+			xlab='',
+			ylab='',
+			main='',
+			axes=FALSE,
+			axis.col=NULL,
+			axis.row=NULL,
+			asp=1
+		)
+		text(0, 11.25, letters[i], xpd=NA, cex=2.5)
+		if(i == 1){
+			mtext('Species', 2, xpd=NA, cex=1.5, padj=-0.4)
+			mtext('Species', 1, xpd=NA, cex=1.5, padj=-2.4)
+		}
+		# text(3, 1.5, "=", xpd=NA, cex=4.5)
+	},
+	A.list = A.list
+)
+
+# plot the color bar
+par(mar = c(6, 0.5, 6, 1.5))
+colorbarr <- t(matrix(seq(fmin, fmax, length.out=length(pal)), length(pal), 1))
+image(
+	colorbarr,
+	col=pal,
+	xaxt='n',
+	yaxt='n',
+	mgp=c(0.5,0.5,0.5)
+)
+text(2., 0.5, "Interaction strength", xpd=NA, cex=2.0, srt=270)
+
+mtext(paste0("Weak"), 1, outer=FALSE, line=1.3, xpd=NA, cex=1.5, adj=1)
+mtext(paste0("Strong"), 3, outer=FALSE, line=0.5, xpd=NA, cex=1.5, adj=1)
+
+
+dev.off()
