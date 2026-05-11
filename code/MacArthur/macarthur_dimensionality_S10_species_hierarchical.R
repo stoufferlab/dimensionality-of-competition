@@ -20,30 +20,10 @@ n_vals <- 100
 # start with no variation
 cr_parms <- random_cr_model(S, d, w_var = FALSE, c_var = FALSE, l_var = FALSE)
 
-# cr_parms$w <- 0.5 + matrix(rnorm(10,0,0.025), S, d, byrow=TRUE)
-
 # immediately make all niches different
 cr_parms$c <- diag(S)
-# cr_parms$c <- matrix(runif(S*d,0,0.05),S,d)
-# diag(cr_parms$c) <- 1
-# cr_parms$c <- sweep(
-# 			cr_parms$c,
-# 			1,
-# 			rowSums(cr_parms$c),
-# 			'/'
-# 		)
 
-# ondiag <- 0.95
-# cfill <- (1 - ondiag) / (ondiag * (d-1))
-# cr_parms$c <- matrix(cfill, S, d)
-# diag(cr_parms$c) <- 1
-# cr_parms$c <- sweep(
-# 			cr_parms$c,
-# 			1,
-# 			rowSums(cr_parms$c),
-# 			'/'
-# 		)
-
+# manner in which to combine species
 merges <- list(
 	list(
 		from = c(2),
@@ -102,22 +82,8 @@ for(i in 1:length(merges)){
 		res[[cntr]] <- var_dat
 
 		res[[cntr]]$cr_parms <- these_parms
-		# res[[cntr]]$species <- sp
 		res[[cntr]]$merge <- i
 		res[[cntr]]$species_val <- val
-
-		A <- cr_model_A_matrix(these_parms)$A
-
-		Asub <- A[c(to_sp,from_sp[1]),c(to_sp,from_sp[1])]
-		res[[cntr]]$nicheoverlap <- sqrt(Asub[1,2] * Asub[2,1] / Asub[1,1] / Asub[2,2])
-
-		res[[cntr]]$pianka <- sum(these_parms$c[to_sp,] * these_parms$c[from_sp[1],]) / sqrt(sum(these_parms$c[to_sp,]**2) * sum(these_parms$c[from_sp[1],]**2))
-
-		res[[cntr]]$bray <- mean(ecodist::bcdist(these_parms$c))
-		# res[[cntr]]$species_ang <- matlib::angle(
-		# 	these_parms$c[sp,],
-		# 	these_parms$c[1,]
-		# )
 
 		cntr <- cntr+1
 	}
@@ -133,14 +99,9 @@ plot_data <- do.call(
 			# estimate the dimensionality
 			dimens <- min(which(x$d_tot_var > 0.95))
 
-			# return(dimens)
 			res <- c(
 				merge = x$merge,
 				species_val = x$species_val,
-				# species_ang = x$species_ang,
-				nichediff = 1 - x$nicheoverlap, #ifelse(dimens == 1, NA, x$d_tot_var[dimens - 1]),
-				pianka = 1 - x$pianka,
-				bray = x$bray,
 				dimens = dimens
 			)
 			return(res)
@@ -150,30 +111,22 @@ plot_data <- do.call(
 
 plot_data$step <- 1:length(res)
 
+# points during process to highlight in additional panels
 which.steps <- c(75,375,690)
 
 p1 <- plot_data |>
 	filter(is.finite(dimens)) |>
-	# mutate(species_val = resource_val / 0.5) |>
-	# mutate(species = 10 - species + 1 ) |>	
-	ggplot(aes(x = step, y = dimens)) + #, group = factor(letters[merge]), color = factor(letters[merge]))) +#, color = fct_rev(factor(species)), group = species)) +
+	ggplot(aes(x = step, y = dimens)) +
 	theme_classic() +
 	geom_line() +
 	geom_vline(xintercept = which.steps, linetype = 'dotted') +
-	# annotate("text", x = 1, y = 10.5, label = "a") +
-	# ylim(c(1,10)) +
-	scale_y_continuous(name = 'Inferred dimensionality', breaks = 1:10, limits=c(0,10)) +
-	# scale_x_continuous(name = 'Position along species similarity tree', breaks = NULL, labels = NULL) +
-	scale_x_continuous(name = '', breaks = which.steps, labels = c('a','b','c')) +
+	scale_y_continuous(name = expression('Inferred dimensionality, '*italic(hat(d))), breaks = 1:10, limits=c(1,10)) +
+	scale_x_continuous(name = '', breaks = which.steps, labels = c('x','y','z')) +
 	theme(
-		axis.title.x = element_text(margin = margin_auto(10))
-	)
-	# scale_color_discrete(
-	# 	guide = guide_legend(
-	# 		title = "Branch"
-	# 	)
-	# )
-
+		axis.title.x = element_text(margin = margin_auto(10)),
+		plot.tag = element_text(face = 'bold')
+	) +
+	labs(tag = 'b')
 
 segs <- as.data.frame(rbind(
 	c(0,10,9,10),
@@ -209,23 +162,21 @@ segs$yend <- 1 + 10 - segs$yend
 
 p2 <- segs |>
 	ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
-	# theme_void() +
 	theme_classic() +
-	# theme(panel.background = element_blank()) +
 	geom_segment() +
 	geom_point(aes(x = res_x[1] + 1/9*(res_x[2] - res_x[1]), y = 1), shape = 21, color = 'black', fill = 'red', size = 5) +
 	geom_point(aes(x = res_x[1] + 2/9*(res_x[2] - res_x[1]), y = 9), shape = 22, color = 'black', fill = 'blue', size = 5) +
 	geom_point(aes(x = res_x[1] + 3/9*(res_x[2] - res_x[1]), y = 5), shape = 23, color = 'black', fill = 'white', size = 5) +
-	scale_y_reverse(name = 'Species', breaks = 1:10) +
+	scale_y_reverse(name = expression('Species, '*italic(i)), breaks = 1:10) +
 	scale_x_continuous(name = 'Position along species similarity tree', breaks = NULL, labels = NULL) +
 	theme(
 		axis.title.x = element_text(color = 'white'),
-		# axis.title.y = element_text(color = 'white'),
 		axis.line = element_line(color = 'white',linewidth = 0),
-		# axis.text = element_text(color = 'white'),
 		axis.ticks = element_line(color = 'white'),
-		axis.ticks.length = unit(0,'cm')
-	)
+		axis.ticks.length = unit(0,'cm'),
+		plot.tag = element_text(face = 'bold')
+	) +
+	labs(tag = 'a')
 
 library(ggpubr)
 
@@ -276,6 +227,7 @@ fmax <- max(unlist(c.list))
 
 pal <- c(
 	# rev(colorRampPalette(brewer.pal(9, "Blues"))(1000*abs(fmin)/(fmax - fmin))),
+	'white',
 	(colorRampPalette(brewer.pal(9, "Reds"))(1000*abs(fmax)/(fmax - fmin)))
 )
 
@@ -298,12 +250,18 @@ sapply(
 			axis.row=NULL,
 			asp=1
 		)
-		text(0, 11.25, letters[i], xpd=NA, cex=2.5)
+		text(
+			5,
+			11.25,
+			paste0("at point ",letters[i+23]),
+			xpd=NA,
+			cex=2.0
+		)
 		if(i == 1){
 			mtext('Species', 2, xpd=NA, cex=1.5, padj=-0.4)
 			mtext('Resource', 1, xpd=NA, cex=1.5, padj=-2.4)
+			mtext(expression(bold(c)*' Resource utilization matrices, '*italic(C)*"      "), 3, xpd=NA, cex=2, adj=0, at = 0, line = -1)
 		}
-		# text(3, 1.5, "=", xpd=NA, cex=4.5)
 	},
 	c.list = c.list
 )
@@ -318,10 +276,10 @@ image(
 	yaxt='n',
 	mgp=c(0.5,0.5,0.5)
 )
-text(2.0, 0.5, "Resource utlization", xpd=NA, cex=2.0, srt=270)
+text(2.0, 0.5, expression("Resource utlization, "*italic(c[ik])), xpd=NA, cex=2.0, srt=270)
 
-mtext(paste0("High"), 1, outer=FALSE, line=1.3, xpd=NA, cex=1.5, adj=1)
-mtext(paste0("Low "), 3, outer=FALSE, line=0.5, xpd=NA, cex=1.5, adj=1)
+mtext(paste0("Low "), 1, outer=FALSE, line=1.3, xpd=NA, cex=1.5, adj=1)
+mtext(paste0("High "), 3, outer=FALSE, line=0.5, xpd=NA, cex=1.5, adj=1)
 
 
 # limits of resource utilization
@@ -329,7 +287,7 @@ fmin <- min(unlist(A.list))
 fmax <- max(unlist(A.list))
 
 pal <- c(
-	# rev(colorRampPalette(brewer.pal(9, "Blues"))(1000*abs(fmin)/(fmax - fmin))),
+	'white',
 	(colorRampPalette(brewer.pal(9, "Reds"))(1000*abs(fmax)/(fmax - fmin)))
 )
 
@@ -354,12 +312,18 @@ sapply(
 			axis.row=NULL,
 			asp=1
 		)
-		text(0, 11.25, letters[i], xpd=NA, cex=2.5)
+		text(
+			5,
+			11.25,
+			paste0("at point ",letters[i+23]),
+			xpd=NA,
+			cex=2.
+		)
 		if(i == 1){
 			mtext('Species', 2, xpd=NA, cex=1.5, padj=-0.4)
 			mtext('Species', 1, xpd=NA, cex=1.5, padj=-2.4)
+			mtext(expression(bold(d)*' Interaction matrices, '*italic(A)), 3, xpd=NA, cex=2, adj=0, at = 0, line = -1)
 		}
-		# text(3, 1.5, "=", xpd=NA, cex=4.5)
 	},
 	A.list = A.list
 )
@@ -374,7 +338,7 @@ image(
 	yaxt='n',
 	mgp=c(0.5,0.5,0.5)
 )
-text(2., 0.5, "Interaction strength", xpd=NA, cex=2.0, srt=270)
+text(2., 0.5, expression("Interaction strength, "*italic(a[ij])), xpd=NA, cex=2.0, srt=270)
 
 mtext(paste0("Weak"), 1, outer=FALSE, line=1.3, xpd=NA, cex=1.5, adj=1)
 mtext(paste0("Strong"), 3, outer=FALSE, line=0.5, xpd=NA, cex=1.5, adj=1)

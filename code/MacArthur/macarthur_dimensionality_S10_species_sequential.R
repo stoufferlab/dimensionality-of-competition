@@ -20,30 +20,10 @@ n_vals <- 100
 # start with no variation
 cr_parms <- random_cr_model(S, d, w_var = FALSE, c_var = FALSE, l_var = FALSE)
 
-# cr_parms$w <- 0.5 + matrix(rnorm(10,0,0.05), S, d, byrow=TRUE)
-
 # immediately make all niches different
 cr_parms$c <- diag(S)
-# cr_parms$c <- matrix(runif(S*S,0,0.05),S,S)
-# diag(cr_parms$c) <- 1
-# cr_parms$c <- sweep(
-# 			cr_parms$c,
-# 			1,
-# 			rowSums(cr_parms$c),
-# 			'/'
-# 		)
 
-# ondiag <- 0.95
-# cfill <- (1 - ondiag) / (ondiag * (d-1))
-# cr_parms$c <- matrix(cfill, S, d)
-# diag(cr_parms$c) <- 1
-# cr_parms$c <- sweep(
-# 			cr_parms$c,
-# 			1,
-# 			rowSums(cr_parms$c),
-# 			'/'
-# 		)
-
+# progressively go through and make species identical to each other
 cntr <- 1
 res <- list()
 for(sp in 2:S){
@@ -58,17 +38,6 @@ for(sp in 2:S){
 		res[[cntr]]$cr_parms <- these_parms
 		res[[cntr]]$species <- sp
 		res[[cntr]]$species_val <- val
-		res[[cntr]]$species_ang <- matlib::angle(
-			these_parms$c[sp,],
-			these_parms$c[1,]
-		)
-
-		A <- cr_model_A_matrix(these_parms)$A
-
-		Asub <- A[c(1,sp),c(1,sp)]
-		res[[cntr]]$nicheoverlap <- sqrt(Asub[1,2] * Asub[2,1] / Asub[1,1] / Asub[2,2])
-
-		res[[cntr]]$bray <- mean(ecodist::bcdist(these_parms$c))
 
 		cntr <- cntr+1
 	}
@@ -84,11 +53,7 @@ plot_data <- do.call(
 			dimens <- min(which(x$d_tot_var > 0.95))
 			res <- c(
 				species = x$species,
-				species_val = x$species_val,
-				species_ang = x$species_ang,
 				rsquared = x$d_tot_var[x$species - 1],
-				nichediff = 1 - x$nicheoverlap,
-				bray = x$bray,
 				dimens = dimens
 			)
 			return(res)
@@ -96,37 +61,30 @@ plot_data <- do.call(
 	)
 ) %>% as_tibble()
 
+# convenience column
 plot_data$step <- 1:length(res)
 
+# points at which to show what happens during the process
 which.steps <- c(75,375,690)
 
 p1 <- plot_data |>
 	filter(is.finite(dimens)) |>
-	# mutate(species_val = resource_val / 0.5) |>
-	# mutate(species = 10 - species + 1 ) |>	
 	ggplot(aes(
 		x = step,
-		y = dimens,
-		# color = factor(letters[1 + 10 - species]),
-		# group = species
+		y = dimens
 	)) +
 	theme_classic() +
 	geom_line() +
 	geom_vline(xintercept = which.steps, linetype = 'dotted') +
 	scale_y_continuous(name = 'Inferred dimensionality', breaks = 1:10) +
-	# scale_x_continuous(name = 'Position along species similarity tree', breaks = NULL, labels = NULL) +
-	scale_x_continuous(name = '', breaks = which.steps, labels = c('a','b','c')) +
+	scale_x_continuous(name = '', breaks = which.steps, labels = c('x','y','z')) +
 	theme(
-		axis.title.x = element_text(margin = margin_auto(10))
-	)
-	# scale_color_discrete(
-	# 	guide = guide_legend(
-	# 		title = "Branch"
-	# 	)
-	# )
+		axis.title.x = element_text(margin = margin_auto(10)),
+		plot.tag = element_text(face = 'bold')
+	) +
+	labs(tag = 'b')
 
-# plot(dimens ~ step, plot_data)
-
+# depiction of the merging process
 segs <- as.data.frame(rbind(
 	c(0,10,9,10),
 	c(0,9,1,10),
@@ -161,26 +119,23 @@ segs$yend <- 1 + 10 - segs$yend
 
 p2 <- segs |>
 	ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
-	# theme_void() +
 	theme_classic() +
-	# theme(panel.background = element_blank()) +
 	geom_segment() +
 	geom_point(aes(x = res_x[1] + 1/9*(res_x[2] - res_x[1]), y = 1), shape = 21, color = 'black', fill = 'red', size = 5) +
 	geom_point(aes(x = res_x[1] + 2/9*(res_x[2] - res_x[1]), y = 1), shape = 22, color = 'black', fill = 'blue', size = 5) +
 	geom_point(aes(x = res_x[1] + 3/9*(res_x[2] - res_x[1]), y = 1), shape = 23, color = 'black', fill = 'white', size = 5) +
-	scale_y_reverse(name = 'Species', breaks = 1:10) +
+	scale_y_reverse(name = expression('Species, '*italic(i)), breaks = 1:10) +
 	scale_x_continuous(name = 'Position along species similarity tree', breaks = NULL, labels = NULL) +
 	theme(
 		axis.title.x = element_text(color = 'white'),
-		# axis.title.y = element_text(color = 'white'),
 		axis.line = element_line(color = 'white',linewidth = 0),
-		# axis.text = element_text(color = 'white'),
 		axis.ticks = element_line(color = 'white'),
-		axis.ticks.length = unit(0,'cm')
-	)
+		axis.ticks.length = unit(0,'cm'),
+		plot.tag = element_text(face = 'bold')
+	) +
+	labs(tag = 'a')
 
 library(ggpubr)
-
 p <- ggarrange(
 	p2, p1,
 	nrow = 2
@@ -227,7 +182,7 @@ fmin <- min(unlist(c.list))
 fmax <- max(unlist(c.list))
 
 pal <- c(
-	# rev(colorRampPalette(brewer.pal(9, "Blues"))(1000*abs(fmin)/(fmax - fmin))),
+	'white',
 	(colorRampPalette(brewer.pal(9, "Reds"))(1000*abs(fmax)/(fmax - fmin)))
 )
 
@@ -250,12 +205,18 @@ sapply(
 			axis.row=NULL,
 			asp=1
 		)
-		text(0, 11.25, letters[i], xpd=NA, cex=2.5)
+		text(
+			5,
+			11.25,
+			paste0("at point ",letters[i+23]),
+			xpd=NA,
+			cex=2.0
+		)
 		if(i == 1){
 			mtext('Species', 2, xpd=NA, cex=1.5, padj=-0.4)
 			mtext('Resource', 1, xpd=NA, cex=1.5, padj=-2.4)
+			mtext(expression(bold(c)*' Resource utilization matrices, '*italic(C)*"      "), 3, xpd=NA, cex=2, adj=0, at = 0, line = -1)
 		}
-		# text(3, 1.5, "=", xpd=NA, cex=4.5)
 	},
 	c.list = c.list
 )
@@ -270,10 +231,10 @@ image(
 	yaxt='n',
 	mgp=c(0.5,0.5,0.5)
 )
-text(2.0, 0.5, "Resource utlization", xpd=NA, cex=2.0, srt=270)
+text(2.0, 0.5, expression("Resource utlization, "*italic(c[ik])), xpd=NA, cex=2.0, srt=270)
 
-mtext(paste0("High"), 1, outer=FALSE, line=1.3, xpd=NA, cex=1.5, adj=1)
-mtext(paste0("Low "), 3, outer=FALSE, line=0.5, xpd=NA, cex=1.5, adj=1)
+mtext(paste0("Low "), 1, outer=FALSE, line=1.3, xpd=NA, cex=1.5, adj=1)
+mtext(paste0("High "), 3, outer=FALSE, line=0.5, xpd=NA, cex=1.5, adj=1)
 
 
 # limits of resource utilization
@@ -281,7 +242,7 @@ fmin <- min(unlist(A.list))
 fmax <- max(unlist(A.list))
 
 pal <- c(
-	# rev(colorRampPalette(brewer.pal(9, "Blues"))(1000*abs(fmin)/(fmax - fmin))),
+	'white',
 	(colorRampPalette(brewer.pal(9, "Reds"))(1000*abs(fmax)/(fmax - fmin)))
 )
 
@@ -306,12 +267,18 @@ sapply(
 			axis.row=NULL,
 			asp=1
 		)
-		text(0, 11.25, letters[i], xpd=NA, cex=2.5)
+		text(
+			5,
+			11.25,
+			paste0("at point ",letters[i+23]),
+			xpd=NA,
+			cex=2.
+		)
 		if(i == 1){
 			mtext('Species', 2, xpd=NA, cex=1.5, padj=-0.4)
 			mtext('Species', 1, xpd=NA, cex=1.5, padj=-2.4)
+			mtext(expression(bold(d)*' Interaction matrices, '*italic(A)), 3, xpd=NA, cex=2, adj=0, at = 0, line = -1)
 		}
-		# text(3, 1.5, "=", xpd=NA, cex=4.5)
 	},
 	A.list = A.list
 )
@@ -326,7 +293,7 @@ image(
 	yaxt='n',
 	mgp=c(0.5,0.5,0.5)
 )
-text(2.0, 0.5, "Interaction strength", xpd=NA, cex=2.0, srt=270)
+text(2., 0.5, expression("Interaction strength, "*italic(a[ij])), xpd=NA, cex=2.0, srt=270)
 
 mtext(paste0("Weak"), 1, outer=FALSE, line=1.3, xpd=NA, cex=1.5, adj=1)
 mtext(paste0("Strong"), 3, outer=FALSE, line=0.5, xpd=NA, cex=1.5, adj=1)
