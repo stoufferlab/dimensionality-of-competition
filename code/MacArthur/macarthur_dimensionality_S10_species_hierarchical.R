@@ -220,6 +220,15 @@ A.list <- lapply(
 		cr_model_A_matrix(x$cr_parms)$A
 	}
 )
+Ahat.list <- lapply(
+	res[which.steps],
+	function(x){
+		dhat <- min(which(x$d_tot_var>0.95))
+		S <- svd(cr_model_A_matrix(x$cr_parms)$A)
+		Ahat <- S$u[,1:dhat,drop=FALSE] %*% diag(S$d[1:dhat],dhat,dhat) %*% t(S$v[,1:dhat,drop=FALSE])
+		Ahat
+	}
+)
 
 # limits of resource utilization
 fmin <- min(unlist(c.list))
