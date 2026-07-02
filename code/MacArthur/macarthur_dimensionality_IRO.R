@@ -1,10 +1,11 @@
 
+library(here)
 library(plot.matrix)
 library(RColorBrewer)
 library(tidyverse)
 
 # read in relevant functions
-source('lib/macarthur_functions.R')
+source(here::here('code/MacArthur/macarthur_functions.R'))
 
 # number of consumers
 S <- 2
@@ -17,7 +18,7 @@ n_rand <- 1E6
 n_chunk <- 25
 
 pdf(
-	'../../manuscript/Supplementary/Figures/macarthur_IRO.pdf',
+	here::here('figures/Supplementary-Notes/macarthur_IRO.pdf'),
 	width=4.45,
 	height=3.77
 )
@@ -233,7 +234,7 @@ sapply(
 dev.off()
 
 pdf(
-	'../../manuscript/Supplementary/Figures/macarthur_IRO_mats.pdf',
+	here::here('figures/Supplementary-Notes/macarthur_IRO_mats.pdf'),
 	width=6.45,
 	height=6.45
 )

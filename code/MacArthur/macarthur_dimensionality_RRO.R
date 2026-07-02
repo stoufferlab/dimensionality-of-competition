@@ -1,10 +1,11 @@
 
+library(here)
 library(ecodist)
 library(tidyverse)
 # library(zoo)
 
 # read in relevant functions
-source('lib/macarthur_functions.R')
+source(here::here('code/MacArthur/macarthur_functions.R'))
 
 # number of consumers
 S <- 2
@@ -72,7 +73,7 @@ plot_data <- do.call(
 
 # plot stuff
 pdf(
-	'../../manuscript/Supplementary/Figures/macarthur_RRO.pdf',
+	here::here('figures/Supplementary-Notes/macarthur_RRO.pdf'),
 	width=7.90,
 	height=3.77
 )

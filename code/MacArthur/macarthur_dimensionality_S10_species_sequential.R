@@ -1,4 +1,5 @@
 
+library(here)
 library(ecodist)
 library(plot.matrix)
 library(RColorBrewer)
@@ -6,7 +7,7 @@ library(tidyverse)
 library(zoo)
 
 # read in relevant functions
-source('lib/macarthur_functions.R')
+source(here::here('code/MacArthur/macarthur_functions.R'))
 
 # number of consumers
 S <- 10
@@ -142,14 +143,14 @@ p <- ggarrange(
 )
 
 ggsave(
-	'macarthur_S10_species_sequential.pdf',
+	here::here('figures/Supplementary-Notes/macarthur_S10_species_sequential.pdf'),
 	p,
 	width = 4,
 	height = 6
 )
 
 pdf(
-	'macarthur_S10_species_sequential_mats.pdf',
+	here::here('figures/Supplementary-Notes/macarthur_S10_species_sequential_mats.pdf'),
 	width=10,
 	height=8
 )
