@@ -16,8 +16,8 @@ Rscript dimensionality.R
 ###
 
 # supporting note 2 (figures S1-S8)
-XXX add macarthur stuff to generate all following figures XXX
-	Figures/macarthur_independent.pdf
+Rscript macarthur_dimensionality_all_independent.R
+	XXX add macarthur stuff to generate all following figures XXX
 	Figures/macarthur_RIO.pdf
 	Figures/macarthur_RIO_mats.pdf
 	Figures/macarthur_IRO.pdf
