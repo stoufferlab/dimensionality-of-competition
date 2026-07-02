@@ -6,11 +6,11 @@ library(RColorBrewer)
 
 # determine the best 
 
-A <- as.matrix(read.table("../../results/Spain/spain.Control.full.alphas.fit.csv"))
-A1 <- as.matrix(read.table("../../results/Spain/spain.Control.full.alphas.1.fit.csv"))
-A2 <- as.matrix(read.table("../../results/Spain/spain.Control.full.alphas.2.fit.csv"))
-A3 <- as.matrix(read.table("../../results/Spain/spain.Control.full.alphas.3.fit.csv"))
-A4 <- as.matrix(read.table("../../results/Spain/spain.Control.full.alphas.4.fit.csv"))
+A <- as.matrix(read.table(here::here("results/Spain/spain.Control.full.alphas.fit.csv")))
+A1 <- as.matrix(read.table(here::here("results/Spain/spain.Control.full.alphas.1.fit.csv")))
+A2 <- as.matrix(read.table(here::here("results/Spain/spain.Control.full.alphas.2.fit.csv")))
+A3 <- as.matrix(read.table(here::here("results/Spain/spain.Control.full.alphas.3.fit.csv")))
+A4 <- as.matrix(read.table(here::here("results/Spain/spain.Control.full.alphas.4.fit.csv")))
 #A <- A1 + A2 + A3 #as.matrix(read.table("../../results/Godoy/godoy.T.alphas.csv"))
 
 rownames(A) <- colnames(A) <- letters[1:nrow(A)]
@@ -69,7 +69,7 @@ fmax <- max((c(A,A1,A2,A3,A4)))
 fmin <- min((c(A,A1,A2,A3,A4)))
 
 setEPS(width=17, height=8)
-postscript('../../manuscript/Figures/alphas.spain.Control.eps')
+postscript(here::here('figures/Main-Text/alphas.spain.Control.eps'))
 
 layout(mat = rbind(
 		c(5,6,1,2),

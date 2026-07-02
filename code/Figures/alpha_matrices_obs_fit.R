@@ -6,23 +6,23 @@ library(plot.matrix)
 # figure out what alpha files exist
 
 # datasets from the Kinlock collection
-kinlock.dir <- "../../results/Kinlock"
+kinlock.dir <- here::here("results/Kinlock")
 kinlock.alphas <- list.files(kinlock.dir,"[.]fit[.]csv",full.names=TRUE)
 
 # put everything together
 alpha.fits <- c(
-	"../../results/Spain/spain.Control.D2.alphas.fit.csv",
-	"../../results/Spain/spain.Treatment.D3.alphas.fit.csv",
-	"../../results/Australia/australia.Open.D1.alphas.fit.csv",
-	"../../results/Australia/australia.Shade.D2.alphas.fit.csv",
+	here::here("results/Spain/spain.Control.D2.alphas.fit.csv"),
+	here::here("results/Spain/spain.Treatment.D3.alphas.fit.csv"),
+	here::here("results/Australia/australia.Open.D1.alphas.fit.csv"),
+	here::here("results/Australia/australia.Shade.D2.alphas.fit.csv"),
 	kinlock.alphas
 )
 
 alpha.orig <- c(
-	"../../results/Spain/spain.Control.full.alphas.fit.csv",
-	"../../results/Spain/spain.Treatment.full.alphas.fit.csv",
-	"../../results/Australia/australia.Open.full.alphas.fit.csv",
-	"../../results/Australia/australia.Shade.full.alphas.fit.csv",
+	here::here("results/Spain/spain.Control.full.alphas.fit.csv"),
+	here::here("results/Spain/spain.Treatment.full.alphas.fit.csv"),
+	here::here("results/Australia/australia.Open.full.alphas.fit.csv"),
+	here::here("results/Australia/australia.Shade.full.alphas.fit.csv"),
 	gsub("fit", "orig", kinlock.alphas)
 )
 
@@ -55,7 +55,7 @@ alpha.fits <- alpha.fits[order(spp, decreasing=TRUE)]
 for(i in 1:4){
 
 setEPS(width=8, height=14)
-postscript(paste0('../../manuscript/Supplementary/Figures/alphas.',i,'.eps'))
+postscript(here::here(paste0('figures/Supplementary-Notes/alphas.',i,'.eps')))
 
 layout(mat = matrix(
 		1:12,

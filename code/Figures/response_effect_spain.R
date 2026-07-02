@@ -2,10 +2,11 @@
 set.seed(12345)
 
 library(RColorBrewer)
+library(here)
 # library(plot.matrix)
 
 setEPS(width=11, height=5.)
-postscript('../../manuscript/Figures/response.effect.spain.eps')
+postscript(here::here('figures/Main-Text/response.effect.spain.eps'))
 
 layout(mat = matrix(
 		c(1, 2), 
@@ -22,14 +23,14 @@ par(mar = c(4, 4, 2.5, 1.5))
 
 # Control values
 
-all.fits <- read.table('../../results/Spain/spain.Control.fit.summary.csv')
+all.fits <- read.table(here::here('results/Spain/spain.Control.fit.summary.csv'))
 which.fit <- which.min(subset(all.fits, dimensions==2)$AIC)
-load(paste0('../../fits/Spain/',rownames(subset(all.fits, dimensions==2)[which.fit,])))
+load(paste0(here::here('fits/Spain/',rownames(subset(all.fits, dimensions==2)[which.fit,]))))
 assign("optim.lowD", eval(parse(text = paste0("Control.optim.lowD"))))
 
 which.trait <- 1
 
-source('../Utils/se.helper.R')
+source(here::here('code/Utils/se.helper.R'))
 
 # define some sizes
 cex.axis <- 1.7
@@ -105,14 +106,14 @@ y1 <- grconvertY(apply(responses, 1, quantile, probs=c(0.5)), to="ndc")
 
 # Treatment values
 
-all.fits <- read.table('../../results/Spain/spain.Treatment.fit.summary.csv')
+all.fits <- read.table(here::here('results/Spain/spain.Treatment.fit.summary.csv'))
 which.fit <- which.min(subset(all.fits, dimensions==3)$AIC)
-load(paste0('../../fits/Spain/',rownames(subset(all.fits, dimensions==3)[which.fit,])))
+load(paste0(here::here('fits/Spain/',rownames(subset(all.fits, dimensions==3)[which.fit,]))))
 assign("optim.lowD", eval(parse(text = paste0("Treatment.optim.lowD"))))
 
 which.trait <- 1
 
-source('../Utils/se.helper.R')
+source(here::here('code/Utils/se.helper.R'))
 
 # define some sizes
 cex.axis <- 1.7

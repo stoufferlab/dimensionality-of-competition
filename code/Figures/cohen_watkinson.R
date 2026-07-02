@@ -138,7 +138,7 @@ for(i in 1:50){
 
 # make a figure of the predicted population dynamics
 setEPS(width=7, height=5.25)
-postscript('../../manuscript/Supplementary/Figures/cohen_watkinson.eps')
+postscript(here::here('figures/Supplementary-Notes/cohen_watkinson.eps'))
 
 layout(mat = matrix(
 		c(1, 2, 3), 

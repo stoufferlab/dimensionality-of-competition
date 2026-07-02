@@ -2,7 +2,7 @@
 library(RColorBrewer)
 
 # find the data files for the synthetic datasets
-random.dir <- "../../results/Synthetic-Datasets/"
+random.dir <- here::here("results/Synthetic-Datasets/")
 random.files <- list.files(random.dir, "rsquared", full.names=TRUE)
 random.aics <- list.files(random.dir, "AICs", full.names=TRUE)
 
@@ -11,7 +11,7 @@ AICs <- sapply(random.aics, function(x) read.table(x), simplify=FALSE)
 
 # where to save the figure
 setEPS(width=15, height=12)
-postscript('../../manuscript/Supplementary/Figures/AIC_randomized.eps')
+postscript(here::here('figures/Supplementary-Notes/AIC_randomized.eps'))
 
 layout(mat = matrix(
 		1:25,

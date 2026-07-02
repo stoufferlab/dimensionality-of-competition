@@ -3,11 +3,11 @@ library(RColorBrewer)
 library(plotrix)
 
 # read in GOF by dimensionality measures
-godoyC <- "../../results/Spain/spain.Control.pseudo-rsquared.csv"
-godoyT <- "../../results/Spain/spain.Treatment.pseudo-rsquared.csv"
+godoyC <- "results/Spain/spain.Control.pseudo-rsquared.csv"
+godoyT <- "results/Spain/spain.Treatment.pseudo-rsquared.csv"
 
-wainwrightOpen <- "../../results/Australia/australia.Open.pseudo-rsquared.csv"
-wainwrightShade <- "../../results/Australia/australia.Shade.pseudo-rsquared.csv"
+wainwrightOpen <- "results/Australia/australia.Open.pseudo-rsquared.csv"
+wainwrightShade <- "results/Australia/australia.Shade.pseudo-rsquared.csv"
 
 # # these datasets were fit from Levine matrix only
 # levine.dir <- "../../results/Levine/"
@@ -15,8 +15,8 @@ wainwrightShade <- "../../results/Australia/australia.Shade.pseudo-rsquared.csv"
 # levine.files <- paste0(levine.dir, levine.files)
 
 # these datasets were fit from Kinlock matrix only
-kinlock.dir <- "../../results/Kinlock/"
-kinlock.files <- list.files(kinlock.dir, "rsquared")
+kinlock.dir <- "results/Kinlock/"
+kinlock.files <- list.files(here::here(kinlock.dir), "rsquared")
 kinlock.files <- paste0(kinlock.dir, kinlock.files)
 
 # remove Engel due to errors in the data and we have it from Levine
@@ -35,7 +35,7 @@ all.files <- c(
 dd <- do.call(rbind,sapply(
 	all.files,
 	function(f) {
-		d <- read.table(f)
+		d <- read.table(here::here(f))
 		return(cbind(
 			nrow(d),
 			igraph::dim_select(d[,1]),
@@ -70,7 +70,7 @@ rownames(dd) <- all.files
 # where to save the figure
 h <- 5
 setEPS(width=4.0, height=3.7)
-postscript('../../manuscript/Figures/dimensionality.eps')
+postscript(here::here('figures/Main-Text/dimensionality.eps'))
 
 par(mar = c(2, 2.5, 0.5, 1.0), oma = c(2.5, 2.5, 0.75, 1.0))
 

@@ -1,8 +1,9 @@
 
 library(RColorBrewer)
+library(here)
 
 # read in the Kinlock data
-kinlock <- read.csv("../../data/Kinlock/Data_PlantInteractionNetworks.csv")
+kinlock <- read.csv(here::here("data/Kinlock/Data_PlantInteractionNetworks.csv"))
 
 # remove small datasets
 kinlock <- subset(kinlock, SpeciesRichness >= 3)
@@ -49,13 +50,13 @@ kinlock.full <- lapply(
 
 # read in the full dimension fits of the australian data sets
 australia.full <- list()
-australia.full[["Open"]] <- list(observed=read.table('../../results/Australia/australia.Open.full.alphas.fit.csv'))
-australia.full[["Shade"]] <- list(observed=read.table('../../results/Australia/australia.Shade.full.alphas.fit.csv'))
+australia.full[["Open"]] <- list(observed=read.table(here::here('results/Australia/australia.Open.full.alphas.fit.csv')))
+australia.full[["Shade"]] <- list(observed=read.table(here::here('results/Australia/australia.Shade.full.alphas.fit.csv')))
 
 # read in the full dimension fits of the spanish data sets
 spain.full <- list()
-spain.full[["Control"]] <- list(observed=read.table('../../results/Spain/spain.Control.full.alphas.fit.csv'))
-spain.full[["Treatment"]] <- list(observed=read.table('../../results/Spain/spain.Treatment.full.alphas.fit.csv'))
+spain.full[["Control"]] <- list(observed=read.table(here::here('results/Spain/spain.Control.full.alphas.fit.csv')))
+spain.full[["Treatment"]] <- list(observed=read.table(here::here('results/Spain/spain.Treatment.full.alphas.fit.csv')))
 
 # combine all observed datasets together
 observed.data <- c(spain.full, australia.full, kinlock.full)
@@ -104,7 +105,7 @@ null.data <- lapply(
 
 # where to save the figure
 setEPS(width=15, height=15)
-postscript('../../manuscript/Supplementary/Figures/rsquared_with_null.eps')
+postscript(here::here('figures/Supplementary-Notes/rsquared_with_null.eps'))
 
 layout(mat = matrix(
 		1:16,

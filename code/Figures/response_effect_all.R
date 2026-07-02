@@ -8,19 +8,19 @@ library(RColorBrewer)
 # figure out what response/effect files exist
 
 # godoy Control which is not in main text figure
-godoy.dir <- "../../results/Spain"
-godoy.resp <- grep("godoy.C",list.files(godoy.dir,"response[.][[:digit:]][.]csv",full.names=TRUE),value=TRUE)
-godoy.effe <- grep("godoy.C",list.files(godoy.dir,"effect[.][[:digit:]][.]csv",full.names=TRUE),value=TRUE)
+godoy.dir <- "results/Spain"
+godoy.resp <- grep("godoy.C",list.files(here::here(godoy.dir),"response[.][[:digit:]][.]csv",full.names=TRUE),value=TRUE)
+godoy.effe <- grep("godoy.C",list.files(here::here(godoy.dir),"effect[.][[:digit:]][.]csv",full.names=TRUE),value=TRUE)
 
 # Wainwright data
-wainwright.dir <- "../../results/Australia"
-wainwright.resp <- list.files(wainwright.dir,"response[.][[:digit:]][.]csv",full.names=TRUE)
-wainwright.effe <- list.files(wainwright.dir,"effect[.][[:digit:]][.]csv",full.names=TRUE)
+wainwright.dir <- "results/Australia"
+wainwright.resp <- list.files(here::here(wainwright.dir),"response[.][[:digit:]][.]csv",full.names=TRUE)
+wainwright.effe <- list.files(here::here(wainwright.dir),"effect[.][[:digit:]][.]csv",full.names=TRUE)
 
 # datasets from the Kinlock collection
-kinlock.dir <- "../../results/Kinlock"
-kinlock.resp <- list.files(kinlock.dir,"response[.][[:digit:]][.]csv",full.names=TRUE)
-kinlock.effe <- list.files(kinlock.dir,"effect[.][[:digit:]][.]csv",full.names=TRUE)
+kinlock.dir <- "results/Kinlock"
+kinlock.resp <- list.files(here::here(kinlock.dir),"response[.][[:digit:]][.]csv",full.names=TRUE)
+kinlock.effe <- list.files(here::here(kinlock.dir),"effect[.][[:digit:]][.]csv",full.names=TRUE)
 
 # put everything together
 response.files <- c(
@@ -68,7 +68,7 @@ se.factor <- 2
 for(i in 1:4){
 
 	setEPS(width=10, height=15)
-	postscript(paste0('../../manuscript/Supplementary/Figures/response.effect.',i,'.eps'))
+	postscript(here::here(paste0('figures/Supplementary-Notes/response.effect.',i,'.eps')))
 
 	layout(mat = matrix(
 			1:12,
@@ -86,28 +86,28 @@ for(i in 1:4){
 		if(j<5){
 			for(which.trait in 1:3){
 				if(j==1){
-					all.fits <- read.table('../../results/Spain/spain.Control.fit.summary.csv')
+					all.fits <- read.table(here::here('results/Spain/spain.Control.fit.summary.csv'))
 					which.fit <- which.min(subset(all.fits, dimensions==2)$AIC)
-					load(paste0('../../fits/Spain/',rownames(subset(all.fits, dimensions==2)[which.fit,])))
+					load(here::here(paste0('fits/Spain/',rownames(subset(all.fits, dimensions==2)[which.fit,]))))
 					assign("optim.lowD", eval(parse(text = paste0("Control.optim.lowD"))))
 				}else if(j==2){
-					all.fits <- read.table('../../results/Spain/spain.Treatment.fit.summary.csv')
+					all.fits <- read.table(here::here('results/Spain/spain.Treatment.fit.summary.csv'))
 					which.fit <- which.min(subset(all.fits, dimensions==3)$AIC)
-					load(paste0('../../fits/Spain/',rownames(subset(all.fits, dimensions==3)[which.fit,])))
+					load(here::here(paste0('fits/Spain/',rownames(subset(all.fits, dimensions==3)[which.fit,]))))
 					assign("optim.lowD", eval(parse(text = paste0("Treatment.optim.lowD"))))
 				}else if(j==3){
-					all.fits <- read.table('../../results/Australia/australia.Open.fit.summary.csv')
+					all.fits <- read.table(here::here('results/Australia/australia.Open.fit.summary.csv'))
 					which.fit <- which.min(subset(all.fits, dimensions==1)$AIC)
-					load(paste0('../../fits/Australia/',rownames(subset(all.fits, dimensions==1)[which.fit,])))
+					load(here::here(paste0('fits/Australia/',rownames(subset(all.fits, dimensions==1)[which.fit,]))))
 					assign("optim.lowD", eval(parse(text = paste0("Open.optim.lowD"))))
 				}else{
-					all.fits <- read.table('../../results/Australia/australia.Shade.fit.summary.csv')
+					all.fits <- read.table(here::here('results/Australia/australia.Shade.fit.summary.csv'))
 					which.fit <- which.min(subset(all.fits, dimensions==2)$AIC)
-					load(paste0('../../fits/Australia/',rownames(subset(all.fits, dimensions==2)[which.fit,])))
+					load(here::here(paste0('fits/Australia/',rownames(subset(all.fits, dimensions==2)[which.fit,]))))
 					assign("optim.lowD", eval(parse(text = paste0("Shade.optim.lowD"))))
 				}
 				if(which.trait <= optim.lowD@data$dimensions){
-					source('../Utils/se.helper.R')
+					source(here::here('code/Utils/se.helper.R'))
 					if("Other" %in% rownames(effects)){
 						effects <- effects[rownames(effects) != "Other",]
 					}
