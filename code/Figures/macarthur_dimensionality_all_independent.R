@@ -1,9 +1,10 @@
 
 library(ecodist)
+library(here)
 library(tidyverse)
 
 # read in relevant functions
-source('lib/macarthur_functions.R')
+source(here::here('code/MacArthur/macarthur_functions.R'))
 
 # number of consumers
 S <- 2
@@ -16,7 +17,7 @@ n_rand <- 1E6
 n_chunk <- 25
 
 # setEPS()
-pdf('../../manuscript/Supplementary/Figures/macarthur_independent.pdf',width=10.64, height=3.77)
+pdf(here::here('figures/Supplementary-Notes/macarthur_independent.pdf'),width=10.64, height=3.77)
 
 # three column plot
 par(mfrow=c(1,3))
@@ -98,7 +99,7 @@ axis(
 		las=1
 	)
 
-title(expression("Random variation in only "*italic(theta)), cex.main = 2)
+title(expression("Random variation in only "*bold(theta)), cex.main = 2)
 
 # only variation in resource value parameters (w matrix)
 res <- vector("list", n_rand)
@@ -173,7 +174,7 @@ axis(
 	las=1
 )
 
-title(expression("Random variation in only "*italic(W)), cex.main = 2)
+title(expression("Random variation in only "*bold(W)), cex.main = 2)
 
 # only variation in resource utilization parameters (c matrix)
 res <- vector("list", n_rand)
@@ -250,6 +251,6 @@ axis(
 	las=1
 )
 
-title(expression("Random variation in only "*italic(C)), cex.main = 2)
+title(expression("Random variation in only "*bold(C)), cex.main = 2)
 
 dev.off()
