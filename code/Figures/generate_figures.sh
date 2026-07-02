@@ -16,7 +16,21 @@ Rscript dimensionality.R
 ###
 
 # supporting note 2 (figures S1-S8)
-XXX add macarthur stuff XXX
+XXX add macarthur stuff to generate all following figures XXX
+	Figures/macarthur_independent.pdf
+	Figures/macarthur_RIO.pdf
+	Figures/macarthur_RIO_mats.pdf
+	Figures/macarthur_IRO.pdf
+	Figures/macarthur_IRO_mats.pdf
+	Figures/macarthur_RRO.pdf
+	Figures/macarthur_S10_resources.pdf
+	Figures/macarthur_S10_resources_mats.pdf
+	Figures/macarthur_S10_species_hierarchical.pdf
+	Figures/macarthur_S10_species_hierarchical_mats.pdf
+	Figures/macarthur_S10_species_hierarchical2.pdf
+	Figures/macarthur_S10_species_hierarchical2_mats.pdf
+	Figures/macarthur_S10_species_sequential.pdf
+	Figures/macarthur_S10_species_sequential_mats.pdf
 
 # supporting note 4 (figures S9-S10)
 Rscript rsquared_with_null.R
