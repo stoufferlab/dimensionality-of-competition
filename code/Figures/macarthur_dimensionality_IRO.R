@@ -5,7 +5,7 @@ library(RColorBrewer)
 library(tidyverse)
 
 # read in relevant functions
-source(here::here('code/MacArthur/macarthur_functions.R'))
+source(here::here('code/Utils/macarthur_functions.R'))
 
 # number of consumers
 S <- 2

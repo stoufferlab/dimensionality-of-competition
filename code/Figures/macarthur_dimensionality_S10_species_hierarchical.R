@@ -7,7 +7,7 @@ library(tidyverse)
 library(zoo)
 
 # read in relevant functions
-source(here::here('code/MacArthur/macarthur_functions.R'))
+source(here::here('code/Utils/macarthur_functions.R'))
 
 # number of consumers
 S <- 10
@@ -24,20 +24,66 @@ cr_parms <- random_cr_model(S, d, w_var = FALSE, c_var = FALSE, l_var = FALSE)
 # immediately make all niches different
 cr_parms$c <- diag(S)
 
-# progressively go through and make species identical to each other
+# manner in which to combine species
+merges <- list(
+	list(
+		from = c(2),
+		to = c(1)
+	),
+	list(
+		from = c(10),
+		to = c(9)
+	),
+	list(
+		from = c(6),
+		to = c(5)
+	),
+	list(
+		from = c(8),
+		to = c(7)
+	),
+	list(
+		from = c(4),
+		to = c(3)
+	),
+	list(
+		from = c(3,4),
+		to = c(1)
+	),
+	list(
+		from = c(9,10),
+		to = c(7)
+	),
+	list(
+		from = c(5,6),
+		to = c(1)
+	),
+	list(
+		from = c(7,8,9,10),
+		to = c(1)
+	)
+)
+
+# container
 cntr <- 1
 res <- list()
-for(sp in 2:S){
+
+# hierarchically merge species together into complexes
+for(i in 1:length(merges)){
+	from_sp <- merges[[i]]$from
+	to_sp <- merges[[i]]$to
 	for(val in seq(1,0,length.out=n_vals)){
 		these_parms <- cr_parms
-		these_parms$c[sp,] <- cr_parms$c[1,] * (1-val) + cr_parms$c[sp,] * val
+		for(j in from_sp){
+			these_parms$c[j,] <- cr_parms$c[to_sp,] * (1-val) + cr_parms$c[j,] * val
+		}
 
 		var_dat <- estimate_cr_variation(these_parms)
 
 		res[[cntr]] <- var_dat
 
 		res[[cntr]]$cr_parms <- these_parms
-		res[[cntr]]$species <- sp
+		res[[cntr]]$merge <- i
 		res[[cntr]]$species_val <- val
 
 		cntr <- cntr+1
@@ -51,10 +97,12 @@ plot_data <- do.call(
 	lapply(
 		res,
 		function(x){
+			# estimate the dimensionality
 			dimens <- min(which(x$d_tot_var > 0.95))
+
 			res <- c(
-				species = x$species,
-				rsquared = x$d_tot_var[x$species - 1],
+				merge = x$merge,
+				species_val = x$species_val,
 				dimens = dimens
 			)
 			return(res)
@@ -62,22 +110,18 @@ plot_data <- do.call(
 	)
 ) %>% as_tibble()
 
-# convenience column
 plot_data$step <- 1:length(res)
 
-# points at which to show what happens during the process
+# points during process to highlight in additional panels
 which.steps <- c(75,375,690)
 
 p1 <- plot_data |>
 	filter(is.finite(dimens)) |>
-	ggplot(aes(
-		x = step,
-		y = dimens
-	)) +
+	ggplot(aes(x = step, y = dimens)) +
 	theme_classic() +
 	geom_line() +
 	geom_vline(xintercept = which.steps, linetype = 'dotted') +
-	scale_y_continuous(name = 'Inferred dimensionality', breaks = 1:10) +
+	scale_y_continuous(name = expression('Inferred dimensionality, '*italic(hat(d))), breaks = 1:10, limits=c(1,10)) +
 	scale_x_continuous(name = '', breaks = which.steps, labels = c('x','y','z')) +
 	theme(
 		axis.title.x = element_text(margin = margin_auto(10)),
@@ -85,26 +129,25 @@ p1 <- plot_data |>
 	) +
 	labs(tag = 'b')
 
-# depiction of the merging process
 segs <- as.data.frame(rbind(
 	c(0,10,9,10),
 	c(0,9,1,10),
-	c(0,8,1,8),
-	c(1,8,2,10),
-	c(0,7,2,7),
-	c(2,7,3,10),
-	c(0,6,3,6),
-	c(3,6,4,10),
-	c(0,5,4,5),
-	c(4,5,5,10),
-	c(0,4,5,4),
-	c(5,4,6,10),
-	c(0,3,6,3),
-	c(6,3,7,10),
-	c(0,2,7,2),
-	c(7,2,8,10),
-	c(0,1,8,1),
-	c(8,1,9,10)
+	c(0,8,5,8),
+	c(5,8,6,10),
+	c(0,7,4,7),
+	c(4,7,5,8),
+	c(0,6,7,6),
+	c(7,6,8,10),
+	c(0,5,2,5),
+	c(2,5,3,6),
+	c(0,4,8,4),
+	c(8,4,9,10),
+	c(0,3,3,3),
+	c(3,3,4,4),
+	c(0,2,6,2),
+	c(6,2,7,4),
+	c(0,1,1,1),
+	c(1,1,2,2)
 ))
 
 colnames(segs) <- c('x','y','xend','yend')
@@ -123,8 +166,8 @@ p2 <- segs |>
 	theme_classic() +
 	geom_segment() +
 	geom_point(aes(x = res_x[1] + 1/9*(res_x[2] - res_x[1]), y = 1), shape = 21, color = 'black', fill = 'red', size = 5) +
-	geom_point(aes(x = res_x[1] + 2/9*(res_x[2] - res_x[1]), y = 1), shape = 22, color = 'black', fill = 'blue', size = 5) +
-	geom_point(aes(x = res_x[1] + 3/9*(res_x[2] - res_x[1]), y = 1), shape = 23, color = 'black', fill = 'white', size = 5) +
+	geom_point(aes(x = res_x[1] + 2/9*(res_x[2] - res_x[1]), y = 9), shape = 22, color = 'black', fill = 'blue', size = 5) +
+	geom_point(aes(x = res_x[1] + 3/9*(res_x[2] - res_x[1]), y = 5), shape = 23, color = 'black', fill = 'white', size = 5) +
 	scale_y_reverse(name = expression('Species, '*italic(i)), breaks = 1:10) +
 	scale_x_continuous(name = 'Position along species similarity tree', breaks = NULL, labels = NULL) +
 	theme(
@@ -137,20 +180,21 @@ p2 <- segs |>
 	labs(tag = 'a')
 
 library(ggpubr)
+
 p <- ggarrange(
 	p2, p1,
 	nrow = 2
 )
 
 ggsave(
-	here::here('figures/Supplementary-Notes/macarthur_S10_species_sequential.pdf'),
+	here::here('figures/Supplementary-Notes/macarthur_S10_species_hierarchical.pdf'),
 	p,
 	width = 4,
 	height = 6
 )
 
 pdf(
-	here::here('figures/Supplementary-Notes/macarthur_S10_species_sequential_mats.pdf'),
+	here::here('figures/Supplementary-Notes/macarthur_S10_species_hierarchical_mats.pdf'),
 	width=10,
 	height=8
 )
@@ -177,12 +221,22 @@ A.list <- lapply(
 		cr_model_A_matrix(x$cr_parms)$A
 	}
 )
+Ahat.list <- lapply(
+	res[which.steps],
+	function(x){
+		dhat <- min(which(x$d_tot_var>0.95))
+		S <- svd(cr_model_A_matrix(x$cr_parms)$A)
+		Ahat <- S$u[,1:dhat,drop=FALSE] %*% diag(S$d[1:dhat],dhat,dhat) %*% t(S$v[,1:dhat,drop=FALSE])
+		Ahat
+	}
+)
 
 # limits of resource utilization
 fmin <- min(unlist(c.list))
 fmax <- max(unlist(c.list))
 
 pal <- c(
+	# rev(colorRampPalette(brewer.pal(9, "Blues"))(1000*abs(fmin)/(fmax - fmin))),
 	'white',
 	(colorRampPalette(brewer.pal(9, "Reds"))(1000*abs(fmax)/(fmax - fmin)))
 )
