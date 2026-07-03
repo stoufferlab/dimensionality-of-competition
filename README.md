@@ -24,4 +24,4 @@ The `figures` directory and its subdirectories are placeholders for where all fi
 
 ### Contact
 
-For any further information, questions or comments, contact Daniel Stouffer `daniel.stouffer@igb-berlin.de`.
+For any further information, questions or comments, please contact Daniel Stouffer `daniel.stouffer@igb-berlin.de`.
