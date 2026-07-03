@@ -1,14 +1,15 @@
 
 # library(ggplot2)
+library(here)
 library(RColorBrewer)
 # library(plot.matrix)
 
 # read in GOF by dimensionality measures
-godoyC <- "../../results/Spain/spain.Control.pseudo-rsquared.csv"
-godoyT <- "../../results/Spain/spain.Treatment.pseudo-rsquared.csv"
+godoyC <- here::here("results/Spain/spain.Control.pseudo-rsquared.csv")
+godoyT <- here::here("results/Spain/spain.Treatment.pseudo-rsquared.csv")
 
-wainwrightOpen <- "../../results/Australia/australia.Open.pseudo-rsquared.csv"
-wainwrightShade <- "../../results/Australia/australia.Shade.pseudo-rsquared.csv"
+wainwrightOpen <- here::here("results/Australia/australia.Open.pseudo-rsquared.csv")
+wainwrightShade <- here::here("results/Australia/australia.Shade.pseudo-rsquared.csv")
 
 # # these datasets were fit from Levine matrix only
 # levine.dir <- "../../results/Levine/"
@@ -16,7 +17,7 @@ wainwrightShade <- "../../results/Australia/australia.Shade.pseudo-rsquared.csv"
 # levine.files <- paste0(levine.dir, levine.files)
 
 # these datasets were fit from Kinlock matrix only
-kinlock.dir <- "../../results/Kinlock/"
+kinlock.dir <- here::here("results/Kinlock/")
 kinlock.files <- list.files(kinlock.dir, "rsquared")
 kinlock.files <- paste0(kinlock.dir, kinlock.files)
 
@@ -65,10 +66,11 @@ for(i in 1:nrow(sing_vals)){
 	)
 }
 
-library(tidyverse)
+library(tidyr)
+library(dplyr)
 kk <-
-	sing_vals %>%
-	mutate(sval = signif(sval, 4)) %>%
+	sing_vals |>
+	mutate(sval = signif(sval, 4)) |>
 	pivot_wider(
 		id_cols = dataset,
 		names_from = d,
@@ -77,7 +79,7 @@ kk <-
 	)
 write.table(
 	kk,
-	'../../manuscript/Supplementary/Tables/singular_values.csv',
+	here::here('results/Summary/singular_values.csv'),
 	quote=FALSE,
 	sep = ' & ',
 	row.names=FALSE,
